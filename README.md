@@ -44,9 +44,12 @@ GRANT ALL PRIVILEGES ON torque.* TO 'steve'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
-Exit the MySQL shell by typing `quit` and we'll move onto creating an [Options File](https://dev.mysql.com/doc/refman/5.5/en/option-files.html) for this new MySQL user. An options file is a MySQL configuration file will allow us to login to the database without typing out the username and password each time, but in a way that is just as secure.
+##### Create MySQL Options File #####
 
-Create a file in your home directory called `.my.cnf` (e.g. */home/myuser/.my.cnf*) and enter the following text into it, replacing the user/password with the one you made:
+
+Exit the MySQL shell by typing `quit` and we'll move onto creating an [Options File](https://dev.mysql.com/doc/refman/5.5/en/option-files.html) for this new MySQL user. An options file is a MySQL configuration file that allows us to login to the database without typing out the username and password each time. We'll also set the permissions on this file so that it is just as secure as typing in your MySQL user/password manually each time.
+
+Create a file in your home directory called `.my.cnf` (e.g. */home/myuser/.my.cnf*) and enter the following text into it, replacing the user/password with the one you created:
 
 ```
 [client]
@@ -54,7 +57,7 @@ user="steve"
 password="zissou44"
 ```
 
-To protect the contents of this file, set the permissions on it so only the owner of the file (your system user) can read it and write to it:
+To protect the contents of this file, set the permissions on it so only the owner of the file (i.e. your system user) can read it and write to it:
 
 ```bash
 chmod 600 ~/.my.cnf
@@ -63,16 +66,18 @@ chmod 600 ~/.my.cnf
 
 ##### Create MySQL Table #####
 
-Next we'll create a table in the database to store the log data sent from Torque. Fortunately, I've provided a shell script in this repo that will do this for you. Open a terminal in the folder where you cloned this repo and,assuming you put your MySQL options file in your home directory, simply run:
+
+Next we'll create a table in the database to store the raw log data sent from Torque. I've provided a shell script in this repo that will do this for you. Open a terminal in the folder where you cloned this repo and, assuming you put your MySQL options file in your home directory, simply run:
 
 ```bash
 mysql < create_torque_log_table.sql
 ```
 
+
 ##### Configure Webserver #####
 
 
-At this point, the MySQL settings are all configured. The only thing left to do related to the database is to add your MySQL user/password to the PHP script. Open the `torque.php` file and enter your MySQL user and password in the blank **$db_user** and **$db_pass** fields:
+At this point, the MySQL settings are all configured. The only thing left to do related to the database is to add your MySQL user/password to the PHP script. Open the `torque.php` file and enter your MySQL user and password in the blank **$db_user** and **$db_pass** fields as I've done below:
 
 ```php
 ...
@@ -85,7 +90,7 @@ $db_table = "raw_logs";
 ...
 ```
 
-Now move the `torque.php` file to your webserver and set the permissions. Assuming the document root for your Apache server is located at `/var/www`, you could do:
+Now move the `torque.php` file to your webserver and set the appropriate permissions on it. Assuming the document root for your Apache server is located at `/var/www`, you could do:
 
 ```bash
 mkdir /var/www/torque
@@ -94,24 +99,21 @@ chmod 755 /var/www/torque/
 chmod 644 /var/www/torque/torque.php
 ```
 
-The last two lines set the permissions seperately for the directory we made and the PHP file. In general, directories on your webserver should have 755 permissions and files should have 644. You can clean up the permissions across your entire server for directories and files by executing the following pipes:
-
-```bash
-find /var/www/ -type d -print0 | xargs -0 chmod 755
-find /var/www/ -type f -print0 | xargs -0 chmod 644
-```
+The last two lines set the permissions seperately for the directory we made and the PHP file. In general, directories on your webserver should have 755 permissions and files should have 644.
 
 With `torque.php` in place on your webserver, it's time to make sure everything works.
 
 
 ##### Testing #####
 
-To use your webserver with Torque, the domain name mapped to the webserver needs to be available to the remote Internet.
 
-Assuming your domain is `http://www.example.com`, open a browser and navigate to `http://www.example.com/torque/torque.php` and make sure your script returns the "OK!" message and only that. If that worked, you're ready to enter the URL to your PHP script into your Torque app.
+To use your webserver with Torque, the domain name mapped to the webserver needs to be available on the remote Internet.
+
+Assuming your domain is `http://www.example.com`, open a browser and navigate to `http://www.example.com/torque/torque.php` and make sure your script returns the "OK!" message and only that. If it worked, you're ready to enter the URL to your PHP script into your Torque app.
 
 
 ##### Configure Torque Settings #####
+
 
 To use your database/server with Torque, open up the Torque app on your phone and go to `Settings` -> `Data Logging & Upload` -> `Webserver URL`. Enter the URL to your **torque.php** script (e.g. `www.example.com/torque/torque.php`) and press `OK`.
 
