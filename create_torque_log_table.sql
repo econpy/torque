@@ -1,4 +1,3 @@
-CREATE DATABASE IF NOT EXISTS `torque`;
 USE `torque`;
 
 DROP TABLE IF EXISTS `raw_logs`;
