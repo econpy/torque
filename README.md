@@ -1,6 +1,6 @@
 ## Torque for Android: PHP/MySQL Config ##
 
-This repo contains a set of scripts and instructions to setup a minimally functional server/database for uploading ODB2 data logged from your car in real- time using the [Torque Pro](https://play.google.com/store/apps/details?id=org.prowl.torque) app for Android.
+This repo contains a set of scripts and instructions to setup a minimally functional server/database for uploading ODB2 data logged from your car in real-time using the [Torque Pro](https://play.google.com/store/apps/details?id=org.prowl.torque) app for Android.
 
 You can also find a growing set of tools to manage, analyze, and visualize the data uploaded into the database from your Torque app.
 
@@ -121,7 +121,7 @@ With your URL inputted into Torque, test to make sure it works by clicking `Test
 
 The final thing you'll want to do before going for a drive is to check the appropriate boxes on the `Data Logging & Upload` page under the `REALTIME WEB UPLOAD` section. Personally, I have both **Upload to webserver** and **Only when ODB connected** checked.
 
-At this point, you should be all setup. The next time you connect to Torque in your car, data will begin syncing into your MySQL database in realtime!
+At this point, you should be all setup. The next time you connect to Torque in your car, data will begin syncing into your MySQL database in real-time!
 
 
 ### Getting Data From the Database ###
