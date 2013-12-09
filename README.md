@@ -44,7 +44,7 @@ GRANT ALL PRIVILEGES ON torque.* TO 'steve'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
-Exit the MySQL shell by typing `quit` we'll move onto creating an (Options File)[https://dev.mysql.com/doc/refman/5.5/en/option-files.html] for this new MySQL user. An options file is a MySQL configuration file will allow us to login to the database without typing out the username and password each time, but in a way that is just as secure.
+Exit the MySQL shell by typing `quit` and we'll move onto creating an [Options File](https://dev.mysql.com/doc/refman/5.5/en/option-files.html) for this new MySQL user. An options file is a MySQL configuration file will allow us to login to the database without typing out the username and password each time, but in a way that is just as secure.
 
 Create a file in your home directory called `.my.cnf` (e.g. */home/myuser/.my.cnf*) and enter the following text into it, replacing the user/password with the one you made:
 
