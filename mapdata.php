@@ -25,6 +25,12 @@ foreach($latlong as $d) {
 $imapdata = implode(",\n                    ", $mapdata);
 
 // Centering location for the map is the most recent location
-$centerlat = $latlong[0]["latitude"];
-$centerlong = $latlong[0]["longitude"];
+if (isset($latlong[0])) {
+    $centerlat = $latlong[0]["latitude"];
+    $centerlong = $latlong[0]["longitude"];
+}
+else {
+    $centerlat = 38.5;
+    $centerlong = -98;
+}
 ?>
