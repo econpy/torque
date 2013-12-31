@@ -77,24 +77,24 @@ mysql < create_torque_log_table.sql
 ##### Configure Webserver #####
 
 
-At this point, the MySQL settings are all configured. The only thing left to do related to the database is to add your MySQL user/password to the PHP script. Open the `torque.php` file and enter your MySQL user and password in the blank **$db_user** and **$db_pass** fields as I've done below:
+At this point, the MySQL settings are all configured. The only thing left to do related to the database is to add your MySQL user/password to the PHP script. Open the `creds.php` file and enter your MySQL user and password in the blank **$db_user** and **$db_pass** fields as I've done below:
 
 ```php
 ...
-// Establish db connection
 $db_host = "localhost";
-$db_user = "steve";     // Enter your MySQL username
-$db_pass = "zissou44";  // Enter your MySQL password
+$db_user = "steve";
+$db_pass = "zissou44";
 $db_name = "torque";
 $db_table = "raw_logs";
 ...
 ```
 
-Now move the `torque.php` file to your webserver and set the appropriate permissions on it. Assuming the document root for your Apache server is located at `/var/www`, you could do:
+Now move the `torque.php` and `creds.php` file to your webserver and set the appropriate permissions on it. Assuming the document root for your Apache server is located at /var/www, you could do:
 
 ```bash
 mkdir /var/www/torque
 cp torque.php /var/www/torque/
+cp creds.php /var/www/torque/
 chmod 755 /var/www/torque/
 chmod 644 /var/www/torque/torque.php
 ```
@@ -124,7 +124,28 @@ The final thing you'll want to do before going for a drive is to check the appro
 At this point, you should be all setup. The next time you connect to Torque in your car, data will begin syncing into your MySQL database in real-time!
 
 
-### Getting Data From the Database ###
+### Mapping Data in Real Time ###
+
+The `map.php` file provides a website that plots the Latitude/Longitude data from the database in real time.
+
+Most of the PHP/MySQL settings are in the `mapdata.php` file. Some that you may be interested in changing are the limit on the data points selected from the database or the centering location of the map. By default, up to 5000 points are selected and the map is centered on the most recent point.
+
+The [Google Maps API](https://developers.google.com/maps/documentation/javascript/tutorial) settings in the JavaScript of the `map.php` file can also be modified to suit your needs. For example, you may want to alter the default zoom of the map, the color/opacity/etc of the roadmap line, and any other Google Maps API settings. Parts of the JavaScript are generated from PHP variables generated in `mapdata.php` such as the latitude/longitude points making up the path of the roadmap and the centering location of the map.
+
+To use the map, simply move the `map.php` and `mapdata.php` to the same folder you put `creds.php` (or just make another copy of creds.php).
+
+```bash
+cp map.php /var/www/torque/
+cp mapdata.php /var/www/torque/
+chmod 644 -R /var/www/torque/*.php
+```
+
+Then you can view a Google Map with real time location data pulled from the created from the database used with Torque by going to `www.yourdomain.com/torque/map.php`. The resulting map will be style like this:
+
+<div align="center"><img src="https://s3.amazonaws.com/torque_maps/mapexample.png"></div>
+
+
+### Getting Raw Data From the Database ###
 
 
 Once you've collected some data in the database, you will eventually want to get it out and look at it. In this repo you'll find a shell script `dbdump_to_csv.sh` which will dump all of the data out of the database into a nicely formatted CSV file. It uses the `~/.my.cnf` file created earlier to login to the database and creates a folder `torque_data` in the repo (the first time it is run) before putting creating a CSV file named with today's date in the folder.
