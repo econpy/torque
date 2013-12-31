@@ -7,7 +7,7 @@ mysql_select_db($db_name) or die(mysql_error());
 
 // Get Latitude/Longitude data from MySQL
 $geoqry = mysql_query("SELECT kff1006, kff1005
-                      FROM raw_logs
+                      FROM $db_table
                       ORDER BY time DESC
                       LIMIT 5000") or die(mysql_error());
 $latlong = array();
