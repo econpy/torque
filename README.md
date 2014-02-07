@@ -1,8 +1,4 @@
-## Torque for Android: PHP/MySQL Config ##
-
 This repo contains a set of scripts and instructions to setup a minimally functional server/database for uploading ODB2 data logged from your car in real-time using the [Torque Pro](https://play.google.com/store/apps/details?id=org.prowl.torque) app for Android.
-
-You can also find a growing set of tools to manage, analyze, and visualize the data uploaded into the database from your Torque app.
 
 
 ### Setup ###
@@ -13,41 +9,27 @@ These instructions assume you already have a LAMP-like server or have access to 
   * Apache webserver
   * PHP server-side scripting
 
-Everything was tested on a computer running Ubuntu 12.04 with MySQL 5.5, Apache 2.2, and PHP 5.3, but many other configurations will work.
+Everything was tested on a computer running Ubuntu 12.04 with MySQL 5.5, Apache 2.2, and PHP 5.3, but many other configurations will work. If you need help setting up these prerequisites, there is obviously a ton of information on Google on how to configure a LAMP server, but I'd recommend one of [these guides](https://library.linode.com/lamp-guides/ubuntu-12.04-precise-pangolin) by Linode or [this guide](https://help.ubuntu.com/community/ApacheMySQLPHP) by Ubuntu.
 
-If you need help setting up these prerequisites, there is obviously a ton of information on Google on how to configure a LAMP server, but I'd recommend one of [these guides](https://library.linode.com/lamp-guides/ubuntu-12.04-precise-pangolin) by Linode or [this guide](https://help.ubuntu.com/community/ApacheMySQLPHP) by Ubuntu.
-
-You don't necessarily need to do everything exactly the same way as I do it here, but my intentions are to provide a reliable configuration that incorporates as many best practices as possible.
+In general, you don't necessarily need to do everything exactly the same way as I do it here, but my intentions are to provide a reliable configuration that incorporates as many best practices as possible.
 
 
-##### Create Empty MySQL Database & Configure User #####
+### Create Empty MySQL Database & Configure User ###
 
 First we'll create an empty database that will be configured further in the next section. Once we have an empty database, we'll then create a MySQL user and provide them with the necessary permissions on the database.
 
-Start by opening up a MySQL shell as the root user:
-
-```bash
-mysql -u root -p
-```
-
-When prompted, enter the password for the MySQL root user. Once logged in, create a database named `torque`:
+Start by opening a MySQL shell as the root user. Then create a database named `torque` and create a user with permission to insert and read data from the database. In this tutorial, we'll create a user `steve` with password `zissou44` that has access to all tables in the database `torque` from `localhost`:
 
 ```sql
 CREATE DATABASE torque;
-```
-
-Before doing anything else with the database, create a user with permission to insert and read data from the database. In this tutorial, we'll create a user `steve` with password `zissou44` that has access to all tables in the database `torque` on `localhost`:
-
-```sql
 CREATE USER 'steve'@'localhost' IDENTIFIED BY 'zissou44';
 GRANT ALL PRIVILEGES ON torque.* TO 'steve'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
-##### Create MySQL Options File #####
+### Create MySQL Options File ###
 
-
-Exit the MySQL shell by typing `quit` and we'll move onto creating an [Options File](https://dev.mysql.com/doc/refman/5.5/en/option-files.html) for this new MySQL user. An options file is a MySQL configuration file that allows us to login to the database without typing out the username and password each time. We'll also set the permissions on this file so that it is just as secure as typing in your MySQL user/password manually each time.
+An [options file](https://dev.mysql.com/doc/refman/5.5/en/option-files.html) is a MySQL configuration file that allows us to login to the database without typing out the username and password each time. We'll also set the permissions on this file so that it is just as secure as typing in your MySQL user/password manually each time.
 
 Create a file in your home directory called `.my.cnf` (e.g. */home/myuser/.my.cnf*) and enter the following text into it, replacing the user/password with the one you created:
 
@@ -64,17 +46,19 @@ chmod 600 ~/.my.cnf
 ```
 
 
-##### Create MySQL Table #####
+### Create MySQL Table ###
 
 
 Next we'll create a table in the database to store the raw log data sent from Torque. I've provided a shell script in this repo that will do this for you. Open a terminal in the folder where you cloned this repo and, assuming you put your MySQL options file in your home directory, simply run:
 
-```bash
+```
+git clone https://github.com/econpy/torque
+cd torque
 mysql < create_torque_log_table.sql
 ```
 
 
-##### Configure Webserver #####
+### Configure Webserver ###
 
 
 At this point, the MySQL settings are all configured. The only thing left to do related to the database is to add your MySQL user/password to the PHP script. Open the `creds.php` file and enter your MySQL user and password in the blank **$db_user** and **$db_pass** fields as I've done below:
@@ -101,23 +85,19 @@ chmod 644 /var/www/torque/torque.php
 
 The last two lines set the permissions seperately for the directory we made and the PHP file. In general, directories on your webserver should have 755 permissions and files should have 644.
 
-With `torque.php` in place on your webserver, it's time to make sure everything works.
+
+### Configure Torque Settings ###
 
 
-##### Testing #####
+To use your database/server with Torque, open the app on your phone and navigate to:
 
+```
+Settings -> Data Logging & Upload -> Webserver URL
+```
 
-To use your webserver with Torque, the domain name mapped to the webserver needs to be available on the remote Internet.
+Enter the URL to your **torque.php** script and press `OK`. Test that it works by clicking `Test settings` and you should see a success message like the image on the right:
 
-Assuming your domain is `http://www.example.com`, open a browser and navigate to `http://www.example.com/torque/torque.php` and make sure your script returns the "OK!" message and only that. If it worked, you're ready to enter the URL to your PHP script into your Torque app.
-
-
-##### Configure Torque Settings #####
-
-
-To use your database/server with Torque, open up the Torque app on your phone and go to `Settings` -> `Data Logging & Upload` -> `Webserver URL`. Enter the URL to your **torque.php** script (e.g. `www.example.com/torque/torque.php`) and press `OK`.
-
-With your URL inputted into Torque, test to make sure it works by clicking `Test settings`. If the message returns saying "No problems found!", then everything is in working order. Congratulations!
+<div align="center" style="padding-bottom:15px;"><a href="https://storage.googleapis.com/torque_github/torque_webserver_url.png" target="_blank"><img src="https://storage.googleapis.com/torque_github/torque_webserver_url.png" width="49%" align="left"></img></a><a href="https://storage.googleapis.com/torque_github/torque_test_passed.png" target="_blank"><img src="https://storage.googleapis.com/torque_github/torque_test_passed.png" width="49%" align="right"></img></a></div>
 
 The final thing you'll want to do before going for a drive is to check the appropriate boxes on the `Data Logging & Upload` page under the `REALTIME WEB UPLOAD` section. Personally, I have both **Upload to webserver** and **Only when ODB connected** checked.
 
