@@ -12,7 +12,7 @@ CURDIR=$(cd -P -- "$(dirname -- "$0")" && pwd -P)
 
 # Make a `torque_data` directory if it doesn't already exist and ensure it can be written to by MySQL
 mkdir -p $CURDIR/torque_data
-chmod a+rwx torque_data/
+chmod a+rwx $CURDIR/torque_data/
 OUTDIR=$CURDIR/torque_data
 
 # Define the name of the output CSV file
@@ -32,3 +32,5 @@ cat $OUTDIR/tempfile.csv >> $FNAME
 
 # Delete temp file
 rm -rf $OUTDIR/tempfile.csv
+
+echo "File saved to:" $FNAME
