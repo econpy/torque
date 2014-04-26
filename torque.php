@@ -2,7 +2,13 @@
 require("./creds.php");
 
 $link = mysql_connect($db_host, $db_user, $db_pass);
+if (!$link) {
+ die("Database connection error: ".mysql_error());
+}
 $db = mysql_select_db($db_name);
+if (!$db) {
+ die("Database error: ".mysql_error());
+}
 
 // Get all the fields from the data
 $result = mysql_query("SHOW COLUMNS FROM $db_table");

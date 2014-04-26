@@ -23,6 +23,7 @@ Start by opening a MySQL shell as the root user. Then create a database named `t
 ```sql
 CREATE DATABASE torque;
 CREATE USER 'steve'@'localhost' IDENTIFIED BY 'zissou44';
+GRANT USAGE, FILE TO 'steve'@'localhost'; -- FILE permission required for csv export
 GRANT ALL PRIVILEGES ON torque.* TO 'steve'@'localhost';
 FLUSH PRIVILEGES;
 ```

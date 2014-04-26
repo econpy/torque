@@ -38,8 +38,8 @@ require("./mapdata.php");
       var map;
       var infowindow = new google.maps.InfoWindow();
       var marker;
-      var xlat = <?=$centerlat?>;
-      var xlng = <?=$centerlong?>;
+      var xlat = <?php echo $centerlat; ?>;
+      var xlng = <?php echo $centerlong; ?>;
 
       function initialize() {
         geocoder = new google.maps.Geocoder();
@@ -80,7 +80,7 @@ require("./mapdata.php");
 //        var cloudLayer = new google.maps.weather.CloudLayer();
 //        cloudLayer.setMap(map);
 
-        var path = [<?=$imapdata?>];
+        var path = [<?php echo $imapdata; ?>];
         var line = new google.maps.Polyline({
           path: path,
           strokeColor: '#800000',
