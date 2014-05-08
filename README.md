@@ -111,3 +111,31 @@ The final thing you'll want to do before going for a drive is to check the appro
 
 At this point, you should be all setup. The next time you connect to Torque in your car, data will begin syncing into your MySQL database in real-time!
 
+
+### GUI Screenshots ###
+
+Here are some screenshots of what the GUI will look like once you get everything setup.
+
+First, you'll have a drop down menu to choose between all your sessions of logged data to choose which you want to visualize:
+![Session Dropdown](http://storage.googleapis.com/torque_github/demo/session_chooser.png)
+
+Then you will also be able to choose different plots and easily export the raw data to CSV:
+![Chart Dropdown](http://storage.googleapis.com/torque_github/demo/chart_dropdown.png)
+![Data Export Dropdown](http://storage.googleapis.com/torque_github/demo/export_session_data.png)
+
+As a side note, an exported CSV file can easily be opened up in Python using something like <a href="https://github.com/pydata/pandas" target="_blank">pandas</a>:
+![Read CSV in Python with Pandas](http://storage.googleapis.com/torque_github/demo/read_export_csv_python.png)
+
+If you click into the charts, you can plot 2 different series against one and other:
+![View Charts](http://storage.googleapis.com/torque_github/demo/charts_1.png)
+
+And of course, you can still switch between sessions and export data at this screen:
+![Dropdown on Charts Screen](http://storage.googleapis.com/torque_github/demo/charts_1.png)
+
+### Coming Up Next ###
+
+  * Plot any series in any session against any other series in any session.
+  * Clean up CSS so it works better on all browsers and mobile devices.
+  * Add JSON data export.
+  * + MORE
+ 
