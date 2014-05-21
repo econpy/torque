@@ -32,7 +32,7 @@ foreach ($_GET as $key => $value) {
         $submitval = 1;
     }
     // If the field doesn't already exist, add it to the database
-    if (!in_array($key, $dbfields) and submitval == 1) {
+    if (!in_array($key, $dbfields) and $submitval == 1) {
         mysql_query("ALTER TABLE $db_table ADD $key VARCHAR(255) NOT NULL default '0';");// || print mysql_error()."\n";
     }
 }
