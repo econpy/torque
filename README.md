@@ -1,13 +1,15 @@
-This repo contains everything needed to setup a server/database for uploading ODB2 data logged from your car in real-time using the [Torque Pro](https://play.google.com/store/apps/details?id=org.prowl.torque) app for Android.
+This repo contains everything needed to setup an interface for uploading ODB2 data logged from your car in real-time using the [Torque Pro](https://play.google.com/store/apps/details?id=org.prowl.torque) app for Android.
 
-Besides being able to store data from Torque into MySQL, this repo also contains a set of PHP scripts that make up a website you can use to view Torque session-level data including:
+The interface allows the user to:
 
-  * Google Maps of GPS data from Torque
-  * Time series plots of OBD2 data.
-  * Easily export data in MySQL to CSV via the web interface.
+  * View Google Maps of GPS data from Torque
+  * Create time series plots of OBD2 data
+  * Easily export data to CSV
 
 
-### Setup ###
+# Server Setup #
+
+### Requirements ###
 
 These instructions assume you already have a LAMP-like server or have access to one. Specifically, you'll need the following:
 
@@ -15,35 +17,30 @@ These instructions assume you already have a LAMP-like server or have access to 
   * Apache webserver
   * PHP server-side scripting
 
-Everything was tested on a computer running Ubuntu 12.04 with MySQL 5.5, Apache 2.2, and PHP 5.3, but many other configurations will work. If you need help setting up these prerequisites, there is obviously a ton of information on Google on how to configure a LAMP server, but I'd recommend one of [these guides](https://library.linode.com/lamp-guides/ubuntu-12.04-precise-pangolin) by Linode or [this guide](https://help.ubuntu.com/community/ApacheMySQLPHP) by Ubuntu.
-
-In general, you don't necessarily need to do everything exactly the same way as I do it here, but my intentions are to provide a reliable configuration that incorporates as many best practices as possible.
-
-
 ### Create Empty MySQL Database & Configure User ###
 
 First we'll create an empty database that will be configured further in the next section. Once we have an empty database, we'll then create a MySQL user and provide them with the necessary permissions on the database.
 
-Start by opening a MySQL shell as the root user. Then create a database named `torque` and create a user with permission to insert and read data from the database. In this tutorial, we'll create a user `steve` with password `zissou44` that has access to all tables in the database `torque` from `localhost`:
+Start by opening a MySQL shell as the root user. Then create a database named `torque` and create a user with permission to insert and read data from the database. In this tutorial, we'll create a user `steve` with password `zissou` that has access to all tables in the database `torque` from `localhost`:
 
 ```sql
 CREATE DATABASE torque;
-CREATE USER 'steve'@'localhost' IDENTIFIED BY 'zissou44';
-GRANT USAGE, FILE TO 'steve'@'localhost'; -- FILE permission required for csv export
+CREATE USER 'steve'@'localhost' IDENTIFIED BY 'zissou';
+GRANT USAGE, FILE TO 'steve'@'localhost';
 GRANT ALL PRIVILEGES ON torque.* TO 'steve'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
 ### Create MySQL Options File ###
 
-An [options file](https://dev.mysql.com/doc/refman/5.5/en/option-files.html) is a MySQL configuration file that allows us to login to the database without typing out the username and password each time. We'll also set the permissions on this file so that it is just as secure as typing in your MySQL user/password manually each time.
+An [options file](https://dev.mysql.com/doc/refman/5.5/en/option-files.html) is a MySQL configuration file that allows you to login to the database without typing out the username and password each time. We'll also set the permissions on this file so that it is just as secure as typing in your MySQL user/password manually each time.
 
 Create a file in your home directory called `.my.cnf` (e.g. */home/myuser/.my.cnf*) and enter the following text into it, replacing the user/password with the one you created:
 
 ```
 [client]
 user="steve"
-password="zissou44"
+password="zissou"
 ```
 
 To protect the contents of this file, set the permissions on it so only the owner of the file (i.e. your system user) can read it and write to it:
@@ -61,41 +58,43 @@ Next we'll create a table in the database to store the raw log data sent from To
 ```
 git clone https://github.com/econpy/torque
 cd torque
-mysql < create_torque_log_table.sql
+mysql < scripts/create_torque_log_table.sql
 ```
 
 
 ### Configure Webserver ###
 
 
-At this point, the MySQL settings are all configured. The only thing left to do related to the database is to add your MySQL user/password to the PHP script. Rename the `creds-sample.php` file to `creds.php` and enter your MySQL user and password in the blank **$db_user** and **$db_pass** fields as I've done below:
+At this point, the MySQL settings are all configured. The only thing left to do related to the database is to add your MySQL user/password to the PHP script.
+
+First rename the `creds-sample.php` file to `creds.php`:
+
+```bash
+mv web/creds-sample.php web/creds.php
+```
+
+then edit your MySQL user and password in the **$db_user** and **$db_pass** fields:
 
 ```php
 ...
 $db_host = "localhost";
 $db_user = "steve";
-$db_pass = "zissou44";
+$db_pass = "zissou";
 $db_name = "torque";
 $db_table = "raw_logs";
 ...
 ```
 
-Now move the `php` files, `assets` folder, and `data` folder to your webserver and set the appropriate permissions. Assuming the document root for your Apache server is located at /var/www, you could do:
+Now move the contents of the `web` folder in this repo to your webserver and set the appropriate permissions. Assuming the document root for your Apache server is located at `/var/www`, you could do:
 
 ```bash
-mkdir /var/www/torque
-cp ./*.php /var/www/torque/
-cp -r assets /var/www/torque/assets
-cp -r data /var/www/torque/data
+mv ./web /var/www/torque
 chmod -R 644 /var/www/torque/*
 chmod 755 /var/www/torque/
 ```
 
-The last two lines set the permissions seperately for the directory we made and the PHP files. In general, directories on your webserver should have 755 permissions and files should have 644.
 
-
-### Configure Torque Settings ###
-
+# Settings in Torque App #
 
 To use your database/server with Torque, open the app on your phone and navigate to:
 
@@ -138,4 +137,4 @@ And of course, you can still switch between sessions and export data at this scr
   * Clean up CSS so it works better on all browsers and mobile devices.
   * Add JSON data export.
   * + MORE
- 
+
