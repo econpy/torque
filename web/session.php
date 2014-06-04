@@ -263,8 +263,8 @@ else {
               <div class="list-group">
                 <?php if ($setZoomManually === 0) { ?>
                   <ul style="padding-top:10px;">
-                    <li><a href="<?php echo './csv.php?sid='.$session_id; ?>" target="_blank">CSV</a></li>
-                    <li>JSON (Coming Soon)</li>
+                    <li><a href="<?php echo './export.php?sid='.$session_id.'&filetype=csv'; ?>" target="_blank">CSV</a></li>
+                    <li><a href="<?php echo './export.php?sid='.$session_id.'&filetype=json'; ?>" target="_blank">JSON</a></li>
                   </ul>
                 <?php } else { ?>
                   <div align="center" style="padding-top:10px;">
