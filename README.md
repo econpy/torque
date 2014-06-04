@@ -135,6 +135,5 @@ And of course, you can still switch between sessions and export data at this scr
 
   * Plot any series in any session against any other series in any session.
   * Clean up CSS so it works better on all browsers and mobile devices.
-  * Add JSON data export.
   * + MORE
 
