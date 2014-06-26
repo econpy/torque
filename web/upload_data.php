@@ -1,4 +1,4 @@
-<?
+<?php
 require("./creds.php");
 
 // Connect to Database

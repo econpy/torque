@@ -1,14 +1,14 @@
 /*
  * jquery.flot.tooltip
- * 
+ *
  * description: easy-to-use tooltips for Flot charts
  * version: 0.6.6
  * author: Krzysztof Urbas @krzysu [myviews.pl]
  * website: https://github.com/krzysu/flot.tooltip
- * 
+ *
  * build on 2014-02-10
  * released under MIT License, 2012
-*/ 
+*/
 (function ($) {
 
     // plugin options, default values
@@ -130,7 +130,7 @@
                     'z-index': '1040',
                     'padding': '0.4em 0.6em',
                     'border-radius': '0.5em',
-                    'font-size': '0.8em',
+                    'font-size': '1.2em',
                     'border': '1px solid #111',
                     'display': 'none',
                     'white-space': 'nowrap'
@@ -239,7 +239,7 @@
                 }
             }
         }
-        
+
         // if no value customization, use tickFormatter by default
         if(typeof item.series.xaxis.tickFormatter !== 'undefined') {
             //escape dollar

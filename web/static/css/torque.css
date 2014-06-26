@@ -1,0 +1,109 @@
+*{
+    font-family: 'Lato', sans-serif;
+}
+html,body {
+    height: 100%;
+}
+#map-container {
+    height: 90%;
+    padding-top: 65px;
+    padding-left: 2%;
+}
+#map-canvas {
+    width: 96%;
+    height: 100%;
+    position: absolute;
+}
+#right-container {
+    height: 90%;
+    padding-top: 62px;
+    padding-right: 2%;
+}
+#right-cell {
+    height: 100%;
+    width: 96%;
+    position: absolute;
+}
+.row.right-row {
+    width: 100%;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    position: absolute;
+}
+.pull-left {
+    float: left !important;
+}
+.pull-right {
+    float: right !important;
+}
+.center-block {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    padding-right: 10px;
+}
+.table-responsive {
+    overflow-x: auto;
+}
+.table-responsive .table {
+    font-size: 0.875em;
+
+}
+
+#placeholder .tickLabel{
+    font-size: 80%;
+}
+
+#seshidtag_chosen {
+    font-size: 15px;
+}
+
+.chosen-container-single .chosen-single {
+    height: 28px;
+}
+
+.chosen-container-single .chosen-single span {
+    margin-right: 0px;
+}
+
+li.search-field {
+    height: 35px !important;
+}
+
+li.search-choice {
+    margin: 7px 0 3px 5px !important;
+}
+
+ul.chosen-choices li input {
+    height: 100% !important;
+    font-size: 15px;
+    padding-bottom: 10px !rimportant;
+}
+
+@media (min-width: 768px){
+.navbar-nav{
+    margin: 0 auto;
+    display: table;
+    table-layout: fixed;
+    float: none;
+}
+}
+@media (max-width: 767px) {
+#map-container {
+    height: 42%;
+}
+}
+
+canvas *{
+width:100%;
+}
+#chart-area {
+width: 100%;
+margin: 0px;
+padding-bottom: 15px;
+background-color: #428bca;
+/*padding-top: -10px;*/
+}
+.clickable{
+  cursor: pointer;
+}

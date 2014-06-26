@@ -1,6 +1,9 @@
 <?php
 require("./creds.php");
 
+session_start();
+$timezone = $_SESSION['time'];
+
 // Connect to Database
 mysql_connect($db_host, $db_user, $db_pass) or die(mysql_error());
 mysql_select_db($db_name) or die(mysql_error());

@@ -1,0 +1,26 @@
+<?php
+require("./creds.php");
+
+$getid = mysql_real_escape_string($_GET['id']);
+$session_id = intval($getid);
+
+// Connect to Database
+mysql_connect($db_host, $db_user, $db_pass) or die(mysql_error());
+mysql_select_db('INFORMATION_SCHEMA') or die(mysql_error());
+
+// Create array of column name/comments for chart data selector form
+$colqry = mysql_query("SELECT COLUMN_NAME,COLUMN_COMMENT,DATA_TYPE
+                       FROM COLUMNS
+                       WHERE TABLE_SCHEMA='torque'
+                       AND TABLE_NAME='raw_logs';") or die(mysql_error());
+
+// Select the column name and comment for data that can be plotted.
+while ($x = mysql_fetch_array($colqry)) {
+  if ((substr($x[0], 0, 1) == "k") && ($x[2] == "float")) {
+    $coldata[] = array("colname"=>$x[0], "colcomment"=>$x[1]);
+  }
+}
+
+$numcols = strval(count($coldata)+1);
+
+?>
