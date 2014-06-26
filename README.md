@@ -4,8 +4,21 @@ The interface allows the user to:
 
   * View Google Maps of GPS data from Torque
   * Create time series plots of OBD2 data
-  * Easily export data to CSV
+  * Easily export data to CSV or JSON
 
+# Screenshots #
+
+Here are some screenshots showing what the interface looks like on both a desktop and mobile device.
+
+### *Desktop* ###
+![Full Desktop View](http://storage.googleapis.com/torque_github/examples/open_torque_viewer_0.png)
+
+### *Mobile* ###
+<div align="center" style="padding-bottom:15px;"><a href="https://storage.googleapis.com/torque_github/examples/open_torque_viewer_1.png" target="_blank"><img src="https://storage.googleapis.com/torque_github/examples/open_torque_viewer_1.png" width="45%" align="left"></img></a><a href="https://storage.googleapis.com/torque_github/examples/open_torque_viewer_2.png" target="_blank"><img src="https://storage.googleapis.com/torque_github/examples/open_torque_viewer_2.png" width="45%" align="right"></img></a></div>
+
+<br><br>
+
+<div align="center" style="padding-bottom:15px;"><a href="https://storage.googleapis.com/torque_github/examples/open_torque_viewer_5.png" target="_blank"><img src="https://storage.googleapis.com/torque_github/examples/open_torque_viewer_5.png" width="100%" align="center"></img></a></div>
 
 # Server Setup #
 
@@ -109,31 +122,3 @@ Enter the URL to your **upload_data.php** script and press `OK`. Test that it wo
 The final thing you'll want to do before going for a drive is to check the appropriate boxes on the `Data Logging & Upload` page under the `REALTIME WEB UPLOAD` section. Personally, I have both **Upload to webserver** and **Only when ODB connected** checked.
 
 At this point, you should be all setup. The next time you connect to Torque in your car, data will begin syncing into your MySQL database in real-time!
-
-
-### GUI Screenshots ###
-
-Here are some screenshots of what the GUI will look like once you get everything setup.
-
-First, you'll have a drop down menu to choose between all your sessions of logged data to choose which you want to visualize:
-![Session Dropdown](http://storage.googleapis.com/torque_github/demo/session_chooser.png)
-
-Then you will also be able to choose different plots and easily export the raw data to CSV:
-![Chart Dropdown](http://storage.googleapis.com/torque_github/demo/chart_dropdown.png)
-![Data Export Dropdown](http://storage.googleapis.com/torque_github/demo/export_session_data.png)
-
-As a side note, an exported CSV file can easily be opened up in Python using something like <a href="https://github.com/pydata/pandas" target="_blank">pandas</a>:
-![Read CSV in Python with Pandas](http://storage.googleapis.com/torque_github/demo/read_export_csv_python.png)
-
-If you click into the charts, you can plot 2 different series against one and other:
-![View Charts](http://storage.googleapis.com/torque_github/demo/charts_1.png)
-
-And of course, you can still switch between sessions and export data at this screen:
-![Dropdown on Charts Screen](http://storage.googleapis.com/torque_github/demo/charts_1.png)
-
-### Coming Up Next ###
-
-  * Plot any series in any session against any other series in any session.
-  * Clean up CSS so it works better on all browsers and mobile devices.
-  * + MORE
-
