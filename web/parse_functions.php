@@ -1,19 +1,24 @@
 <?php
 
 // Convert a CSV object into our JSON format
-function CSVtoJSON($csvFile){
-    $file_handle = fopen($csvFile, 'r');
-    while (!feof($file_handle) ) {
-        $line_of_text[] = fgetcsv($file_handle, 1024);
-    }
-    fclose($file_handle);
-    $columns = array();
-    foreach ($line_of_text as $line) {
-        if($line["0"] != "") {
-            $columns[$line["0"]] = $line["1"];
+function CSVtoJSON($csvFile, $skipheader=True) {
+    $keyidarray = array();
+    if (($handle = fopen($csvFile, "r")) !== FALSE) {
+        while (($csvdata = fgetcsv($handle, 1000, ",")) !== FALSE) {
+            $num = count($csvdata);
+            if ($skipheader === True) {
+                $skip = 1;
+            }
+            else {
+                $skip = 0;
+            }
+            for ($c=$skip; $c < $num; $c++) {
+                $keyidarray[$csvdata[0]] = $csvdata[1];
+            }
         }
+        fclose($handle);
     }
-    return json_encode($columns);
+    return json_encode($keyidarray);
 }
 
 // Function to count uppercase strings
