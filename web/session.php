@@ -9,8 +9,8 @@ require ("./plot.php");
 $_SESSION['recent_session_id'] = strval(max($sids));
 
 // Connect to Database
-mysql_connect($db_host, $db_user, $db_pass) or die(mysql_error());
-mysql_select_db($db_name) or die(mysql_error());
+$con = mysql_connect($db_host, $db_user, $db_pass) or die(mysql_error());
+mysql_select_db($db_name, $con) or die(mysql_error());
 
 if (isset($_POST["id"])) {
     $getid = mysql_real_escape_string($_POST['id']);
@@ -20,7 +20,7 @@ if (isset($_POST["id"])) {
     $sessionqry = mysql_query("SELECT kff1006, kff1005
                           FROM $db_table
                           WHERE session=$session_id
-                          ORDER BY time DESC;") or die(mysql_error());
+                          ORDER BY time DESC", $con) or die(mysql_error());
 
     $geolocs = array();
     while($geo = mysql_fetch_array($sessionqry)) {
@@ -39,6 +39,8 @@ if (isset($_POST["id"])) {
     // Don't need to set zoom manually
     $setZoomManually = 0;
 
+    mysql_free_result($sessionqry);
+    mysql_close($con);
 }
 
 elseif (isset($_GET["id"])) {
@@ -49,7 +51,7 @@ elseif (isset($_GET["id"])) {
     $sessionqry = mysql_query("SELECT kff1006, kff1005
                           FROM $db_table
                           WHERE session=$session_id
-                          ORDER BY time DESC;") or die(mysql_error());
+                          ORDER BY time DESC", $con) or die(mysql_error());
 
     $geolocs = array();
     while($geo = mysql_fetch_array($sessionqry)) {
@@ -67,6 +69,9 @@ elseif (isset($_GET["id"])) {
 
     // Don't need to set zoom manually
     $setZoomManually = 0;
+
+    mysql_free_result($sessionqry);
+    mysql_close($con);
 }
 
 else {
@@ -190,9 +195,9 @@ else {
 
           google.maps.event.addDomListener(window, 'load', initialize);
         </script>
-        
+
         <?php if ($setZoomManually === 0) { ?>
-        
+
         <!-- Flot Javascript files -->
         <script language="javascript" type="text/javascript" src="static/js/jquery.flot.js"></script>
         <script language="javascript" type="text/javascript" src="static/js/jquery.flot.axislabels.js"></script>
@@ -203,7 +208,7 @@ else {
         <script language="javascript" type="text/javascript" src="static/js/jquery.flot.tooltip.min.js"></script>
         <script language="javascript" type="text/javascript" src="static/js/jquery.flot.updater.js"></script>
         <script language="javascript" type="text/javascript" src="static/js/jquery.flot.resize.min.js"></script>
-
+        
         <script language="javascript" type="text/javascript">
         $(document).ready(function(){
 
@@ -260,13 +265,14 @@ else {
             });
         });
         </script>
-
         <script language="javascript" type="text/javascript" src="static/js/torquehelpers.js"></script>
 
         <?php } else { ?>
         <script language="javascript" type="text/javascript" src="static/js/torquehelpers.js"></script>
         <?php } ?>
+
         
+
     </head>
     <body>
         <div class="navbar navbar-default navbar-fixed-top navbar-inverse" role="navigation">
@@ -298,20 +304,25 @@ else {
 
                     <br>
 
+                    <?php if ($setZoomManually === 0) { ?>
                     <h4>Select 2 Variables to Plot</h4>
                     <div class="row center-block" style="padding-top:3px;">
                         <form method="post" role="form" action="url.php?makechart=y&seshid=<?php echo $session_id; ?>" id="formplotdata">
                             <select data-placeholder="Choose OBD2 data..." multiple class="chosen-select" size="<?php echo $numcols; ?>" style="width:100%;" id="plot_data" onsubmit="onSubmitIt" name="plotdata[]">
                                 <option value=""></option>
-                                <?php
-                                foreach ($coldata as $xcol) { ?>
+                                <?php foreach ($coldata as $xcol) { ?>
                                   <option value="<?php echo $xcol['colname']; ?>"><?php echo $xcol['colcomment']; ?></option>
                                 <?php } ?>
                             </select>
                             <div align="center" style="padding-top:6px;"><input class="btn btn-info btn-sm" type="submit" id="formplotdata" name="plotdata[]" value="Plot!"></div>
                         </form>
                     </div>
-
+                    <?php } else { ?>
+                    <h4>Plot</h4>
+                      <div align="center" style="padding-top:10px;">
+                          <h5><span class="label label-warning">Select a session first!</span></h5>
+                      </div>
+                    <?php } ?>
                     <br>
 
                     <h4>Chart</h4>
@@ -424,4 +435,3 @@ else {
             </script>
         </body>
     </html>
-
