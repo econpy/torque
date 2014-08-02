@@ -6,19 +6,10 @@ The interface allows the user to:
   * Create time series plots of OBD2 data
   * Easily export data to CSV or JSON
 
-# Screenshots #
+# Demo #
 
-Here are some screenshots showing what the interface looks like on both a desktop and mobile device.
+[Check out the demo!](https://data.mattnicklay.com/torque/session.php?id=1404557450999)
 
-### *Desktop* ###
-![Full Desktop View](http://storage.googleapis.com/torque_github/examples/open_torque_viewer_0.png)
-
-### *Mobile* ###
-<div align="center" style="padding-bottom:15px;"><a href="https://storage.googleapis.com/torque_github/examples/open_torque_viewer_1.png" target="_blank"><img src="https://storage.googleapis.com/torque_github/examples/open_torque_viewer_1.png" width="45%" align="left"></img></a><a href="https://storage.googleapis.com/torque_github/examples/open_torque_viewer_2.png" target="_blank"><img src="https://storage.googleapis.com/torque_github/examples/open_torque_viewer_2.png" width="45%" align="right"></img></a></div>
-
-<br><br>
-
-<div align="center" style="padding-bottom:15px;"><a href="https://storage.googleapis.com/torque_github/examples/open_torque_viewer_5.png" target="_blank"><img src="https://storage.googleapis.com/torque_github/examples/open_torque_viewer_5.png" width="100%" align="center"></img></a></div>
 
 # Server Setup #
 
