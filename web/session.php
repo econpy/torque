@@ -190,7 +190,9 @@ else {
 
           google.maps.event.addDomListener(window, 'load', initialize);
         </script>
-
+        
+        <?php if ($setZoomManually === 0) { ?>
+        
         <!-- Flot Javascript files -->
         <script language="javascript" type="text/javascript" src="static/js/jquery.flot.js"></script>
         <script language="javascript" type="text/javascript" src="static/js/jquery.flot.axislabels.js"></script>
@@ -261,6 +263,10 @@ else {
 
         <script language="javascript" type="text/javascript" src="static/js/torquehelpers.js"></script>
 
+        <?php } else { ?>
+        <script language="javascript" type="text/javascript" src="static/js/torquehelpers.js"></script>
+        <?php } ?>
+        
     </head>
     <body>
         <div class="navbar navbar-default navbar-fixed-top navbar-inverse" role="navigation">
