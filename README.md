@@ -12,11 +12,13 @@ The interface allows the user to:
 
 # Requirements #
 
-These instructions assume you already have a LAMP-like server or have access to one. Specifically, you'll need the following:
+These instructions assume you already have a LAMP-like server (on a Linux/UNIX based host) or have access to one. Specifically, you'll need the following:
 
   * MySQL database
   * Apache webserver
   * PHP server-side scripting
+
+If in doubt, I'd recommend using Ubuntu 12.04 LTS.
 
 # Server Setup #
 
@@ -27,7 +29,7 @@ git clone https://github.com/econpy/torque
 cd torque
 ```
 
-## Configure MySQL ##
+### Configure MySQL ###
 
 To get started, create a database named `torque` and a user with permission to insert and read data from the database. In this tutorial, we'll create a user `steve` with password `zissou` that has access to all tables in the database `torque` from `localhost`:
 
@@ -46,7 +48,7 @@ mysql -u yoursqlusername -p < scripts/create_torque_log_table.sql
 ```
 
 
-## Configure Webserver ##
+### Configure Webserver ###
 
 Move the contents of the `web` folder to your webserver and set the appropriate permissions. For example, using an Apache server located at `/var/www`:
 
