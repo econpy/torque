@@ -13,8 +13,7 @@ $con = mysql_connect($db_host, $db_user, $db_pass) or die(mysql_error());
 mysql_select_db($db_name, $con) or die(mysql_error());
 
 if (isset($_POST["id"])) {
-    $getid = mysql_real_escape_string($_POST['id']);
-    $session_id = intval($getid);
+    $session_id = preg_replace('/\D/', '', $_POST['id']);
 
     // Get GPS data for session
     $sessionqry = mysql_query("SELECT kff1006, kff1005
@@ -44,8 +43,7 @@ if (isset($_POST["id"])) {
 }
 
 elseif (isset($_GET["id"])) {
-    $getid = mysql_real_escape_string($_GET['id']);
-    $session_id = intval($getid);
+    $session_id = preg_replace('/\D/', '', $_GET['id']);
 
     // Get data for session
     $sessionqry = mysql_query("SELECT kff1006, kff1005
@@ -100,6 +98,23 @@ else {
         <link rel="stylesheet" href="static/css/torque.css">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
         <script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+            <script language="javascript" type="text/javascript">
+                $(document).ready(function() {
+                    if("<?php echo $timezone; ?>".length==0){
+                        var visitortime = new Date();
+                        var visitortimezone = "GMT " + -visitortime.getTimezoneOffset()/60;
+                        var timezoneurl = $(location).attr('href').split('?')[0].replace('session', 'timezone');
+                        $.ajax({
+                            type: "GET",
+                            url: timezoneurl,
+                            data: 'time='+ visitortimezone,
+                            success: function(){
+                                location.reload();
+                            }
+                        });
+                    }
+                });
+            </script>
         <script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
         <script language="javascript" type="text/javascript" src="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
         <script language="javascript" type="text/javascript" src="static/js/jquery.peity.min.js"></script>
@@ -416,22 +431,5 @@ else {
                 </div>
             </div>
 
-            <script language="javascript" type="text/javascript">
-                $(document).ready(function() {
-                    if("<?php echo $timezone; ?>".length==0){
-                        var visitortime = new Date();
-                        var visitortimezone = "GMT " + -visitortime.getTimezoneOffset()/60;
-                        var timezoneurl = $(location).attr('href').split('?')[0].replace('session', 'timezone');
-                        $.ajax({
-                            type: "GET",
-                            url: timezoneurl,
-                            data: 'time='+ visitortimezone,
-                            success: function(){
-                                location.reload();
-                            }
-                        });
-                    }
-                });
-            </script>
         </body>
     </html>

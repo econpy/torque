@@ -21,8 +21,8 @@ while($row = mysql_fetch_assoc($sessionqry)) {
     // Drop sessions smaller than 60 data points
     if ($session_size >= 60) {
         $sid = $row["session"];
-        $sids[] = intval($sid);
-        $seshdates[$sid] = date("F d, Y  h:ia", intval(substr($sid, 0, -3)));
+        $sids[] = preg_replace('/\D/', '', $sid);
+        $seshdates[$sid] = date("F d, Y  h:ia", substr($sid, 0, -3));
     }
     else {}
 }

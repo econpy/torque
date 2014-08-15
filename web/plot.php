@@ -8,7 +8,7 @@ mysql_select_db($db_name) or die(mysql_error());
 
 // Grab the session number
 if (isset($_GET["id"]) and in_array($_GET["id"], $sids)) {
-    $session_id = intval(mysql_real_escape_string($_GET['id']));
+    $session_id = mysql_real_escape_string($_GET['id']);
 
     // Get the torque key->val mappings
     $js = CSVtoJSON("./data/torque_keys.csv");
