@@ -51,7 +51,7 @@ if (isset($_GET["id"]) and in_array($_GET["id"], $sids)) {
         else {
             $x = intval($row[$v1]);
         }
-        $d1[] = array(intval($row['time']), $x);
+        $d1[] = array($row['time'], $x);
         $spark1[] = $x;
         // data column #2
         if (substri_count($jsarr[$v2], "Speed") > 0) {
@@ -63,7 +63,7 @@ if (isset($_GET["id"]) and in_array($_GET["id"], $sids)) {
         else {
             $x = intval($row[$v2]);
         }
-        $d2[] = array(intval($row['time']), $x);
+        $d2[] = array($row['time'], $x);
         $spark2[] = $x;
     }
 
