@@ -5,7 +5,7 @@ require 'convert.php';
 
 // Connect to Database
 $con = mysql_connect($db_host, $db_user, $db_pass) or die(mysql_error());
-mysql_select_db($db_name) or die(mysql_error());
+mysql_select_db($db_name, $con) or die(mysql_error());
 
 // Grab the session number
 if (isset($_GET["id"]) and in_array($_GET["id"], $sids)) {
