@@ -1,5 +1,5 @@
 <?php
-require("./creds.php");
+require 'creds.php';
 
 session_start();
 $timezone = $_SESSION['time'];
@@ -10,7 +10,7 @@ mysql_select_db($db_name, $con) or die(mysql_error());
 
 // Get list of unique session IDs
 $sessionqry = mysql_query("SELECT COUNT(*) as `Session Size`, session
-                      FROM $db_table
+                      FROM raw_logs
                       GROUP BY session
                       ORDER BY time DESC", $con) or die(mysql_error());
 
