@@ -1,10 +1,9 @@
 <?php
-
 ini_set('memory_limit', '-1');
-require ("./creds.php");
-require ("./get_sessions.php");
-require ("./get_columns.php");
-require ("./plot.php");
+require 'creds.php';
+require 'get_sessions.php';
+require 'get_columns.php';
+require 'plot.php';
 
 $_SESSION['recent_session_id'] = strval(max($sids));
 
@@ -23,17 +22,17 @@ if (isset($_POST["id"])) {
 
     $geolocs = array();
     while($geo = mysql_fetch_array($sessionqry)) {
-        if (($geo["0"] != 0) && ($geo["1"] != 0)) {
-            $geolocs[] = array("lat" => $geo["0"], "lon" => $geo["1"]);
+        if (($geo['0'] != 0) && ($geo['1'] != 0)) {
+            $geolocs[] = array('lat' => $geo['0'], 'lon' => $geo['1']);
         }
     }
 
     // Create array of Latitude/Longitude strings in Google Maps JavaScript format
     $mapdata = array();
     foreach($geolocs as $d) {
-        $mapdata[] = "new google.maps.LatLng(".$d['lat'].", ".$d['lon'].")";
+        $mapdata[] = 'new google.maps.LatLng('.$d['lat'].', '.$d['lon'].')';
     }
-    $imapdata = implode(",\n                    ", $mapdata);
+    $imapdata = implode(',\n                    ', $mapdata);
 
     // Don't need to set zoom manually
     $setZoomManually = 0;
@@ -42,7 +41,7 @@ if (isset($_POST["id"])) {
     mysql_close($con);
 }
 
-elseif (isset($_GET["id"])) {
+elseif (isset($_GET['id'])) {
     $session_id = preg_replace('/\D/', '', $_GET['id']);
 
     // Get data for session
@@ -53,17 +52,17 @@ elseif (isset($_GET["id"])) {
 
     $geolocs = array();
     while($geo = mysql_fetch_array($sessionqry)) {
-        if (($geo["0"] != 0) && ($geo["1"] != 0)) {
-            $geolocs[] = array("lat" => $geo["0"], "lon" => $geo["1"]);
+        if (($geo['0'] != 0) && ($geo['1'] != 0)) {
+            $geolocs[] = array('lat' => $geo['0'], 'lon' => $geo['1']);
         }
     }
 
     // Create array of Latitude/Longitude strings in Google Maps JavaScript format
     $mapdata = array();
     foreach($geolocs as $d) {
-        $mapdata[] = "new google.maps.LatLng(".$d['lat'].", ".$d['lon'].")";
+        $mapdata[] = 'new google.maps.LatLng('.$d['lat'].', '.$d['lon'].')';
     }
-    $imapdata = implode(",\n                    ", $mapdata);
+    $imapdata = implode(',\n                    ', $mapdata);
 
     // Don't need to set zoom manually
     $setZoomManually = 0;
@@ -75,8 +74,8 @@ elseif (isset($_GET["id"])) {
 else {
     // Define these so we don't get an error on empty page loads. Instead it
     // will load a map of Area 51.
-    $session_id = "";
-    $imapdata = "new google.maps.LatLng(37.235, -115.8111)";
+    $session_id = '';
+    $imapdata = 'new google.maps.LatLng(37.235, -115.8111)';
     $setZoomManually = 1;
 
 }
