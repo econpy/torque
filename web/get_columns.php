@@ -9,7 +9,7 @@ mysql_select_db("INFORMATION_SCHEMA", $con) or die(mysql_error());
 $colqry = mysql_query("SELECT COLUMN_NAME,COLUMN_COMMENT,DATA_TYPE
                        FROM COLUMNS
                        WHERE TABLE_SCHEMA='".$db_name."'
-                       AND TABLE_NAME='".$db_table."'", $con) or die(mysql_error());
+                       AND TABLE_NAME='raw_logs'", $con) or die(mysql_error());
 
 // Select the column name and comment for data that can be plotted.
 while ($x = mysql_fetch_array($colqry)) {
