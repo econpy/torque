@@ -16,7 +16,7 @@ if (isset($_POST["id"])) {
 
     // Get GPS data for session
     $sessionqry = mysql_query("SELECT kff1006, kff1005
-                          FROM $db_table
+                          FROM raw_logs
                           WHERE session=$session_id
                           ORDER BY time DESC", $con) or die(mysql_error());
 
@@ -46,7 +46,7 @@ elseif (isset($_GET['id'])) {
 
     // Get data for session
     $sessionqry = mysql_query("SELECT kff1006, kff1005
-                          FROM $db_table
+                          FROM raw_logs
                           WHERE session=$session_id
                           ORDER BY time DESC", $con) or die(mysql_error());
 
