@@ -10,6 +10,18 @@ function onSubmitIt() {
     }
 }
 
+function toggleCharts() {
+  $('#right-container').toggle();
+  if ($('#right-container').is(":visible")) {
+    $('#map-container').attr('class', 'col-md-7 col-xs-12');
+    initialize();
+  }
+  else {
+    $('#map-container').attr('class', 'col-md-12');
+    initialize();
+  }
+}
+
 $(document).ready(function(){
     var previousPoint = null;
     $("#placeholder").bind("plothover", function (event, pos, item) {
