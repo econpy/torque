@@ -1,146 +1,146 @@
-id,Device ID
-k10,Mass Air Flow Rate
-k11,Throttle Position(Manifold)
-k12,Air Status
-k14,Fuel trim bank 1 sensor 1
-k15,Fuel trim bank 1 sensor 2
-k16,Fuel trim bank 1 sensor 3
-k17,Fuel trim bank 1 sensor 4
-k18,Fuel trim bank 2 sensor 1
-k19,Fuel trim bank 2 sensor 2
-k1a,Fuel trim bank 2 sensor 3
-k1b,Fuel trim bank 2 sensor 4
-k1f,Run time since engine start
-k21,Distance travelled with MIL/CEL lit
-k22,Fuel Rail Pressure (relative to manifold vacuum)
-k23,Fuel Rail Pressure
-k24,O2 Sensor1 Equivalence Ratio
-k25,O2 Sensor2 Equivalence Ratio
-k26,O2 Sensor3 Equivalence Ratio
-k27,O2 Sensor4 Equivalence Ratio
-k28,O2 Sensor5 Equivalence Ratio
-k29,O2 Sensor6 Equivalence Ratio
-k2a,O2 Sensor7 Equivalence Ratio
-k2b,O2 Sensor8 Equivalence Ratio
-k2c,EGR Commanded
-k2d,EGR Error
-k2f,Fuel Level (From Engine ECU)
-k3,Fuel Status
-k31,Distance travelled since codes cleared
-k32,Evap System Vapour Pressure
-k33,Barometric pressure (from vehicle)
-k34,O2 Sensor1 Equivalence Ratio(alternate)
-k3c,Catalyst Temperature (Bank 1 Sensor 1)
-k3d,Catalyst Temperature (Bank 2 Sensor 1)
-k3e,Catalyst Temperature (Bank 1 Sensor 2)
-k3f,Catalyst Temperature (Bank 2 Sensor 2)
-k4,Engine Load
-k42,Voltage (Control Module)
-k43,Engine Load(Absolute)
-k44,Commanded Equivalence Ratio(lambda)
-k45,Relative Throttle Position
-k46,Ambient air temp
-k47,Absolute Throttle Position B
-k49,Accelerator PedalPosition D
-k4a,Accelerator PedalPosition E
-k4b,Accelerator PedalPosition F
-k5,Engine Coolant Temperature
-k52,Ethanol Fuel %
-k5a,Relative Accelerator Pedal Position
-k5c,Engine Oil Temperature
-k6,Fuel Trim Bank 1 Short Term
-k7,Fuel Trim Bank 1 Long Term
-k78,Exhaust Gas Temperature 1
-k79,Exhaust Gas Temperature 2
-k8,Fuel Trim Bank 2 Short Term
-k9,Fuel Trim Bank 2 Long Term
-ka,Fuel pressure
-kb,Intake Manifold Pressure
-kb4,Transmission Temperature(Method 2)
-kc,Engine RPM
-kd,Speed (OBD)
-ke,Timing Advance
-kf,Intake Air Temperature
-kfe1805,Transmission Temperature(Method 1)
-kff1001,Speed (GPS)
-kff1005,GPS Longitude
-kff1006,GPS Latitude
-kff1010,GPS Altitude
-kff1201,Miles Per Gallon(Instant)
-kff1202,Turbo Boost & Vacuum Gauge
-kff1203,Kilometers Per Litre(Instant)
-kff1204,Trip Distance
-kff1205,Trip average MPG
-kff1206,Trip average KPL
-kff1207,Litres Per 100 Kilometer(Instant)
-kff1208,Trip average Litres/100 KM
-kff120c,Trip distance (stored in vehicle profile)
-kff1214,O2 Volts Bank 1 sensor 1
-kff1215,O2 Volts Bank 1 sensor 2
-kff1216,O2 Volts Bank 1 sensor 3
-kff1217,O2 Volts Bank 1 sensor 4
-kff1218,O2 Volts Bank 2 sensor 1
-kff1219,O2 Volts Bank 2 sensor 2
-kff121a,O2 Volts Bank 2 sensor 3
-kff121b,O2 Volts Bank 2 sensor 4
-kff1220,Acceleration Sensor(X axis)
-kff1221,Acceleration Sensor(Y axis)
-kff1222,Acceleration Sensor(Z axis)
-kff1223,Acceleration Sensor(Total)
-kff1225,Torque
-kff1226,Horsepower (At the wheels)
-kff122d,0-60mph Time
-kff122e,0-100kph Time
-kff122f,1/4 mile time
-kff1230,1/8 mile time
-kff1237,GPS vs OBD Speed difference
-kff1238,Voltage (OBD Adapter)
-kff1239,GPS Accuracy
-kff123a,GPS Satellites
-kff123b,GPS Bearing
-kff1240,O2 Sensor1 wide-range Voltage
-kff1241,O2 Sensor2 wide-range Voltage
-kff1242,O2 Sensor3 wide-range Voltage
-kff1243,O2 Sensor4 wide-range Voltage
-kff1244,O2 Sensor5 wide-range Voltage
-kff1245,O2 Sensor6 wide-range Voltage
-kff1246,O2 Sensor7 wide-range Voltage
-kff1247,O2 Sensor8 wide-range Voltage
-kff1249,Air Fuel Ratio(Measured)
-kff124a,Tilt(x)
-kff124b,Tilt(y)
-kff124c,Tilt(z)
-kff124d,Air Fuel Ratio(Commanded)
-kff124f,0-200kph Time
-kff1257,CO₂ in g/km (Instantaneous)
-kff1258,CO₂ in g/km (Average)
-kff125a,Fuel flow rate/minute
-kff125c,Fuel cost (trip)
-kff125d,Fuel flow rate/hour
-kff125e,60-120mph Time
-kff125f,60-80mph Time
-kff1260,40-60mph Time
-kff1261,80-100mph Time
-kff1263,Average trip speed(whilst moving only)
-kff1264,100-0kph Time
-kff1265,60-0mph Time
-kff1266,Trip Time(Since journey start)
-kff1267,Trip time(whilst stationary)
-kff1268,Trip Time(whilst moving)
-kff1269,Volumetric Efficiency (Calculated)
-kff126a,Distance to empty (Estimated)
-kff126b,Fuel Remaining (Calculated from vehicle profile)
-kff126d,Cost per mile/km (Instant)
-kff126e,Cost per mile/km (Trip)
-kff1270,Barometer (on Android device)
-kff1271,Fuel used (trip)
-kff1272,Average trip speed(whilst stopped or moving)
-kff1273,Engine kW (At the wheels)
-kff1275,80-120kph Time
-kff1276,60-130mph Time
-kff1277,0-30mph Time
-kff5201,Miles Per Gallon(Long Term Average)
-kff5202,Kilometers Per Litre(Long Term Average)
-kff5203,Litres Per 100 Kilometer(Long Term Average)
-session,Session ID
-time,Timestamp
+id,Device ID,id,id
+session,Session ID,session,session
+time,Timestamp,time,time
+k10,Mass Air Flow Rate,userUnit10,defaultUnit10
+k11,Throttle Position(Manifold),userUnit11,defaultUnit11
+k12,Air Status,userUnit12,defaultUnit12
+k14,Fuel trim bank 1 sensor 1,userUnit14,defaultUnit14
+k15,Fuel trim bank 1 sensor 2,userUnit15,defaultUnit15
+k16,Fuel trim bank 1 sensor 3,userUnit16,defaultUnit16
+k17,Fuel trim bank 1 sensor 4,userUnit17,defaultUnit17
+k18,Fuel trim bank 2 sensor 1,userUnit18,defaultUnit18
+k19,Fuel trim bank 2 sensor 2,userUnit19,defaultUnit19
+k1a,Fuel trim bank 2 sensor 3,userUnit1a,defaultUnit1a
+k1b,Fuel trim bank 2 sensor 4,userUnit1b,defaultUnit1b
+k1f,Run time since engine start,userUnit1f,defaultUnit1f
+k21,Distance travelled with MIL/CEL lit,userUnit21,defaultUnit21
+k22,Fuel Rail Pressure (relative to manifold vacuum),userUnit22,defaultUnit22
+k23,Fuel Rail Pressure,userUnit23,defaultUnit23
+k24,O2 Sensor1 Equivalence Ratio,userUnit24,defaultUnit24
+k25,O2 Sensor2 Equivalence Ratio,userUnit25,defaultUnit25
+k26,O2 Sensor3 Equivalence Ratio,userUnit26,defaultUnit26
+k27,O2 Sensor4 Equivalence Ratio,userUnit27,defaultUnit27
+k28,O2 Sensor5 Equivalence Ratio,userUnit28,defaultUnit28
+k29,O2 Sensor6 Equivalence Ratio,userUnit29,defaultUnit29
+k2a,O2 Sensor7 Equivalence Ratio,userUnit2a,defaultUnit2a
+k2b,O2 Sensor8 Equivalence Ratio,userUnit2b,defaultUnit2b
+k2c,EGR Commanded,userUnit2c,defaultUnit2c
+k2d,EGR Error,userUnit2d,defaultUnit2d
+k2f,Fuel Level (From Engine ECU),userUnit2f,defaultUnit2f
+k3,Fuel Status,userUnit03,defaultUnit03
+k31,Distance travelled since codes cleared,userUnit31,defaultUnit31
+k32,Evap System Vapour Pressure,userUnit32,defaultUnit32
+k33,Barometric pressure (from vehicle),userUnit33,defaultUnit33
+k34,O2 Sensor1 Equivalence Ratio(alternate),userUnit34,defaultUnit34
+k3c,Catalyst Temperature (Bank 1 Sensor 1),userUnit3c,defaultUnit3c
+k3d,Catalyst Temperature (Bank 2 Sensor 1),userUnit3d,defaultUnit3d
+k3e,Catalyst Temperature (Bank 1 Sensor 2),userUnit3e,defaultUnit3e
+k3f,Catalyst Temperature (Bank 2 Sensor 2),userUnit3f,defaultUnit3f
+k4,Engine Load,userUnit04,defaultUnit04
+k42,Voltage (Control Module),userUnit42,defaultUnit42
+k43,Engine Load(Absolute),userUnit43,defaultUnit43
+k44,Commanded Equivalence Ratio(lambda),userUnit44,defaultUnit44
+k45,Relative Throttle Position,userUnit45,defaultUnit45
+k46,Ambient air temp,userUnit46,defaultUnit46
+k47,Absolute Throttle Position B,userUnit47,defaultUnit47
+k49,Accelerator PedalPosition D,userUnit49,defaultUnit49
+k4a,Accelerator PedalPosition E,userUnit4a,defaultUnit4a
+k4b,Accelerator PedalPosition F,userUnit4b,defaultUnit4b
+k5,Engine Coolant Temperature,userUnit05,defaultUnit05
+k52,Ethanol Fuel %,userUnit52,defaultUnit52
+k5a,Relative Accelerator Pedal Position,userUnit5a,defaultUnit5a
+k5c,Engine Oil Temperature,userUnit5c,defaultUnit5c
+k6,Fuel Trim Bank 1 Short Term,userUnit06,defaultUnit06
+k7,Fuel Trim Bank 1 Long Term,userUnit07,defaultUnit07
+k78,Exhaust Gas Temperature 1,userUnit78,defaultUnit78
+k79,Exhaust Gas Temperature 2,userUnit79,defaultUnit79
+k8,Fuel Trim Bank 2 Short Term,userUnit08,defaultUnit08
+k9,Fuel Trim Bank 2 Long Term,userUnit09,defaultUnit09
+ka,Fuel pressure,userUnit0a,defaultUnit0a
+kb,Intake Manifold Pressure,userUnit0b,defaultUnit0b
+kb4,Transmission Temperature(Method 2),userUnitb4,defaultUnitb4
+kc,Engine RPM,userUnit0c,defaultUnit0c
+kd,Speed (OBD),userUnit0d,defaultUnit0d
+ke,Timing Advance,userUnit0e,defaultUnit0e
+kf,Intake Air Temperature,userUnit0f,defaultUnit0f
+kfe1805,Transmission Temperature(Method 1),userUnitfe1805,defaultUnitfe1805
+kff1001,Speed (GPS),userUnitff1001,defaultUnitff1001
+kff1005,GPS Longitude,userUnitff1005,defaultUnitff1005
+kff1006,GPS Latitude,userUnitff1006,defaultUnitff1006
+kff1010,GPS Altitude,userUnitff1010,defaultUnitff1010
+kff1201,Miles Per Gallon(Instant),userUnitff1201,defaultUnitff1201
+kff1202,Turbo Boost & Vacuum Gauge,userUnitff1202,defaultUnitff1202
+kff1203,Kilometers Per Litre(Instant),userUnitff1203,defaultUnitff1203
+kff1204,Trip Distance,userUnitff1204,defaultUnitff1204
+kff1205,Trip average MPG,userUnitff1205,defaultUnitff1205
+kff1206,Trip average KPL,userUnitff1206,defaultUnitff1206
+kff1207,Litres Per 100 Kilometer(Instant),userUnitff1207,defaultUnitff1207
+kff1208,Trip average Litres/100 KM,userUnitff1208,defaultUnitff1208
+kff120c,Trip distance (stored in vehicle profile),userUnitff120c,defaultUnitff120c
+kff1214,O2 Volts Bank 1 sensor 1,userUnitff1214,defaultUnitff1214
+kff1215,O2 Volts Bank 1 sensor 2,userUnitff1215,defaultUnitff1215
+kff1216,O2 Volts Bank 1 sensor 3,userUnitff1216,defaultUnitff1216
+kff1217,O2 Volts Bank 1 sensor 4,userUnitff1217,defaultUnitff1217
+kff1218,O2 Volts Bank 2 sensor 1,userUnitff1218,defaultUnitff1218
+kff1219,O2 Volts Bank 2 sensor 2,userUnitff1219,defaultUnitff1219
+kff121a,O2 Volts Bank 2 sensor 3,userUnitff121a,defaultUnitff121a
+kff121b,O2 Volts Bank 2 sensor 4,userUnitff121b,defaultUnitff121b
+kff1220,Acceleration Sensor(X axis),userUnitff1220,defaultUnitff1220
+kff1221,Acceleration Sensor(Y axis),userUnitff1221,defaultUnitff1221
+kff1222,Acceleration Sensor(Z axis),userUnitff1222,defaultUnitff1222
+kff1223,Acceleration Sensor(Total),userUnitff1223,defaultUnitff1223
+kff1225,Torque,userUnitff1225,defaultUnitff1225
+kff1226,Horsepower (At the wheels),userUnitff1226,defaultUnitff1226
+kff122d,0-60mph Time,userUnitff122d,defaultUnitff122d
+kff122e,0-100kph Time,userUnitff122e,defaultUnitff122e
+kff122f,1/4 mile time,userUnitff122f,defaultUnitff122f
+kff1230,1/8 mile time,userUnitff1230,defaultUnitff1230
+kff1237,GPS vs OBD Speed difference,userUnitff1237,defaultUnitff1237
+kff1238,Voltage (OBD Adapter),userUnitff1238,defaultUnitff1238
+kff1239,GPS Accuracy,userUnitff1239,defaultUnitff1239
+kff123a,GPS Satellites,userUnitff123a,defaultUnitff123a
+kff123b,GPS Bearing,userUnitff123b,defaultUnitff123b
+kff1240,O2 Sensor1 wide-range Voltage,userUnitff1240,defaultUnitff1240
+kff1241,O2 Sensor2 wide-range Voltage,userUnitff1241,defaultUnitff1241
+kff1242,O2 Sensor3 wide-range Voltage,userUnitff1242,defaultUnitff1242
+kff1243,O2 Sensor4 wide-range Voltage,userUnitff1243,defaultUnitff1243
+kff1244,O2 Sensor5 wide-range Voltage,userUnitff1244,defaultUnitff1244
+kff1245,O2 Sensor6 wide-range Voltage,userUnitff1245,defaultUnitff1245
+kff1246,O2 Sensor7 wide-range Voltage,userUnitff1246,defaultUnitff1246
+kff1247,O2 Sensor8 wide-range Voltage,userUnitff1247,defaultUnitff1247
+kff1249,Air Fuel Ratio(Measured),userUnitff1249,defaultUnitff1249
+kff124a,Tilt(x),userUnitff124a,defaultUnitff124a
+kff124b,Tilt(y),userUnitff124b,defaultUnitff124b
+kff124c,Tilt(z),userUnitff124c,defaultUnitff124c
+kff124d,Air Fuel Ratio(Commanded),userUnitff124d,defaultUnitff124d
+kff124f,0-200kph Time,userUnitff124f,defaultUnitff124f
+kff1257,CO₂ in g/km (Instantaneous),userUnitff1257,defaultUnitff1257
+kff1258,CO₂ in g/km (Average),userUnitff1258,defaultUnitff1258
+kff125a,Fuel flow rate/minute,userUnitff125a,defaultUnitff125a
+kff125c,Fuel cost (trip),userUnitff125c,defaultUnitff125c
+kff125d,Fuel flow rate/hour,userUnitff125d,defaultUnitff125d
+kff125e,60-120mph Time,userUnitff125e,defaultUnitff125e
+kff125f,60-80mph Time,userUnitff125f,defaultUnitff125f
+kff1260,40-60mph Time,userUnitff1260,defaultUnitff1260
+kff1261,80-100mph Time,userUnitff1261,defaultUnitff1261
+kff1263,Average trip speed(whilst moving only),userUnitff1263,defaultUnitff1263
+kff1264,100-0kph Time,userUnitff1264,defaultUnitff1264
+kff1265,60-0mph Time,userUnitff1265,defaultUnitff1265
+kff1266,Trip Time(Since journey start),userUnitff1266,defaultUnitff1266
+kff1267,Trip time(whilst stationary),userUnitff1267,defaultUnitff1267
+kff1268,Trip Time(whilst moving),userUnitff1268,defaultUnitff1268
+kff1269,Volumetric Efficiency (Calculated),userUnitff1269,defaultUnitff1269
+kff126a,Distance to empty (Estimated),userUnitff126a,defaultUnitff126a
+kff126b,Fuel Remaining (Calculated from vehicle profile),userUnitff126b,defaultUnitff126b
+kff126d,Cost per mile/km (Instant),userUnitff126d,defaultUnitff126d
+kff126e,Cost per mile/km (Trip),userUnitff126e,defaultUnitff126e
+kff1270,Barometer (on Android device),userUnitff1270,defaultUnitff1270
+kff1271,Fuel used (trip),userUnitff1271,defaultUnitff1271
+kff1272,Average trip speed(whilst stopped or moving),userUnitff1272,defaultUnitff1272
+kff1273,Engine kW (At the wheels),userUnitff1273,defaultUnitff1273
+kff1275,80-120kph Time,userUnitff1275,defaultUnitff1275
+kff1276,60-130mph Time,userUnitff1276,defaultUnitff1276
+kff1277,0-30mph Time,userUnitff1277,defaultUnitff1277
+kff5201,Miles Per Gallon(Long Term Average),userUnitff5201,defaultUnitff5201
+kff5202,Kilometers Per Litre(Long Term Average),userUnitff5202,defaultUnitff5202
+kff5203,Litres Per 100 Kilometer(Long Term Average),userUnitff5203,defaultUnitff5203
