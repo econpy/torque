@@ -222,7 +222,7 @@ else {
         <script language="javascript" type="text/javascript" src="static/js/jquery.flot.tooltip.min.js"></script>
         <script language="javascript" type="text/javascript" src="static/js/jquery.flot.updater.js"></script>
         <script language="javascript" type="text/javascript" src="static/js/jquery.flot.resize.min.js"></script>
-        
+
         <script language="javascript" type="text/javascript">
         $(document).ready(function(){
 
@@ -286,17 +286,27 @@ else {
         <script language="javascript" type="text/javascript" src="static/js/torquehelpers.js"></script>
         <?php } ?>
 
-        
+
 
     </head>
     <body>
-        <div class="navbar navbar-default navbar-fixed-top navbar-inverse" role="navigation">
-            <div class="container">
+          <nav class="navbar navbar-default navbar-fixed-top navbar-inverse" role="navigation">
+            <div class="container-fluid">
                 <div class="navbar-header">
-                    <a class="navbar-brand" href="session.php">Open Torque Viewer</a>
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse-1">
+                      <span class="icon-bar"></span>
+                      <span class="icon-bar"></span>
+                      <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="session.php" style="padding-left:45px;">Open Torque Viewer</a>
                 </div>
+                <div class="collapse navbar-collapse" id="navbar-collapse-1">
+                    <ul class="nav navbar-nav navbar-right">
+                      <li style="padding-right:65px;line-height:40px;"><button class="button" onclick="toggleCharts()">Toggle Map</button></li>
+                    </ul>
                 </div>
-            </div>
+              </div>
+            </nav>
             <div id="map-container" class="col-md-7 col-xs-12">
                 <div id="map-canvas"></div>
             </div>
