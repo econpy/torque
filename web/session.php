@@ -256,8 +256,9 @@ else {
                     },
                     //selection: { mode: "xy" },
                     grid: {
-                        hoverable: false,
-                        clickable: true
+                        hoverable: true,
+                        clickable: true,
+                        autoHighlight: true
                     },
                     //multihighlightdelta: { mode: 'x' },
                     tooltip: false,
