@@ -32,7 +32,7 @@ if (isset($_POST["id"])) {
     foreach($geolocs as $d) {
         $mapdata[] = 'new google.maps.LatLng('.$d['lat'].', '.$d['lon'].')';
     }
-    $imapdata = implode(',\n                    ', $mapdata);
+    $imapdata = implode(",\n                    ", $mapdata);
 
     // Don't need to set zoom manually
     $setZoomManually = 0;
@@ -62,7 +62,7 @@ elseif (isset($_GET['id'])) {
     foreach($geolocs as $d) {
         $mapdata[] = 'new google.maps.LatLng('.$d['lat'].', '.$d['lon'].')';
     }
-    $imapdata = implode(',\n                    ', $mapdata);
+    $imapdata = implode(",\n                    ", $mapdata);
 
     // Don't need to set zoom manually
     $setZoomManually = 0;
