@@ -5,6 +5,7 @@ CREATE TABLE `raw_logs` (
   `v` varchar(1) NOT NULL,
   `session` varchar(15) NOT NULL,
   `id` varchar(32) NOT NULL,
+  `eml` varchar(64) NOT NULL,
   `time` varchar(15) NOT NULL,
   `kff1005` float NOT NULL DEFAULT '0',
   `kff1006` float NOT NULL DEFAULT '0',
@@ -21,6 +22,44 @@ CREATE TABLE `raw_logs` (
   `kff1220` float NOT NULL DEFAULT '0' COMMENT 'Accel (X)',
   `kff1221` float NOT NULL DEFAULT '0' COMMENT 'Accel (Y)',
   `k46` float NOT NULL DEFAULT '0' COMMENT 'Ambiant Air Temp',
+  KEY `session` (`session`,`id`),
+  KEY `id` (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `profile`;
+CREATE TABLE `profile` (
+  `v` varchar(1) NOT NULL,
+  `session` varchar(15) NOT NULL,
+  `id` varchar(32) NOT NULL,
+  `eml` varchar(64) NOT NULL,
+  `time` varchar(15) NOT NULL,
+  `profileName` varchar(32) NOT NULL DEFAULT '0' COMMENT 'Profile Name',
+  `profileFuelCost` float NOT NULL DEFAULT '0' COMMENT 'Fuel Cost',
+  `profileFuelType` float NOT NULL DEFAULT '0' COMMENT 'Fuel Type',
+  `profileVe` float NOT NULL DEFAULT '0' COMMENT 'Volumetric Efficiency Percent',
+  `profileWeight` float NOT NULL DEFAULT '0' COMMENT 'Vehicle Weight',
+  KEY `session` (`session`,`id`),
+  KEY `id` (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `userunit`;
+CREATE TABLE `userunit` (
+  `v` varchar(1) NOT NULL,
+  `session` varchar(15) NOT NULL,
+  `id` varchar(32) NOT NULL,
+  `eml` varchar(64) NOT NULL,
+  `time` varchar(15) NOT NULL,
+  KEY `session` (`session`,`id`),
+  KEY `id` (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `defaultunit`;
+CREATE TABLE `defaultunit` (
+  `v` varchar(1) NOT NULL,
+  `session` varchar(15) NOT NULL,
+  `id` varchar(32) NOT NULL,
+  `eml` varchar(64) NOT NULL,
+  `time` varchar(15) NOT NULL,
   KEY `session` (`session`,`id`),
   KEY `id` (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
