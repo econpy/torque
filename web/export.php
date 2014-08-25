@@ -1,15 +1,17 @@
 <?php
-require("./creds.php");
+require 'creds.php';
 
 // Connect to Database
-mysql_connect($db_host, $db_user, $db_pass) or die(mysql_error());
-mysql_select_db($db_name) or die(mysql_error());
+$con = mysql_connect($db_host, $db_user, $db_pass) or die(mysql_error());
+mysql_select_db($db_name, $con) or die(mysql_error());
 
 if (isset($_GET["sid"])) {
     $session_id = mysql_real_escape_string($_GET['sid']);
     // Get data for session
     $output = "";
-    $sql = mysql_query("SELECT * FROM $db_table WHERE session=$session_id ORDER BY time DESC;") or die(mysql_error());
+    $sql = mysql_query("SELECT * FROM raw_logs
+                        WHERE session=$session_id
+                        ORDER BY time DESC", $con) or die(mysql_error());
 
     if ($_GET["filetype"] == "csv") {
         $columns_total = mysql_num_fields($sql);
