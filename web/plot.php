@@ -41,7 +41,7 @@ if (isset($_GET["id"]) and in_array($_GET["id"], $sids)) {
 
     // Get data for session
     $sessionqry = mysql_query("SELECT time,$v1,$v2
-                          FROM $db_table
+                          FROM raw_logs
                           WHERE session=$session_id
                           ORDER BY time DESC", $con) or die(mysql_error());
 
