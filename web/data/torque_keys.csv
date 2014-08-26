@@ -1,4 +1,17 @@
 id,Device ID
+k03,Fuel Status                                        
+k04,Engine Load                                        
+k05,Engine Coolant Temperature                         
+k06,Fuel Trim Bank 1 Short Term                        
+k07,Fuel Trim Bank 1 Long Term                         
+k08,Fuel Trim Bank 2 Short Term                        
+k09,Fuel Trim Bank 2 Long Term                         
+k0a,Fuel pressure                                      
+k0b,Intake Manifold Pressure                           
+k0c,Engine RPM                                         
+k0d,Speed (OBD)                                        
+k0e,Timing Advance                                     
+k0f,Intake Air Temperature                             
 k10,Mass Air Flow Rate
 k11,Throttle Position(Manifold)
 k12,Air Status

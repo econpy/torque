@@ -2,7 +2,7 @@
 require("./creds.php");
 
 session_start();
-$timezone = $_SESSION['time'];
+$timezone = ini_get('date.timezone');
 
 // Connect to Database
 $con = mysql_connect($db_host, $db_user, $db_pass) or die(mysql_error());
@@ -19,10 +19,10 @@ $seshdates = array();
 while($row = mysql_fetch_assoc($sessionqry)) {
     $session_size = $row["Session Size"];
     // Drop sessions smaller than 60 data points
-    if ($session_size >= 60) {
+    if ($session_size >= 10) {
         $sid = $row["session"];
         $sids[] = preg_replace('/\D/', '', $sid);
-        $seshdates[$sid] = date("F d, Y  h:ia", substr($sid, 0, -3));
+        $seshdates[$sid] = date("Y-m-d D h:ia", substr($sid, 0, -3));
     }
     else {}
 }

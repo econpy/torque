@@ -1,6 +1,23 @@
 <?php
 require 'creds.php';
 
+// for backup and replay
+if (isset($param_backup)) {
+    if (array_key_exists('session', $_GET)) {
+        $param_capture = dirname(__FILE__) . "/param/" . date("Ymd-Hi");
+        $logcontentstr = file_get_contents($param_capture);
+        if (! $logcontentstr) 
+            $logcontent = array();
+        else 
+            $logcontent = unserialize($logcontentstr);
+        $logcontent[] = $_GET;
+
+        $logfile = fopen($param_capture, 'w+') or die('cannot open param log file');
+        fwrite($logfile, serialize($logcontent));
+        fclose($logfile);
+    }
+}
+
 // Connect to Database
 $con = mysql_connect($db_host, $db_user, $db_pass) or die(mysql_error());
 mysql_select_db($db_name, $con) or die(mysql_error());

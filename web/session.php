@@ -94,10 +94,10 @@ else {
         <meta name="author" content="Matt Nicklay">
         <!--<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">-->
         <link rel="stylesheet" href="static/css/bootstrap.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.0/chosen.min.css">
+        <link rel="stylesheet" href="static/css/chosen.min.css">
         <link rel="stylesheet" href="static/css/torque.css">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
-        <script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
             <script language="javascript" type="text/javascript">
                 $(document).ready(function() {
                     if("<?php echo $timezone; ?>".length==0){
@@ -115,10 +115,13 @@ else {
                     }
                 });
             </script>
-        <script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/themes/smoothness/jquery-ui.css" />
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script> 
+
         <script language="javascript" type="text/javascript" src="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
         <script language="javascript" type="text/javascript" src="static/js/jquery.peity.min.js"></script>
-        <script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.1.0/chosen.jquery.min.js"></script>
+        <script language="javascript" type="text/javascript" src="static/js/chosen.jquery.min.js"></script>
+        <script language="javascript" type="text/javascript" src="static/js/date.format.js"></script>
         <script language="javascript" type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
 
         <script language="javascript" type="text/javascript">
@@ -141,7 +144,7 @@ else {
                   style: google.maps.NavigationControlStyle.ZOOM_PAN
               },
               scaleControl: true,
-              disableDoubleClickZoom: false,
+              disableDoubleClickZoom: true,
               draggable: true,
               streetViewControl: true,
               draggableCursor: 'move'
@@ -206,9 +209,46 @@ else {
               strokeWeight: 4
             });
             line.setMap(map);
+
+            google.maps.event.addListener(map, 'dblclick', function(event){
+              var d = {
+                id  : "<?php echo $session_id;?>", 
+                lat : event.latLng.lat(), 
+                lng : event.latLng.lng()
+              };
+              $.ajax({
+                type: "GET", 
+                url:  "session_speed.php", 
+                data: d,
+                success: function(data) {
+                  var titletext = "<pre>" 
+                  + "Error: " + data.dist + "\n"
+                  + "Time: " + new Date(data.time * 1).format('Y-m-d H:i:s') + "\n"
+                  + "Engine RPM: " + data.kc + "\n"
+                  + "Speed OBD: " + data.kd + "\n"
+                  + "Speed GPS: " + data.kff1001 + "</pre>";
+
+                  if (marker == null) {
+                    marker = new google.maps.Marker({
+                      position: new google.maps.LatLng(data.kff1006, data.kff1005), 
+                      map: map, 
+                      icon: "static/css/small_red.png"
+                    });
+                    infowin = new google.maps.InfoWindow();
+                  } else {
+                    marker.setPosition(new google.maps.LatLng(data.kff1006, data.kff1005));
+                  }
+                  infowin.setContent(titletext);
+                  infowin.open(map, marker);
+                }, 
+                dataType: "json"
+              });
+            });
           };
 
           google.maps.event.addDomListener(window, 'load', initialize);
+          var marker = null;
+          var infowin = null;
         </script>
 
         <?php if ($setZoomManually === 0) { ?>
@@ -255,7 +295,7 @@ else {
                         backgroundOpacity: 0.1,
                         margin: 0
                     },
-                    //selection: { mode: "xy" },
+                    // selection: { mode: "xy" },
                     grid: {
                         hoverable: false,
                         clickable: true
@@ -373,7 +413,6 @@ else {
                                         <th>25th Pcnt</th>
                                         <th>75th Pcnt</th>
                                         <th>Mean</th>
-                                        <th>Sparkline</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -383,7 +422,6 @@ else {
                                         <td><?php echo $pcnt25data1; ?></td>
                                         <td><?php echo $pcnt75data1; ?></td>
                                         <td><?php echo $avg1; ?></td>
-                                        <td><span class="line"><?php echo $sparkdata1; ?></span></td>
                                     </tr>
                                     <tr>
                                         <td><strong><?php echo substr($v2_label, 1, -1); ?></strong></td>
@@ -391,7 +429,6 @@ else {
                                         <td><?php echo $pcnt25data2; ?></td>
                                         <td><?php echo $pcnt75data2; ?></td>
                                         <td><?php echo $avg2; ?></td>
-                                        <td><span class="line"><?php echo $sparkdata2; ?></span></td>
                                     </tr>
                                 </tbody>
                             </table>
