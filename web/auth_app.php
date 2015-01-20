@@ -7,7 +7,7 @@ $logged_in = false;
 
 
 //Session makes no sense for the torque app, I assume it to have no cookie handling integrated
-//session_set_cookie_params(0,'/torque');
+//session_set_cookie_params(0,dirname($_SERVER['SCRIPT_NAME']));
 //session_start();
 
 //if (!isset($_SESSION['torque_logged_in'])) {

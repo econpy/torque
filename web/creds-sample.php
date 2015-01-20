@@ -7,6 +7,10 @@ $db_pass = '';     // Enter your MySQL password
 $db_name = 'torque';
 $db_table = 'raw_logs';
 
+// User credentials for Browser login
+$auth_user = '';    //Sample: 'torque'
+$auth_pass = '';    //Sample: 'open'
+
 //If you want to restrict access to upload_data.php, 
 // either enter your torque ID as shown in the torque app, 
 // or enter the hashed ID as it can found in the uploaded data.

@@ -2,6 +2,8 @@
 
 ini_set('memory_limit', '-1');
 require_once ("./creds.php");
+require_once ("./auth_user.php");
+
 require_once ("./get_sessions.php");
 require_once ("./get_columns.php");
 require_once ("./plot.php");

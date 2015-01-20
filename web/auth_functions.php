@@ -67,6 +67,7 @@ function auth_user()
     $user = get_user();
     $pass = get_pass();
 
+    //No User/Pass defined: Allow everything
     if ( empty($auth_user) && empty($auth_pass) ) {
         return true;
     }
