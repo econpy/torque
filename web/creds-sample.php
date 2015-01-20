@@ -13,5 +13,6 @@ $use_fahrenheit = false;
 $source_is_miles = false;
 $use_miles = false;
 
+$hide_empty_variables = true;
 
 ?>

@@ -1,10 +1,10 @@
 <?php
 
 ini_set('memory_limit', '-1');
-require ("./creds.php");
-require ("./get_sessions.php");
-require ("./get_columns.php");
-require ("./plot.php");
+require_once ("./creds.php");
+require_once ("./get_sessions.php");
+require_once ("./get_columns.php");
+require_once ("./plot.php");
 
 $_SESSION['recent_session_id'] = strval(max($sids));
 
@@ -14,6 +14,12 @@ mysql_select_db($db_name, $con) or die(mysql_error());
 
 if (isset($_POST["id"])) {
     $session_id = preg_replace('/\D/', '', $_POST['id']);
+}
+elseif (isset($_GET["id"])) {
+    $session_id = preg_replace('/\D/', '', $_GET['id']);
+}
+
+if (isset($session_id)) {
 
     // Get GPS data for session
     $sessionqry = mysql_query("SELECT kff1006, kff1005
@@ -41,37 +47,6 @@ if (isset($_POST["id"])) {
     mysql_free_result($sessionqry);
     mysql_close($con);
 }
-
-elseif (isset($_GET["id"])) {
-    $session_id = preg_replace('/\D/', '', $_GET['id']);
-
-    // Get data for session
-    $sessionqry = mysql_query("SELECT kff1006, kff1005
-                          FROM $db_table
-                          WHERE session=$session_id
-                          ORDER BY time DESC", $con) or die(mysql_error());
-
-    $geolocs = array();
-    while($geo = mysql_fetch_array($sessionqry)) {
-        if (($geo["0"] != 0) && ($geo["1"] != 0)) {
-            $geolocs[] = array("lat" => $geo["0"], "lon" => $geo["1"]);
-        }
-    }
-
-    // Create array of Latitude/Longitude strings in Google Maps JavaScript format
-    $mapdata = array();
-    foreach($geolocs as $d) {
-        $mapdata[] = "new google.maps.LatLng(".$d['lat'].", ".$d['lon'].")";
-    }
-    $imapdata = implode(",\n                    ", $mapdata);
-
-    // Don't need to set zoom manually
-    $setZoomManually = 0;
-
-    mysql_free_result($sessionqry);
-    mysql_close($con);
-}
-
 else {
     // Define these so we don't get an error on empty page loads. Instead it
     // will load a map of Area 51.
@@ -325,9 +300,9 @@ else {
                         <form method="post" role="form" action="url.php?makechart=y&seshid=<?php echo $session_id; ?>" id="formplotdata">
                             <select data-placeholder="Choose OBD2 data..." multiple class="chosen-select" size="<?php echo $numcols; ?>" style="width:100%;" id="plot_data" onsubmit="onSubmitIt" name="plotdata[]">
                                 <option value=""></option>
-                                <?php foreach ($coldata as $xcol) { ?>
-                                  <option value="<?php echo $xcol['colname']; ?>"><?php echo $xcol['colcomment']; ?></option>
-                                <?php } ?>
+                                <?php foreach ($coldata as $xcol) { if ( !(($coldataempty[$xcol['colname']]==1) && ($hide_empty_variables))) {?>
+                                  <option value="<?php echo $xcol['colname']; ?>" <?php echo ($coldataempty[$xcol['colname']]?"class='dataempty'":"") ?>><?php echo $xcol['colcomment'].($coldataempty[$xcol['colname']]?" &nbsp; [empty]":""); ?></option>
+                                <?php }} ?>
                             </select>
                             <div align="center" style="padding-top:6px;"><input class="btn btn-info btn-sm" type="submit" id="formplotdata" name="plotdata[]" value="Plot!"></div>
                         </form>

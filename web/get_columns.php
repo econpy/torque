@@ -1,5 +1,5 @@
 <?php
-require("./creds.php");
+require_once("./creds.php");
 
 // Connect to Database
 mysql_connect($db_host, $db_user, $db_pass) or die(mysql_error());
@@ -18,5 +18,41 @@ while ($x = mysql_fetch_array($colqry)) {
 }
 
 $numcols = strval(count($coldata)+1);
+
+mysql_free_result($colqry);
+
+
+//TODO: Do this once in a dedicated file
+if (isset($_POST["id"])) {
+    $session_id = preg_replace('/\D/', '', $_POST['id']);
+}
+elseif (isset($_GET["id"])) {
+    $session_id = preg_replace('/\D/', '', $_GET['id']);
+}
+
+
+// If we have a certain session, check which colums contain no information at all
+$coldataempty = array();
+if (isset($session_id)) {
+    mysql_select_db($db_name) or die(mysql_error());
+
+    //Count distinct values for each known column
+    //TODO: Unroll loop into single query
+    foreach ($coldata as $col)
+    {
+        $colname = $col["colname"];
+
+        // Count number of different values for this specific field
+        $colqry = mysql_query("SELECT count(DISTINCT $colname)<2 as $colname
+                               FROM $db_table
+                               WHERE session=$session_id") or die(mysql_error());
+        $colresult = mysql_fetch_assoc($colqry);
+        $coldataempty[$colname] = $colresult[$colname];
+    }
+
+    //print_r($coldataempty);
+}
+
+mysql_close();
 
 ?>
