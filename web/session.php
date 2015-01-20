@@ -285,7 +285,7 @@ else {
                             <option value=""></option>
                             <?php
                             foreach ($seshdates as $dateid => $datestr) { ?>
-                              <option value="<?php echo $dateid; ?>"<?php if ($dateid == $session_id) echo ' selected'; ?>><?php echo $datestr; ?></option>
+                              <option value="<?php echo $dateid; ?>"<?php if ($dateid == $session_id) echo ' selected'; ?>><?php echo $datestr; if ($show_session_length) {echo $seshsizes[$dateid];} ?></option>
                             <?php } ?>
                           </select>
                           <noscript><input type="submit" id="seshidtag" name="seshidtag" class="input-sm"></noscript>

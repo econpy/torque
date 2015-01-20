@@ -14,5 +14,6 @@ $source_is_miles = false;
 $use_miles = false;
 
 $hide_empty_variables = true;
+$show_session_length = true;
 
 ?>
