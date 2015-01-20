@@ -1,5 +1,6 @@
 <?php
-require 'creds.php';
+require_once ('creds.php');
+require_once ('auth_app.php');
 
 // Connect to Database
 $con = mysql_connect($db_host, $db_user, $db_pass) or die(mysql_error());
