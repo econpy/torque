@@ -1,10 +1,14 @@
 <?php
 
 ini_set('memory_limit', '-1');
-require ("./creds.php");
-require ("./get_sessions.php");
-require ("./get_columns.php");
-require ("./plot.php");
+require_once ("./creds.php");
+require_once ("./auth_user.php");
+
+require_once ("./del_session.php");
+require_once ("./merge_sessions.php");
+require_once ("./get_sessions.php");
+require_once ("./get_columns.php");
+require_once ("./plot.php");
 
 $_SESSION['recent_session_id'] = strval(max($sids));
 
@@ -14,6 +18,20 @@ mysql_select_db($db_name, $con) or die(mysql_error());
 
 if (isset($_POST["id"])) {
     $session_id = preg_replace('/\D/', '', $_POST['id']);
+}
+elseif (isset($_GET["id"])) {
+    $session_id = preg_replace('/\D/', '', $_GET['id']);
+}
+
+if (isset($session_id)) {
+
+    //For the merge function, we need to find out, what would be the next session
+    $idx = array_search( $session_id, $sids);
+    if($idx>0) {
+        $session_id_next = $sids[$idx-1];
+    } else {
+        $session_id_next = false;
+    }
 
     // Get GPS data for session
     $sessionqry = mysql_query("SELECT kff1006, kff1005
@@ -41,37 +59,6 @@ if (isset($_POST["id"])) {
     mysql_free_result($sessionqry);
     mysql_close($con);
 }
-
-elseif (isset($_GET["id"])) {
-    $session_id = preg_replace('/\D/', '', $_GET['id']);
-
-    // Get data for session
-    $sessionqry = mysql_query("SELECT kff1006, kff1005
-                          FROM $db_table
-                          WHERE session=$session_id
-                          ORDER BY time DESC", $con) or die(mysql_error());
-
-    $geolocs = array();
-    while($geo = mysql_fetch_array($sessionqry)) {
-        if (($geo["0"] != 0) && ($geo["1"] != 0)) {
-            $geolocs[] = array("lat" => $geo["0"], "lon" => $geo["1"]);
-        }
-    }
-
-    // Create array of Latitude/Longitude strings in Google Maps JavaScript format
-    $mapdata = array();
-    foreach($geolocs as $d) {
-        $mapdata[] = "new google.maps.LatLng(".$d['lat'].", ".$d['lon'].")";
-    }
-    $imapdata = implode(",\n                    ", $mapdata);
-
-    // Don't need to set zoom manually
-    $setZoomManually = 0;
-
-    mysql_free_result($sessionqry);
-    mysql_close($con);
-}
-
 else {
     // Define these so we don't get an error on empty page loads. Instead it
     // will load a map of Area 51.
@@ -310,12 +297,43 @@ else {
                             <option value=""></option>
                             <?php
                             foreach ($seshdates as $dateid => $datestr) { ?>
-                              <option value="<?php echo $dateid; ?>"<?php if ($dateid == $session_id) echo ' selected'; ?>><?php echo $datestr; ?></option>
+                              <option value="<?php echo $dateid; ?>"<?php if ($dateid == $session_id) echo ' selected'; ?>><?php echo $datestr; if ($show_session_length) {echo $seshsizes[$dateid];} ?></option>
                             <?php } ?>
                           </select>
                           <noscript><input type="submit" id="seshidtag" name="seshidtag" class="input-sm"></noscript>
                         </form>
+
+
+<?php if(isset($session_id) && !empty($session_id)){ ?>
+                        <div class="btn-group btn-group-justified">
+                          <table style="width:100%"><tr>
+                            <td><form method="post" class="form-horizontal" role="form" action="session.php?mergesession=<?php echo $session_id; ?>&mergesessionwith=<?php echo $session_id_next; ?>" id="formmerge">
+                              <div align="center" style="padding-top:6px;"><input class="btn btn-info btn-sm" type="submit" id="formmerge" name="merge" value="Merge" title="Merge this session (<?php echo $seshdates[$session_id]; ?>) with the next session (<?php echo $seshdates[$session_id_next]; ?>)." <?php if(!$session_id_next){ echo 'disabled="disabled"';} ?> /></div>
+                            </form></td>
+                            <script type="text/javascript">
+                              //Adding a confirmation dialog to above forms
+                              $('#formmerge').submit(function() {
+                                var c = confirm("Click OK to merge sessions (<?php echo $seshdates[$session_id]; ?>) and (<?php echo $seshdates[$session_id_next]; ?>).");
+                                return c; //you can just return c because it will be true or false
+                              });
+                            </script>
+
+                            <td><form method="post" class="form-horizontal" role="form" action="session.php?deletesession=<?php echo $session_id; ?>" id="formdelete">
+                              <div align="center" style="padding-top:6px;"><input class="btn btn-info btn-sm" type="submit" id="formdelete" name="delete" value="Delete" title="Delete this session (<?php echo $seshdates[$session_id]; ?>)." /></div>
+                            </form></td>
+                            <script type="text/javascript">
+                              $('#formdelete').submit(function() {
+                                var c = confirm("Click OK to delete session (<?php echo $seshdates[$session_id]; ?>).");
+                                return c; //you can just return c because it will be true or false
+                              });
+                            </script>
+                          </tr></table>
                     </div>
+<?php } /* END: if(isset($session_id) && !empty($session_id)) */?>
+
+
+                    </div> <!-- END: Select Session -->
+
 
                     <br>
 
@@ -325,9 +343,9 @@ else {
                         <form method="post" role="form" action="url.php?makechart=y&seshid=<?php echo $session_id; ?>" id="formplotdata">
                             <select data-placeholder="Choose OBD2 data..." multiple class="chosen-select" size="<?php echo $numcols; ?>" style="width:100%;" id="plot_data" onsubmit="onSubmitIt" name="plotdata[]">
                                 <option value=""></option>
-                                <?php foreach ($coldata as $xcol) { ?>
-                                  <option value="<?php echo $xcol['colname']; ?>"><?php echo $xcol['colcomment']; ?></option>
-                                <?php } ?>
+                                <?php foreach ($coldata as $xcol) { if ( !(($coldataempty[$xcol['colname']]==1) && ($hide_empty_variables))) {?>
+                                  <option value="<?php echo $xcol['colname']; ?>" <?php echo ($coldataempty[$xcol['colname']]?"class='dataempty'":"") ?>><?php echo $xcol['colcomment'].($coldataempty[$xcol['colname']]?" &nbsp; [empty]":""); ?></option>
+                                <?php }} ?>
                             </select>
                             <div align="center" style="padding-top:6px;"><input class="btn btn-info btn-sm" type="submit" id="formplotdata" name="plotdata[]" value="Plot!"></div>
                         </form>

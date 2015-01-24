@@ -1,6 +1,6 @@
 <?php
-require("./creds.php");
-require("./parse_functions.php");
+require_once("./creds.php");
+require_once("./parse_functions.php");
 
 // Connect to Database
 mysql_connect($db_host, $db_user, $db_pass) or die(mysql_error());
@@ -38,34 +38,92 @@ if (isset($_GET["id"]) and in_array($_GET["id"], $sids)) {
                           WHERE session=$session_id
                           ORDER BY time DESC;") or die(mysql_error());
 
+    //Speed conversion
+    if (!$source_is_miles && $use_miles)
+    {
+        $speed_factor = 0.621371;
+        $speed_measurand = ' [mph]';
+    }
+    elseif ($source_is_miles && $use_miles)
+    {
+        $speed_factor = 1.0;
+        $speed_measurand = ' [mph]';
+    }
+    elseif ($source_is_miles && !$use_miles)
+    {
+        $speed_factor = 1.609344;
+        $speed_measurand = ' [km/h]';
+    }
+    else
+    {
+        $speed_factor = 1.0;
+        $speed_measurand = ' [km/h]';
+    }
+
+    //Temperature Conversion
+    //From Celsius to Fahrenheit
+    if (!$source_is_fahrenheit && $use_fahrenheit)
+    {
+        $temp_func = function ($temp) { return $temp*9.0/5.0+32.0; };
+        $temp_measurand = ' [&deg;F]';
+    }
+    //Just Fahrenheit
+    elseif ($source_is_fahrenheit && $use_fahrenheit)
+    {
+        $temp_func = function ($temp) { return $temp; };
+        $temp_measurand = ' [&deg;F]';
+    }
+    //From Fahrenheit to Celsius
+    elseif ($source_is_fahrenheit && !$use_fahrenheit)
+    {
+        $temp_func = function ($temp) { return ($temp-32.0)*5.0/9.0; };
+        $temp_measurand = ' [&deg;C]';
+    }
+    //Just Celsius
+    else
+    {
+        $temp_func = function ($temp) { return $temp; };
+        $temp_measurand = ' [&deg;C]';
+    }
+
     // Convert data units
     // TODO: Use the userDefault fields to do these conversions dynamically
     while($row = mysql_fetch_assoc($sessionqry)) {
         // data column #1
         if (substri_count($jsarr[$v1], "Speed") > 0) {
-            $x = intval($row[$v1])*0.621371;
+            $x = intval($row[$v1]) * $speed_factor;
+            $v1_measurand = $speed_measurand;
         }
         elseif (substri_count($jsarr[$v1], "Temp") > 0) {
-            $x = floatval($row[$v1])*9/5+32;
+            $x = $temp_func ( floatval($row[$v1]) );
+            $v1_measurand = $temp_measurand;
         }
         else {
             $x = intval($row[$v1]);
+            $v1_measurand = '';
         }
         $d1[] = array($row['time'], $x);
         $spark1[] = $x;
+
         // data column #2
         if (substri_count($jsarr[$v2], "Speed") > 0) {
-            $x = intval($row[$v2])*0.621371;
+            $x = intval($row[$v2]) * $speed_factor;
+            $v2_measurand = $speed_measurand;
         }
         elseif (substri_count($jsarr[$v2], "Temp") > 0) {
-            $x = floatval($row[$v2])*9/5+32;
+            $x = $temp_func ( floatval($row[$v2]) );
+            $v2_measurand = $temp_measurand;
         }
         else {
             $x = intval($row[$v2]);
+            $v2_measurand = '';
         }
         $d2[] = array($row['time'], $x);
         $spark2[] = $x;
     }
+
+    $v1_label = '"'.$jsarr[$v1].$v1_measurand.'"';
+    $v2_label = '"'.$jsarr[$v2].$v2_measurand.'"';
 
     $sparkdata1 = implode(",", array_reverse($spark1));
     $sparkdata2 = implode(",", array_reverse($spark2));
