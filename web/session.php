@@ -66,6 +66,19 @@ else {
     $imapdata = "new google.maps.LatLng(37.235, -115.8111)";
     $setZoomManually = 1;
 
+    # Automatically load the most recent session when loading the page
+    $sessionqry = mysql_query("SELECT session
+        FROM $db_table
+        ORDER BY session
+        DESC LIMIT 0, 1", $con) or die(mysql_error());
+    while($sessid = mysql_fetch_array($sessionqry)) {
+        $session_id = $sessid["0"];
+    }
+    if ($session_id != "") {
+        $url = "session.php?id=" . $session_id;
+        header( "Location: $url" );
+    }
+
 }
 
 ?>
