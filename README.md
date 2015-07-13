@@ -8,7 +8,7 @@ The interface allows the user to:
 
 # Demo #
 
-[Check out the demo!](https://data.mattnicklay.com/torque/session.php?id=1404557450999)
+[Check out the demo!](http://data.mattnicklay.com/torque/session.php?id=1404557450999)
 
 # Requirements #
 
