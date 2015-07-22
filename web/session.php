@@ -44,7 +44,6 @@ else {
     $var2 = "";
 }
 
-
 if (isset($session_id)) {
 
     //For the merge function, we need to find out, what would be the next session
@@ -397,11 +396,16 @@ else {
                     <div class="row center-block" style="padding-bottom:5px;">
 
                     <?php if ($setZoomManually === 0) { ?>
-
-                        <div class="demo-container">
-                            <div id="placeholder" class="demo-placeholder" style="height:300px;"></div>
-                        </div>
-
+                        <!-- Don't display anything if no variables are set (default) -->
+                        <?php if ( $var1 == "" and $var2 == "" ) { ?>
+                            <div align="center" style="padding-top:10px;">
+                                <h5><span class="label label-warning">No Variables Selected to Plot!</span></h5>
+                            </div>
+                        <?php } else { ?>
+                            <div class="demo-container">
+                                <div id="placeholder" class="demo-placeholder" style="height:300px;"></div>
+                            </div>
+                        <?php } ?>
                     <?php } else { ?>
                         <div align="center" style="padding-top:10px;">
                             <h5><span class="label label-warning">Select a session first!</span></h5>
@@ -416,41 +420,45 @@ else {
                     <div class="row center-block">
 
                     <?php if ($setZoomManually === 0) { ?>
-
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Min/Max</th>
-                                        <th>25th Pcnt</th>
-                                        <th>75th Pcnt</th>
-                                        <th>Mean</th>
-                                        <th>Sparkline</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td><strong><?php echo substr($v1_label, 1, -1); ?></strong></td>
-                                        <td><?php echo $min1.'/'.$max1; ?></td>
-                                        <td><?php echo $pcnt25data1; ?></td>
-                                        <td><?php echo $pcnt75data1; ?></td>
-                                        <td><?php echo $avg1; ?></td>
-                                        <td><span class="line"><?php echo $sparkdata1; ?></span></td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong><?php echo substr($v2_label, 1, -1); ?></strong></td>
-                                        <td><?php echo $min2.'/'.$max2; ?></td>
-                                        <td><?php echo $pcnt25data2; ?></td>
-                                        <td><?php echo $pcnt75data2; ?></td>
-                                        <td><?php echo $avg2; ?></td>
-                                        <td><span class="line"><?php echo $sparkdata2; ?></span></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-
+                        <!-- Don't display anything if no variables are set (default) -->
+                        <?php if ( $var1 == "" and $var2 == "" ) { ?>
+                            <div align="center" style="padding-top:10px;">
+                                <h5><span class="label label-warning">No Variables Selected to Plot!</span></h5>
+                            </div>
+                        <?php } else { ?>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Min/Max</th>
+                                            <th>25th Pcnt</th>
+                                            <th>75th Pcnt</th>
+                                            <th>Mean</th>
+                                            <th>Sparkline</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><strong><?php echo substr($v1_label, 1, -1); ?></strong></td>
+                                            <td><?php echo $min1.'/'.$max1; ?></td>
+                                            <td><?php echo $pcnt25data1; ?></td>
+                                            <td><?php echo $pcnt75data1; ?></td>
+                                            <td><?php echo $avg1; ?></td>
+                                            <td><span class="line"><?php echo $sparkdata1; ?></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong><?php echo substr($v2_label, 1, -1); ?></strong></td>
+                                            <td><?php echo $min2.'/'.$max2; ?></td>
+                                            <td><?php echo $pcnt25data2; ?></td>
+                                            <td><?php echo $pcnt75data2; ?></td>
+                                            <td><?php echo $avg2; ?></td>
+                                            <td><span class="line"><?php echo $sparkdata2; ?></span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <? } ?>
                     <?php } else { ?>
 
                         <div align="center" style="padding-top:5px;">
