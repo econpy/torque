@@ -490,6 +490,7 @@ else {
 				</div>
 			</div>
 		</div>
+		<div> Debug Info: $session_id=<?php echo $session_id; ?> $sessionqry=<?php echo $sessionqry; ?> $url=<?php echo $url;?></div>
 	</body>
 </html>
 
