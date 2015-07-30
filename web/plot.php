@@ -19,6 +19,8 @@ if (isset($_GET["id"]) and in_array($_GET["id"], $sids)) {
         $v1 = mysql_real_escape_string($_GET['s1']);
     }
     else {
+		// 2015.07.22 - edit by surfrock66 - Dsiable choosing of default variable when
+		//   none is selected
         //$v1 = "kd"; // OBD Speed
         $v1 = "";
     }
@@ -26,6 +28,8 @@ if (isset($_GET["id"]) and in_array($_GET["id"], $sids)) {
         $v2 = mysql_real_escape_string($_GET['s2']);
     }
     else {
+		// 2015.07.22 - edit by surfrock66 - Dsiable choosing of default variable when
+		//   none is selected
         //$v2 = "kf";   // Intake Air Temp
         $v2 = "";
     }
