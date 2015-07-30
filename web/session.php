@@ -66,7 +66,7 @@ else {
     $imapdata = "new google.maps.LatLng(37.235, -115.8111)";
     $setZoomManually = 1;
 
-    # Automatically load the most recent session when loading the page
+    # 2015.06.25 - edit by surfrock66 - Automatically load the most recent session when loading the page
     $sessionqry = mysql_query("SELECT session
         FROM $db_table
         ORDER BY session
@@ -375,7 +375,8 @@ else {
                     <div class="row center-block" style="padding-bottom:5px;">
 
                     <?php if ($setZoomManually === 0) { ?>
-                        <!-- Don't display anything if no variables are set (default) -->
+                        <!-- 2015.07.22 - edit by surfrock66 - Don't display anything if no 
+								variables are set (default) -->
                         <?php if ( $var1 == "" and $var2 == "" ) { ?>
                             <div align="center" style="padding-top:10px;">
                                 <h5><span class="label label-warning">No Variables Selected to Plot!</span></h5>
@@ -399,7 +400,8 @@ else {
                     <div class="row center-block">
 
                     <?php if ($setZoomManually === 0) { ?>
-                        <!-- Don't display anything if no variables are set (default) -->
+                        <!-- 2015.07.22 - edit by surfrock66 - Don't display anything if no 
+								variables are set (default) -->
                         <?php if ( $var1 == "" and $var2 == "" ) { ?>
                             <div align="center" style="padding-top:10px;">
                                 <h5><span class="label label-warning">No Variables Selected to Plot!</span></h5>
