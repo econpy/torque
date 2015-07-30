@@ -23,6 +23,28 @@ elseif (isset($_GET["id"])) {
     $session_id = preg_replace('/\D/', '', $_GET['id']);
 }
 
+// 2015.07.22 - edit by surfrock66 - Define some variables to be used in 
+//    variable management later, specifically when choosing default vars to plot
+if (isset($_POST["s1"])) {
+    $var1 = preg_replace('/\D/', '', $_POST['s1']);
+}
+elseif (isset($_GET["s1"])) {
+    $var1 = preg_replace('/\D/', '', $_GET['s1']);
+}
+else {
+    $var1 = "";
+}
+
+if (isset($_POST["s2"])) {
+    $var2 = preg_replace('/\D/', '', $_POST['s2']);
+}
+elseif (isset($_GET["s2"])) {
+    $var2 = preg_replace('/\D/', '', $_GET['s2']);
+}
+else {
+    $var2 = "";
+}
+
 if (isset($session_id)) {
 
     //For the merge function, we need to find out, what would be the next session
