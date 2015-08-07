@@ -25,24 +25,40 @@ elseif (isset($_GET["id"])) {
 
 // 2015.07.22 - edit by surfrock66 - Define some variables to be used in 
 //    variable management later, specifically when choosing default vars to plot
+$var1 = "";
 if (isset($_POST["s1"])) {
-    $var1 = preg_replace('/\D/', '', $_POST['s1']);
+    $var1 = $_POST['s1'];
 }
 elseif (isset($_GET["s1"])) {
-    $var1 = preg_replace('/\D/', '', $_GET['s1']);
+    $var1 = $_GET['s1'];
 }
-else {
-    $var1 = "";
-}
-
+$var2 = "";
 if (isset($_POST["s2"])) {
-    $var2 = preg_replace('/\D/', '', $_POST['s2']);
+    $var2 = $_POST['s2'];
 }
 elseif (isset($_GET["s2"])) {
-    $var2 = preg_replace('/\D/', '', $_GET['s2']);
+    $var2 = $_GET['s2'];
 }
-else {
-    $var2 = "";
+$var3= "";
+if (isset($_POST["s3"])) {
+    $var3 = $_POST['s3'];
+}
+elseif (isset($_GET["s3"])) {
+    $var3 = $_GET['s3'];
+}
+$var4 = "";
+if (isset($_POST["s4"])) {
+    $var4 = $_POST['s4'];
+}
+elseif (isset($_GET["s4"])) {
+    $var4 = $_GET['s4'];
+}
+$var5 = "";
+if (isset($_POST["s5"])) {
+    $var5 = $_POST['s5'];
+}
+elseif (isset($_GET["s5"])) {
+    $var5 = $_GET['s5'];
 }
 
 if (isset($session_id)) {
@@ -250,11 +266,10 @@ else {
         $(document).ready(function(){
 
             var s1 = [<?php foreach($d1 as $b) {echo "[".$b[0].", ".$b[1]."],";} ?>];
-            var s2 = [<?php foreach($d2 as $d) {echo "[".$d[0].", ".$d[1]."],";} ?>];
-
+            var s2 = [<?php if ( $var2 == "" ) { foreach($d1 as $d) { echo "[".$d[0].", 0],";} } else { foreach($d2 as $d) {echo "[".$d[0].", ".$d[1]."],";} } ?>];
             var flotData = [
                             { data: s1, label: <?php echo $v1_label; ?> },
-                            { data: s2, label: <?php echo $v2_label; ?>, yaxis: 2 }
+                            { data: s2, label: <?php if ( $var2 == "" ) { echo "\"\""; } else { echo $v2_label; } ?>, yaxis: 2 }
                            ];
 
             function doPlot(position) {
@@ -269,7 +284,7 @@ else {
                     yaxes: [ { axisLabel: <?php echo $v1_label; ?> }, {
                         alignTicksWithAxis: position == "right" ? 1 : null,
                         position: position,
-                        axisLabel: <?php echo $v2_label; ?>
+                        axisLabel: <?php if ( $var2 == "" ) { echo "\"\""; } else { echo $v2_label; } ?>
                     } ],
                     legend: {
                         position: "nw",
@@ -277,19 +292,19 @@ else {
                         backgroundOpacity: 0.1,
                         margin: 0
                     },
-                    //selection: { mode: "xy" },
+                    selection: { mode: "x" },
                     grid: {
                         hoverable: false,
                         clickable: true
                     },
-                    //multihighlightdelta: { mode: 'x' },
+                    multihighlightdelta: { mode: 'x' },
                     tooltip: false,
                     tooltipOpts: {
                         content: "%s at %x: %y",
                         xDateFormat: "%I:%M:%S%p",
                         twelveHourClock: true,
                         onHover: function(flotItem, $tooltipEl) {
-                            // console.log(flotItem, $tooltipEl);
+                             console.log(flotItem, $tooltipEl);
                         }
                     }
                 }
@@ -307,9 +322,6 @@ else {
         <?php } else { ?>
         <script language="javascript" type="text/javascript" src="static/js/torquehelpers.js"></script>
         <?php } ?>
-
-
-
     </head>
     <body>
         <div class="navbar navbar-default navbar-fixed-top navbar-inverse" role="navigation">
@@ -373,7 +385,7 @@ else {
                     <br>
 
                     <?php if ($setZoomManually === 0) { ?>
-                    <h4>Select 2 Variables to Plot</h4>
+				<h4>Select Up To 5 Variables to Compare</h4><h5>(Only The First 2, Alphabetically Sorted, Will Be Graphed)</h5>
                     <div class="row center-block" style="padding-top:3px;">
                         <form method="post" role="form" action="url.php?makechart=y&seshid=<?php echo $session_id; ?>" id="formplotdata">
                             <select data-placeholder="Choose OBD2 data..." multiple class="chosen-select" size="<?php echo $numcols; ?>" style="width:100%;" id="plot_data" onsubmit="onSubmitIt" name="plotdata[]">
@@ -399,7 +411,7 @@ else {
                     <?php if ($setZoomManually === 0) { ?>
                         <!-- 2015.07.22 - edit by surfrock66 - Don't display anything if no 
 								variables are set (default) -->
-                        <?php if ( $var1 == "" and $var2 == "" ) { ?>
+                        <?php if ( $var1 == "" ) { ?>
                             <div align="center" style="padding-top:10px;">
                                 <h5><span class="label label-warning">No Variables Selected to Plot!</span></h5>
                             </div>
@@ -424,11 +436,7 @@ else {
                     <?php if ($setZoomManually === 0) { ?>
                         <!-- 2015.07.22 - edit by surfrock66 - Don't display anything if no 
 								variables are set (default) -->
-                        <?php if ( $var1 == "" and $var2 == "" ) { ?>
-                            <div align="center" style="padding-top:10px;">
-                                <h5><span class="label label-warning">No Variables Selected to Plot!</span></h5>
-                            </div>
-                        <?php } else { ?>
+                        <?php if ( $var1 <> "" || $var2 <> "" || $var3 <> "" || $var4 <> "" || $var5 <> "" ) { ?>
                             <div class="table-responsive">
                                 <table class="table">
                                     <thead>
@@ -441,7 +449,9 @@ else {
                                             <th>Sparkline</th>
                                         </tr>
                                     </thead>
+									<!-- 2015.08.05 - Edit by surfrock66 - Code to plot up to 5 variables -->
                                     <tbody>
+										<?php if ( $var1 <> "" ) { ?>
                                         <tr>
                                             <td><strong><?php echo substr($v1_label, 1, -1); ?></strong></td>
                                             <td><?php echo $min1.'/'.$max1; ?></td>
@@ -450,6 +460,8 @@ else {
                                             <td><?php echo $avg1; ?></td>
                                             <td><span class="line"><?php echo $sparkdata1; ?></span></td>
                                         </tr>
+										<?php } ?>
+										<?php if ( $var2 <> "" ) { ?>
                                         <tr>
                                             <td><strong><?php echo substr($v2_label, 1, -1); ?></strong></td>
                                             <td><?php echo $min2.'/'.$max2; ?></td>
@@ -458,8 +470,43 @@ else {
                                             <td><?php echo $avg2; ?></td>
                                             <td><span class="line"><?php echo $sparkdata2; ?></span></td>
                                         </tr>
+										<?php } ?>
+										<?php if ( $var3 <> "" ) { ?>
+                                        <tr>
+                                            <td><strong><?php echo substr($v3_label, 1, -1); ?></strong></td>
+                                            <td><?php echo $min3.'/'.$max3; ?></td>
+                                            <td><?php echo $pcnt25data3; ?></td>
+                                            <td><?php echo $pcnt75data3; ?></td>
+                                            <td><?php echo $avg3; ?></td>
+                                            <td><span class="line"><?php echo $sparkdata3; ?></span></td>
+                                        </tr>
+										<?php } ?>
+										<?php if ( $var4 <> "" ) { ?>
+                                        <tr>
+                                            <td><strong><?php echo substr($v4_label, 1, -1); ?></strong></td>
+                                            <td><?php echo $min4.'/'.$max4; ?></td>
+                                            <td><?php echo $pcnt25data4; ?></td>
+                                            <td><?php echo $pcnt75data4; ?></td>
+                                            <td><?php echo $avg4; ?></td>
+                                            <td><span class="line"><?php echo $sparkdata4; ?></span></td>
+                                        </tr>
+										<?php } ?>
+										<?php if ( $var5 <> "" ) { ?>
+                                        <tr>
+                                            <td><strong><?php echo substr($v5_label, 1, -1); ?></strong></td>
+                                            <td><?php echo $min5.'/'.$max5; ?></td>
+                                            <td><?php echo $pcnt25data5; ?></td>
+                                            <td><?php echo $pcnt75data5; ?></td>
+                                            <td><?php echo $avg5; ?></td>
+                                            <td><span class="line"><?php echo $sparkdata5; ?></span></td>
+                                        </tr>
+										<?php } ?>
                                     </tbody>
                                 </table>
+                            </div>
+                        <?php } else { ?>
+                            <div align="center" style="padding-top:10px;">
+                                <h5><span class="label label-warning">No Variables Selected to Plot!</span></h5>
                             </div>
                         <? } ?>
 
