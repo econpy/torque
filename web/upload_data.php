@@ -46,7 +46,11 @@ if (sizeof($_GET) > 0) {
         //}
         // If the field doesn't already exist, add it to the database
         if (!in_array($key, $dbfields) and $submitval == 1) {
-            $sqlalter = "ALTER TABLE $db_table ADD $key VARCHAR(255) NOT NULL default '0'";
+			if ( is_float($value) ) {
+				$sqlalter = "ALTER TABLE $db_table ADD $key float NOT NULL default '0'";
+			} else {
+				$sqlalter = "ALTER TABLE $db_table ADD $key VARCHAR(255) NOT NULL default '0'";
+			}
             mysql_query($sqlalter, $con) or die(mysql_error());
         }
     }
