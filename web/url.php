@@ -11,9 +11,14 @@ if (isset($_GET["makechart"])) {
         $seshid = strval(mysql_escape_string($_GET["seshid"]));
         if (isset($_POST["plotdata"])) {
             $plotdataarray = $_POST["plotdata"];
-            $s1data = $plotdataarray[0];
-            $s2data = $plotdataarray[1];
-            $outurl = $baselink."?id=".$seshid."&s1=".$s1data."&s2=".$s2data;
+			// 2015.08.05 - Edit by surfrock66 - code to allow plotting up to 5 variables
+            $outurl = $baselink."?id=".$seshid;
+			$i = 1;
+			while( isset($plotdataarray[$i-1]) && $plotdataarray[$i-1] <> "Plot!" ) {
+	            ${'s' . $i . 'data'} = $plotdataarray[$i-1];
+				$outurl = $outurl."&s$i=${'s' . $i . 'data'}";
+				$i = $i + 1;
+			}
         }
         else {
             $seshid = $_SESSION['recent_session_id'];

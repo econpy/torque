@@ -23,6 +23,20 @@ elseif (isset($_GET["id"])) {
     $session_id = preg_replace('/\D/', '', $_GET['id']);
 }
 
+// 2015.07.22 - edit by surfrock66 - Define some variables to be used in 
+//    variable management later, specifically when choosing default vars to plot
+$i=1;
+while ( isset($_POST["s$i"]) || isset($_GET["s$i"]) ) {
+	${'var' . $i} = "";
+	if (isset($_POST["s$i"])) {
+	    ${'var' . $i} = $_POST["s$i"];
+	}
+	elseif (isset($_GET["s$i"])) {
+	    ${'var' . $i} = $_GET["s$i"];
+	}
+	$i = $i + 1;
+}
+
 if (isset($session_id)) {
 
     //For the merge function, we need to find out, what would be the next session
@@ -65,6 +79,19 @@ else {
     $session_id = "";
     $imapdata = "new google.maps.LatLng(37.235, -115.8111)";
     $setZoomManually = 1;
+
+    # 2015.06.25 - edit by surfrock66 - Automatically load the most recent session when loading the page
+    $sessionqry = mysql_query("SELECT session
+        FROM $db_table
+        ORDER BY session
+        DESC LIMIT 0, 1", $con) or die(mysql_error());
+    while($sessid = mysql_fetch_array($sessionqry)) {
+        $session_id = $sessid["0"];
+    }
+    if ($session_id != "") {
+        $url = "session.php?id=" . $session_id;
+        header( "Location: $url" );
+    }
 
 }
 
@@ -210,16 +237,15 @@ else {
         <script language="javascript" type="text/javascript" src="static/js/jquery.flot.tooltip.min.js"></script>
         <script language="javascript" type="text/javascript" src="static/js/jquery.flot.updater.js"></script>
         <script language="javascript" type="text/javascript" src="static/js/jquery.flot.resize.min.js"></script>
-        
+
         <script language="javascript" type="text/javascript">
         $(document).ready(function(){
 
             var s1 = [<?php foreach($d1 as $b) {echo "[".$b[0].", ".$b[1]."],";} ?>];
-            var s2 = [<?php foreach($d2 as $d) {echo "[".$d[0].", ".$d[1]."],";} ?>];
-
+            var s2 = [<?php if ( $var2 == "" ) { foreach($d1 as $d) { echo "[".$d[0].", 0],";} } else { foreach($d2 as $d) {echo "[".$d[0].", ".$d[1]."],";} } ?>];
             var flotData = [
                             { data: s1, label: <?php echo $v1_label; ?> },
-                            { data: s2, label: <?php echo $v2_label; ?>, yaxis: 2 }
+                            { data: s2, label: <?php if ( $var2 == "" ) { echo "\"\""; } else { echo $v2_label; } ?>, yaxis: 2 }
                            ];
 
             function doPlot(position) {
@@ -234,7 +260,7 @@ else {
                     yaxes: [ { axisLabel: <?php echo $v1_label; ?> }, {
                         alignTicksWithAxis: position == "right" ? 1 : null,
                         position: position,
-                        axisLabel: <?php echo $v2_label; ?>
+                        axisLabel: <?php if ( $var2 == "" ) { echo "\"\""; } else { echo $v2_label; } ?>
                     } ],
                     legend: {
                         position: "nw",
@@ -242,19 +268,19 @@ else {
                         backgroundOpacity: 0.1,
                         margin: 0
                     },
-                    //selection: { mode: "xy" },
+                    selection: { mode: "x" },
                     grid: {
                         hoverable: false,
                         clickable: true
                     },
-                    //multihighlightdelta: { mode: 'x' },
+                    multihighlightdelta: { mode: 'x' },
                     tooltip: false,
                     tooltipOpts: {
                         content: "%s at %x: %y",
                         xDateFormat: "%I:%M:%S%p",
                         twelveHourClock: true,
                         onHover: function(flotItem, $tooltipEl) {
-                            // console.log(flotItem, $tooltipEl);
+                             console.log(flotItem, $tooltipEl);
                         }
                     }
                 }
@@ -272,9 +298,6 @@ else {
         <?php } else { ?>
         <script language="javascript" type="text/javascript" src="static/js/torquehelpers.js"></script>
         <?php } ?>
-
-        
-
     </head>
     <body>
         <div class="navbar navbar-default navbar-fixed-top navbar-inverse" role="navigation">
@@ -338,7 +361,7 @@ else {
                     <br>
 
                     <?php if ($setZoomManually === 0) { ?>
-                    <h4>Select 2 Variables to Plot</h4>
+				<h4>Select Variables to Compare</h4><h5>(Only The First 2, Alphabetically Sorted, Will Be Graphed)</h5>
                     <div class="row center-block" style="padding-top:3px;">
                         <form method="post" role="form" action="url.php?makechart=y&seshid=<?php echo $session_id; ?>" id="formplotdata">
                             <select data-placeholder="Choose OBD2 data..." multiple class="chosen-select" size="<?php echo $numcols; ?>" style="width:100%;" id="plot_data" onsubmit="onSubmitIt" name="plotdata[]">
@@ -362,11 +385,17 @@ else {
                     <div class="row center-block" style="padding-bottom:5px;">
 
                     <?php if ($setZoomManually === 0) { ?>
-
-                        <div class="demo-container">
-                            <div id="placeholder" class="demo-placeholder" style="height:300px;"></div>
-                        </div>
-
+                        <!-- 2015.07.22 - edit by surfrock66 - Don't display anything if no 
+								variables are set (default) -->
+                        <?php if ( $var1 == "" ) { ?>
+                            <div align="center" style="padding-top:10px;">
+                                <h5><span class="label label-warning">No Variables Selected to Plot!</span></h5>
+                            </div>
+                        <?php } else { ?>
+                            <div class="demo-container">
+                                <div id="placeholder" class="demo-placeholder" style="height:300px;"></div>
+                            </div>
+                        <?php } ?>
                     <?php } else { ?>
                         <div align="center" style="padding-top:10px;">
                             <h5><span class="label label-warning">Select a session first!</span></h5>
@@ -381,40 +410,43 @@ else {
                     <div class="row center-block">
 
                     <?php if ($setZoomManually === 0) { ?>
-
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Min/Max</th>
-                                        <th>25th Pcnt</th>
-                                        <th>75th Pcnt</th>
-                                        <th>Mean</th>
-                                        <th>Sparkline</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td><strong><?php echo substr($v1_label, 1, -1); ?></strong></td>
-                                        <td><?php echo $min1.'/'.$max1; ?></td>
-                                        <td><?php echo $pcnt25data1; ?></td>
-                                        <td><?php echo $pcnt75data1; ?></td>
-                                        <td><?php echo $avg1; ?></td>
-                                        <td><span class="line"><?php echo $sparkdata1; ?></span></td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong><?php echo substr($v2_label, 1, -1); ?></strong></td>
-                                        <td><?php echo $min2.'/'.$max2; ?></td>
-                                        <td><?php echo $pcnt25data2; ?></td>
-                                        <td><?php echo $pcnt75data2; ?></td>
-                                        <td><?php echo $avg2; ?></td>
-                                        <td><span class="line"><?php echo $sparkdata2; ?></span></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-
+                        <!-- 2015.07.22 - edit by surfrock66 - Don't display anything if no 
+								variables are set (default) -->
+                        <?php if ( $var1 <> "" ) { ?>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Min/Max</th>
+                                            <th>25th Pcnt</th>
+                                            <th>75th Pcnt</th>
+                                            <th>Mean</th>
+                                            <th>Sparkline</th>
+                                        </tr>
+                                    </thead>
+									<!-- 2015.08.05 - Edit by surfrock66 - Code to plot unlimited variables -->
+                                    <tbody>
+									<?php $i=1; ?>
+									<?php while ( ${'var' . $i } <> "" ) { ?>
+                                        <tr>
+                                            <td><strong><?php echo substr(${'v' . $i . '_label'}, 1, -1); ?></strong></td>
+                                            <td><?php echo ${'min' . $i}.'/'.${'max' . $i}; ?></td>
+                                            <td><?php echo ${'pcnt25data' . $i}; ?></td>
+                                            <td><?php echo ${'pcnt75data' . $i}; ?></td>
+                                            <td><?php echo ${'avg' . $i}; ?></td>
+                                            <td><span class="line"><?php echo ${'sparkdata' . $i}; ?></span></td>
+                                        </tr>
+										<?php $i = $i + 1; ?>
+									<?php } ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <?php } else { ?>
+                            <div align="center" style="padding-top:10px;">
+                                <h5><span class="label label-warning">No Variables Selected to Plot!</span></h5>
+                            </div>
+                        <? } ?>
 
                     <?php } else { ?>
 
@@ -451,3 +483,4 @@ else {
 
         </body>
     </html>
+
