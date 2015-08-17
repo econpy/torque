@@ -270,14 +270,15 @@ else {
                     },
                     selection: { mode: "x" },
                     grid: {
-                        hoverable: false,
-                        clickable: true
+                        hoverable: true,
+                        clickable: false
                     },
                     multihighlightdelta: { mode: 'x' },
                     tooltip: false,
                     tooltipOpts: {
-                        content: "%s at %x: %y",
-                        xDateFormat: "%I:%M:%S%p",
+                        //content: "%s at %x: %y",
+                        content: "%x",
+                        xDateFormat: "%m/%d/%Y %I:%M:%S%p",
                         twelveHourClock: true,
                         onHover: function(flotItem, $tooltipEl) {
                              console.log(flotItem, $tooltipEl);
@@ -381,31 +382,6 @@ else {
                     <?php } ?>
                     <br>
 
-                    <h4>Chart</h4>
-                    <div class="row center-block" style="padding-bottom:5px;">
-
-                    <?php if ($setZoomManually === 0) { ?>
-                        <!-- 2015.07.22 - edit by surfrock66 - Don't display anything if no 
-								variables are set (default) -->
-                        <?php if ( $var1 == "" ) { ?>
-                            <div align="center" style="padding-top:10px;">
-                                <h5><span class="label label-warning">No Variables Selected to Plot!</span></h5>
-                            </div>
-                        <?php } else { ?>
-                            <div class="demo-container">
-                                <div id="placeholder" class="demo-placeholder" style="height:300px;"></div>
-                            </div>
-                        <?php } ?>
-                    <?php } else { ?>
-                        <div align="center" style="padding-top:10px;">
-                            <h5><span class="label label-warning">Select a session first!</span></h5>
-                        </div>
-                    <?php } ?>
-
-                    </div>
-
-                    <br>
-
                     <h4>Data Summary</h4>
                     <div class="row center-block">
 
@@ -459,6 +435,32 @@ else {
                     </div>
 
                     <br>
+
+                    <h4>Chart</h4>
+                    <div class="row center-block" style="padding-bottom:5px;">
+
+                    <?php if ($setZoomManually === 0) { ?>
+                        <!-- 2015.07.22 - edit by surfrock66 - Don't display anything if no 
+								variables are set (default) -->
+                        <?php if ( $var1 == "" ) { ?>
+                            <div align="center" style="padding-top:10px;">
+                                <h5><span class="label label-warning">No Variables Selected to Plot!</span></h5>
+                            </div>
+                        <?php } else { ?>
+                            <div class="demo-container">
+                                <div id="placeholder" class="demo-placeholder" style="height:300px;"></div>
+                            </div>
+                        <?php } ?>
+                    <?php } else { ?>
+                        <div align="center" style="padding-top:10px;">
+                            <h5><span class="label label-warning">Select a session first!</span></h5>
+                        </div>
+                    <?php } ?>
+
+                    </div>
+
+                    <br>
+
 
                     <h4>Export Data</h4>
                     <div class="row center-block" style="padding-bottom:18px;">
