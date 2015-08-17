@@ -8,7 +8,7 @@ The interface allows the user to:
 
 # Demo #
 
-[Check out the demo!](https://data.mattnicklay.com/torque/session.php?id=1404557450999)
+[Check out the demo!](http://hda.surfrock66.com/torquetest/)
 
 # Requirements #
 
@@ -25,7 +25,7 @@ If in doubt, I'd recommend using Ubuntu 12.04 LTS.
 First clone the repo:
 
 ```bash
-git clone https://github.com/econpy/torque
+git clone https://github.com/surfrock66/torque
 cd torque
 ```
 
