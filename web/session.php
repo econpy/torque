@@ -241,12 +241,19 @@ else {
         <script language="javascript" type="text/javascript">
         $(document).ready(function(){
 
-            var s1 = [<?php foreach($d1 as $b) {echo "[".$b[0].", ".$b[1]."],";} ?>];
-            var s2 = [<?php if ( $var2 == "" ) { foreach($d1 as $d) { echo "[".$d[0].", 0],";} } else { foreach($d2 as $d) {echo "[".$d[0].", ".$d[1]."],";} } ?>];
+            <?php $i=1; ?>
+                <?php while ( ${'var' . $i } <> "" ) { ?>
+                    var <?php echo "s$i"; ?> = [<?php foreach(${"d".$i} as $b) {echo "[".$b[0].", ".$b[1]."],";} ?>];
+                <?php $i = $i + 1; ?>
+            <?php } ?>
+
             var flotData = [
-                            { data: s1, label: <?php echo $v1_label; ?> },
-                            { data: s2, label: <?php if ( $var2 == "" ) { echo "\"\""; } else { echo $v2_label; } ?>, yaxis: 2 }
-                           ];
+			    <?php $i=1; ?>
+                <?php while ( ${'var' . $i } <> "" ) { ?>
+                    { data: <?php echo "s$i"; ?>, label: <?php echo "${'v'.$i.'_label'}"; ?> }<?php if ( ${'var'.($i+1)} <> "" ) echo ","; ?>
+                    <?php $i = $i + 1; ?>
+                <?php } ?>
+            ];
 
             function doPlot(position) {
                 $.plot("#placeholder", flotData, {
@@ -257,10 +264,10 @@ else {
                         timeformat: "%I:%M%p",
                         twelveHourClock: true
                     } ],
-                    yaxes: [ { axisLabel: <?php echo $v1_label; ?> }, {
+                    yaxes: [ { axisLabel: "" }, {
                         alignTicksWithAxis: position == "right" ? 1 : null,
                         position: position,
-                        axisLabel: <?php if ( $var2 == "" ) { echo "\"\""; } else { echo $v2_label; } ?>
+                        axisLabel: ""
                     } ],
                     legend: {
                         position: "nw",
@@ -362,7 +369,7 @@ else {
                     <br>
 
                     <?php if ($setZoomManually === 0) { ?>
-				<h4>Select Variables to Compare</h4><h5>(Only The First 2, Alphabetically Sorted, Will Be Graphed)</h5>
+				<h4>Select Variables to Compare</h4>
                     <div class="row center-block" style="padding-top:3px;">
                         <form method="post" role="form" action="url.php?makechart=y&seshid=<?php echo $session_id; ?>" id="formplotdata">
                             <select data-placeholder="Choose OBD2 data..." multiple class="chosen-select" size="<?php echo $numcols; ?>" style="width:100%;" id="plot_data" onsubmit="onSubmitIt" name="plotdata[]">
@@ -382,6 +389,30 @@ else {
                     <?php } ?>
                     <br>
 
+                    <h4>Chart</h4>
+                    <div class="row center-block" style="padding-bottom:5px;">
+
+                    <?php if ($setZoomManually === 0) { ?>
+                        <!-- 2015.07.22 - edit by surfrock66 - Don't display anything if no 
+								variables are set (default) -->
+                        <?php if ( $var1 == "" ) { ?>
+                            <div align="center" style="padding-top:10px;">
+                                <h5><span class="label label-warning">No Variables Selected to Plot!</span></h5>
+                            </div>
+                        <?php } else { ?>
+                            <div class="demo-container">
+                                <div id="placeholder" class="demo-placeholder" style="height:300px;"></div>
+                            </div>
+                        <?php } ?>
+                    <?php } else { ?>
+                        <div align="center" style="padding-top:10px;">
+                            <h5><span class="label label-warning">Select a session first!</span></h5>
+                        </div>
+                    <?php } ?>
+
+                    </div>
+
+                    <br>
                     <h4>Data Summary</h4>
                     <div class="row center-block">
 
@@ -430,31 +461,6 @@ else {
                             <h5><span class="label label-warning">Select a session first!</span></h5>
                         </div>
 
-                    <?php } ?>
-
-                    </div>
-
-                    <br>
-
-                    <h4>Chart</h4>
-                    <div class="row center-block" style="padding-bottom:5px;">
-
-                    <?php if ($setZoomManually === 0) { ?>
-                        <!-- 2015.07.22 - edit by surfrock66 - Don't display anything if no 
-								variables are set (default) -->
-                        <?php if ( $var1 == "" ) { ?>
-                            <div align="center" style="padding-top:10px;">
-                                <h5><span class="label label-warning">No Variables Selected to Plot!</span></h5>
-                            </div>
-                        <?php } else { ?>
-                            <div class="demo-container">
-                                <div id="placeholder" class="demo-placeholder" style="height:300px;"></div>
-                            </div>
-                        <?php } ?>
-                    <?php } else { ?>
-                        <div align="center" style="padding-top:10px;">
-                            <h5><span class="label label-warning">Select a session first!</span></h5>
-                        </div>
                     <?php } ?>
 
                     </div>
