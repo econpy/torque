@@ -3,9 +3,9 @@ USE `torque`;
 DROP TABLE IF EXISTS `keys`;
 CREATE TABLE `keys` (
   `id` varchar(255) NOT NULL,
-  `description` varchar(255) DEFAULT '' COMMENT 'Description',
+  `description` varchar(255) COMMENT 'Description',
   `type` varchar(255) NOT NULL DEFAULT 'varchar(255)' COMMENT 'Variable Type',
-  `units` varchar(255) DEFAULT '' COMMENT 'Units',
+  `units` varchar(255) COMMENT 'Units',
   `populated` boolean NOT NULL DEFAULT '0' COMMENT 'Is This Variable Populated?',
   `min` float COMMENT 'Minimum Value',
   `max` float COMMENT 'Maximum Value',
@@ -37,15 +37,15 @@ INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VAL
 INSERT INTO torque.keys (id, description, type, populated, min, max) VALUES ('kff124d','Air Fuel Ratio (Commanded)','float',1,0,30);
 INSERT INTO torque.keys (id, description, type, populated) VALUES ('kff1249','Air Fuel Ratio (Measured)','float',1);
 INSERT INTO torque.keys (id, description, type, populated) VALUES ('k12','Air Status','float',1);
-INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('k46','Ambient Air Temp','float','°C',1,-40,50);
+INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('k46','Ambient Air Temp','float','&deg;C',1,-40,50);
 INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('kff1263','Average Trip Speed (Whilst Moving Only)','float','km/h',1,0,16);
 INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('kff1272','Average Trip Speed (Whilst Stopped or Moving)','float','km/h',1,0,16);
 INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('kff1270','Barometer (On Android device)','float','mb',1,800,1100);
 INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('k33','Barometric Pressure (From Vehicle)','float','kPa',1,0,255);
-INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('k3c','Catalyst Temperature (Bank 1 Sensor 1)','float','°C',1,0,60);
-INSERT INTO torque.keys (id, description, type,  units, populated) VALUES ('k3e','Catalyst Temperature (Bank 1 Sensor 2)','float','°C',1);
-INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('k3d','Catalyst Temperature (Bank 2 Sensor 1)','float','°C',1,0,60);
-INSERT INTO torque.keys (id, description, type,  units, populated) VALUES ('k3f','Catalyst Temperature (Bank 2 Sensor 2)','float','°C',1);
+INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('k3c','Catalyst Temperature (Bank 1 Sensor 1)','float','&deg;C',1,0,60);
+INSERT INTO torque.keys (id, description, type,  units, populated) VALUES ('k3e','Catalyst Temperature (Bank 1 Sensor 2)','float','&deg;C',1);
+INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('k3d','Catalyst Temperature (Bank 2 Sensor 1)','float','&deg;C',1,0,60);
+INSERT INTO torque.keys (id, description, type,  units, populated) VALUES ('k3f','Catalyst Temperature (Bank 2 Sensor 2)','float','&deg;C',1);
 INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('kff1258','CO2 (Average)','float','g/km',1,0,120);
 INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('kff1257','CO2 (Instantaneous)','float','g/km',1,0,120);
 INSERT INTO torque.keys (id, description, type, populated, min, max) VALUES ('k44','Commanded Equivalence Ratio (lambda)','float',1,0,2);
@@ -56,16 +56,16 @@ INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VAL
 INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('k21','Distance Travelled With MIL/CEL Lit','float','km',1,0,100);
 INSERT INTO torque.keys (id, description, type, populated) VALUES ('k2c','EGR Commanded','float',1);
 INSERT INTO torque.keys (id, description, type, populated) VALUES ('k2d','EGR Error','float',1);
-INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('k5','Engine Coolant Temperature','float','°C',1,-40,120);
+INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('k5','Engine Coolant Temperature','float','&deg;C',1,-40,120);
 INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('kff1273','Engine kW (At the Wheels)','float','kW',1,0,100);
 INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('k4','Engine Load','float','%',1,0,100);
 INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('k43','Engine Load (Absolute)','float','%',1,0,20000);
-INSERT INTO torque.keys (id, description, type,  units, populated) VALUES ('k5c','Engine Oil Temperature','float','°C',1);
+INSERT INTO torque.keys (id, description, type,  units, populated) VALUES ('k5c','Engine Oil Temperature','float','&deg;C',1);
 INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('kc','Engine RPM','float','rpm',1,0,10000);
 INSERT INTO torque.keys (id, description, type,  units, populated) VALUES ('k52','Ethanol Fuel %','float','%',1);
 INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('k32','Evap System Vapor Pressure','float','Pa',1,0,1000);
-INSERT INTO torque.keys (id, description, type,  units, populated) VALUES ('k78','Exhaust Gas Temperature 1','float','°C',1);
-INSERT INTO torque.keys (id, description, type,  units, populated) VALUES ('k79','Exhaust Gas Temperature 2','float','°C',1);
+INSERT INTO torque.keys (id, description, type,  units, populated) VALUES ('k78','Exhaust Gas Temperature 1','float','&deg;C',1);
+INSERT INTO torque.keys (id, description, type,  units, populated) VALUES ('k79','Exhaust Gas Temperature 2','float','&deg;C',1);
 INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('kff125c','Fuel Cost (Trip)','float','$',1,0,100);
 INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('kff125d','Fuel Flow Rate/Hour','float','l/hr',1,0,100);
 INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('kff125a','Fuel Flow Rate/Minute','float','cc/min',1,0,100);
@@ -90,13 +90,13 @@ INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VAL
 INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('kff1271','Fuel Used (Trip)','float','l',1,0,100);
 INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('kff1239','GPS Accuracy','float','m',1,0,100);
 INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('kff1010','GPS Altitude','float','m',1,0,100);
-INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('kff123b','GPS Bearing','float','°',1,0,360);
-INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('kff1006','GPS Latitude','float','°',1,0,100);
-INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('kff1005','GPS Longitude','float','°',1,0,100);
+INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('kff123b','GPS Bearing','float','&deg;',1,0,360);
+INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('kff1006','GPS Latitude','float','&deg;',1,0,100);
+INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('kff1005','GPS Longitude','float','&deg;',1,0,100);
 INSERT INTO torque.keys (id, description, type, populated, min, max) VALUES ('kff123a','GPS Satellites','float',1,0,10);
 INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('kff1237','GPS vs OBD Speed Difference','float','km/h',1,0,10);
 INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('kff1226','Horsepower (At the Wheels)','float','hp',1,0,100);
-INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('kf','Intake Air Temperature','float','°C',1,-40,60);
+INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('kf','Intake Air Temperature','float','&deg;C',1,-40,60);
 INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('kb','Intake Manifold Pressure','float','kPa',1,0,255);
 INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('kff1203','Kilometers Per Litre (Instant)','float','kpl',1,0,100);
 INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('kff5202','Kilometers Per Litre (Long Term Average)','float','kpl',1,0,100);
@@ -141,10 +141,10 @@ INSERT INTO torque.keys (id, description, type, populated) VALUES ('kff124a','Ti
 INSERT INTO torque.keys (id, description, type, populated) VALUES ('kff124b','Tilt (y)','float',1);
 INSERT INTO torque.keys (id, description, type, populated) VALUES ('kff124c','Tilt (z)','float',1);
 INSERT INTO torque.keys (id, description, type, populated) VALUES ('time','Timestamp','varchar(255)',1);
-INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('ke','Timing Advance','float','°',1,-64,63);
+INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('ke','Timing Advance','float','&deg;',1,-64,63);
 INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('kff1225','Torque','float','ft-lb',1,0,100);
-INSERT INTO torque.keys (id, description, type,  units, populated) VALUES ('kfe1805','Transmission Temperature (Method 1)','float','°C',1);
-INSERT INTO torque.keys (id, description, type,  units, populated) VALUES ('kb4','Transmission Temperature (Method 2)','float','°C',1);
+INSERT INTO torque.keys (id, description, type,  units, populated) VALUES ('kfe1805','Transmission Temperature (Method 1)','float','&deg;C',1);
+INSERT INTO torque.keys (id, description, type,  units, populated) VALUES ('kb4','Transmission Temperature (Method 2)','float','&deg;C',1);
 INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('kff1206','Trip Average KPL','float','kpl',1,0,100);
 INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('kff1208','Trip Average Litres/100 KM','float','l/100km',1,0,100);
 INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('kff1205','Trip Average MPG','float','mpg',1,0,100);
@@ -157,3 +157,4 @@ INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VAL
 INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('k42','Voltage (Control Module)','float','V',1,0,16);
 INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('kff1238','Voltage (OBD Adapter)','float','V',1,0,16);
 INSERT INTO torque.keys (id, description, type,  units, populated) VALUES ('kff1269','Volumetric Efficiency (Calculated)','float','%',1);
+
