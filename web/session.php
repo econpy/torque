@@ -22,7 +22,18 @@ if (isset($_POST["id"])) {
 elseif (isset($_GET["id"])) {
   $session_id = preg_replace('/\D/', '', $_GET['id']);
 }
-
+if (isset($_POST["selyear"])) {
+  $filteryear = $_POST['selyear'];
+}
+elseif (isset($_GET["year"])) {
+  $filteryear = $_GET['year'];
+}
+if (isset($_POST["selmonth"])) {
+  $filtermonth = $_POST['selmonth'];
+}
+elseif (isset($_GET["month"])) {
+  $filtermonth = $_GET['month'];
+}
 // 2015.07.22 - edit by surfrock66 - Define some variables to be used in 
 //  variable management later, specifically when choosing default vars to plot
 $i=1;
@@ -309,6 +320,41 @@ else {
       <div id="right-cell">
         <h4>Select Session</h4>
         <div class="row center-block" style="padding-bottom:4px;">
+          <h5>Filter Sessions By Date</h5>
+          <form method="post" class="form-horizontal" role="form" action="url.php">
+            <table width="100%">
+              <tr>
+                <td width="32%">
+                  <select id="selyear" name="selyear" class="form-control chosen-select" data-placeholder="Select Year">
+                    <option value=""></option>
+                    <option value="2015"<?php if ($filteryear == "2015") echo ' selected'; ?>>2015</option>
+                    <option value="2014"<?php if ($filteryear == "2014") echo ' selected'; ?>>2014</option>
+                  </select>
+                </td>
+                <td width="32%">
+                  <select id="selmonth" name="selmonth" class="form-control chosen-select" data-placeholder="Select Month">
+                    <option value=""></option>
+                    <option value="January"<?php if ($filtermonth == "January") echo ' selected'; ?>>January</option>
+                    <option value="February"<?php if ($filtermonth == "February") echo ' selected'; ?>>February</option>
+                    <option value="March"<?php if ($filtermonth == "March") echo ' selected'; ?>>March</option>
+                    <option value="April"<?php if ($filtermonth == "April") echo ' selected'; ?>>April</option>
+                    <option value="May"<?php if ($filtermonth == "May") echo ' selected'; ?>>May</option>
+                    <option value="June"<?php if ($filtermonth == "June") echo ' selected'; ?>>June</option>
+                    <option value="July"<?php if ($filtermonth == "July") echo ' selected'; ?>>July</option>
+                    <option value="August"<?php if ($filtermonth == "August") echo ' selected'; ?>>August</option>
+                    <option value="September"<?php if ($filtermonth == "September") echo ' selected'; ?>>September</option>
+                    <option value="October"<?php if ($filtermonth == "October") echo ' selected'; ?>>October</option>
+                    <option value="November"<?php if ($filtermonth == "November") echo ' selected'; ?>>November</option>
+                    <option value="December"<?php if ($filtermonth == "December") echo ' selected'; ?>>December</option>
+                  </select>
+                </td>
+                <td width="36%">
+                  <div align="center" style="padding-top:6px;"><input class="btn btn-info btn-sm" type="submit" id="formfilterdates" name="filterdates" value="Filter Dates"></div>
+                </td>
+              </tr>
+            </table>
+            <noscript><input type="submit" id="datefilter" name="datefilter" class="input-sm"></noscript>
+          </form><br />
           <form method="post" class="form-horizontal" role="form" action="url.php">
             <select id="seshidtag" name="seshidtag" class="form-control chosen-select" onchange="this.form.submit()" data-placeholder="Select Session..." style="width:100%;">
               <option value=""></option>
@@ -358,10 +404,16 @@ else {
               <select data-placeholder="Choose OBD2 data..." multiple class="chosen-select" size="<?php echo $numcols; ?>" style="width:100%;" id="plot_data" onsubmit="onSubmitIt" name="plotdata[]">
                 <option value=""></option>
 <?php   foreach ($coldata as $xcol) { if ( !(($coldataempty[$xcol['colname']]==1) && ($hide_empty_variables))) {?>
-                <option value="<?php echo $xcol['colname']; ?>" <?php echo ($coldataempty[$xcol['colname']]?"class='dataempty'":"") ?>><?php echo $xcol['colcomment'].($coldataempty[$xcol['colname']]?" &nbsp; [empty]":""); ?></option>
+                <option value="<?php echo $xcol['colname']; ?>" <?php echo ($coldataempty[$xcol['colname']]?"class='dataempty'":"") ?><?php $i = 1; while ( ${'var' . $i} <> "" ) { if ( ${'var' . $i} == $xcol['colname'] ) { echo " selected"; } $i = $i + 1; } ?>><?php echo $xcol['colcomment'].($coldataempty[$xcol['colname']]?" &nbsp; [empty]":""); ?></option>
 <?php   } ?>
 <?php } ?>
             </select>
+<?php if ( $filteryear <> "" ) { ?>
+            <input type="hidden" name="selyear" id="selyear" value="<?php echo $filteryear; ?>" />
+<?php } ?>
+<?php if ( $filtermonth <> "" ) { ?>
+            <input type="hidden" name="selmonth" id="selmonth" value="<?php echo $filtermonth; ?>" />
+<?php } ?>
             <div align="center" style="padding-top:6px;"><input class="btn btn-info btn-sm" type="submit" id="formplotdata" name="plotdata[]" value="Plot!"></div>
           </form>
         </div>
