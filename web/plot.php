@@ -78,13 +78,11 @@ if (isset($_GET["id"]) and in_array($_GET["id"], $sids)) {
 	$sessionqry = mysql_query("SELECT $selectstring FROM $db_table WHERE session=$session_id ORDER BY time DESC;") or die(mysql_error());
 	while($row = mysql_fetch_assoc($sessionqry)) {
 	    $i = 1;
-		while ( ${'v' . $i} <> "" ) {
-//	        if (substri_count($jsarr[${'v' . $i}], "Speed") > 0) {
+		while (isset(${'v' . $i})) {
 	        if (substri_count($keyarr[${'v' . $i}][0], "Speed") > 0) {
 	            $x = intval($row[${'v' . $i}]) * $speed_factor;
 	            ${'v' . $i . '_measurand'} = $speed_measurand;
 	        }
-//	        elseif (substri_count($jsarr[${'v' . $i}], "Temp") > 0) {
 	        elseif (substri_count($keyarr[${'v' . $i}][0], "Temp") > 0) {
 	            $x = $temp_func ( floatval($row[${'v' . $i}]) );
 	            ${'v' . $i . '_measurand'} = $temp_measurand;
@@ -99,10 +97,8 @@ if (isset($_GET["id"]) and in_array($_GET["id"], $sids)) {
 		}
 	}
 	$i = 1;	
-	while ( ${'v' . $i} <> "" ) {
-//	    ${'v' . $i . '_label'} = '"'.$jsarr[${'v' . $i}].${'v' . $i . '_measurand'}.'"';
+	while (isset(${'v' . $i})) {
 	    ${'v' . $i . '_label'} = '"'.$keyarr[${'v' . $i}][0].${'v' . $i . '_measurand'}.'"';
-//		${'v' . $i . '_label'} = '"'.$keyarr[${'v' . $i}][0]." (".$keyarr[${'v' . $i}][1].")".'"';
 	    ${'sparkdata' . $i} = implode(",", array_reverse(${'spark' . $i}));
 	    ${'max' . $i} = round(max(${'spark' . $i}), 1);
 	    ${'min' . $i} = round(min(${'spark' . $i}), 1);

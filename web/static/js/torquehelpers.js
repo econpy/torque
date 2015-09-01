@@ -72,7 +72,6 @@ $(document).ready(function(){
   $("div#seshidtag_chosen a.chosen-single span").attr('align', 'center');
   $("div#selyear_chosen a.chosen-single span").attr('align', 'center');
   $("div#selmonth_chosen a.chosen-single span").attr('align', 'center');
-  // Limit number of multi selects to 2
   $("select#plot_data").chosen({no_results_text: "Oops, nothing found!"});
   $("select#plot_data").chosen({placeholder_text_multiple: "Choose OBD2 data.."});
   // When the selection drop down is open, force all elements to align left with padding

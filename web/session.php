@@ -16,27 +16,23 @@ $_SESSION['recent_session_id'] = strval(max($sids));
 $con = mysql_connect($db_host, $db_user, $db_pass) or die(mysql_error());
 mysql_select_db($db_name, $con) or die(mysql_error());
 
-if (isset($_POST["id"])) {
-  $session_id = preg_replace('/\D/', '', $_POST['id']);
-}
-elseif (isset($_GET["id"])) {
+$filteryear = "";
+$filtermonth = "";
+//$filteryear = date('Y');
+//$filtermonth = date('F');
+if (isset($_GET["id"])) {
   $session_id = preg_replace('/\D/', '', $_GET['id']);
 }
-if (isset($_POST["selyear"])) {
-  $filteryear = $_POST['selyear'];
-}
-elseif (isset($_GET["year"])) {
+if (isset($_GET["year"])) {
   $filteryear = $_GET['year'];
 }
-if (isset($_POST["selmonth"])) {
-  $filtermonth = $_POST['selmonth'];
-}
-elseif (isset($_GET["month"])) {
+if (isset($_GET["month"])) {
   $filtermonth = $_GET['month'];
 }
 // 2015.07.22 - edit by surfrock66 - Define some variables to be used in 
 //  variable management later, specifically when choosing default vars to plot
 $i=1;
+$var1 = "";
 while ( isset($_POST["s$i"]) || isset($_GET["s$i"]) ) {
   ${'var' . $i} = "";
   if (isset($_POST["s$i"])) {
@@ -48,14 +44,15 @@ while ( isset($_POST["s$i"]) || isset($_GET["s$i"]) ) {
   $i = $i + 1;
 }
 
-if (isset($session_id)) {
-
+if (isset($sids[0])) {
+  if (!isset($session_id)) {
+    $session_id = $sids[0];
+  }
   //For the merge function, we need to find out, what would be the next session
   $idx = array_search( $session_id, $sids);
+  $session_id_next = "";
   if($idx>0) {
     $session_id_next = $sids[$idx-1];
-  } else {
-    $session_id_next = false;
   }
 
   // Get GPS data for session
@@ -81,29 +78,21 @@ if (isset($session_id)) {
   // Don't need to set zoom manually
   $setZoomManually = 0;
 
+  $yearquery = mysql_query("SELECT YEAR(FROM_UNIXTIME(session/1000)) as 'year'
+              FROM $db_table WHERE session <> ''
+              GROUP BY YEAR(FROM_UNIXTIME(session/1000)) 
+              ORDER BY YEAR(FROM_UNIXTIME(session/1000))", $con) or die(mysql_error());
+  $yeararray = array();
+  $i = 0;
+  while($row = mysql_fetch_assoc($yearquery)) {
+    $yeararray[$i] = $row['year'];
+    $i = $i + 1;
+  }
   mysql_free_result($sessionqry);
   mysql_close($con);
-}
-else {
-  // Define these so we don't get an error on empty page loads. Instead it
-  // will load a map of Area 51.
-  $session_id = "";
+} else {
   $imapdata = "new google.maps.LatLng(37.235, -115.8111)";
   $setZoomManually = 1;
-
-  # 2015.06.25 - edit by surfrock66 - Automatically load the most recent session when loading the page
-  $sessionqry = mysql_query("SELECT session
-    FROM $db_table
-    ORDER BY session
-    DESC LIMIT 0, 1", $con) or die(mysql_error());
-  while($sessid = mysql_fetch_array($sessionqry)) {
-    $session_id = $sessid["0"];
-  }
-  if ($session_id != "") {
-    $url = "session.php?id=" . $session_id;
-    header( "Location: $url" );
-  }
-
 }
 
 ?>
@@ -321,19 +310,22 @@ else {
         <h4>Select Session</h4>
         <div class="row center-block" style="padding-bottom:4px;">
           <h5>Filter Sessions By Date</h5>
-          <form method="post" class="form-horizontal" role="form" action="url.php">
+          <form method="post" class="form-horizontal" role="form" action="url.php?id=<?php echo $session_id; ?>">
             <table width="100%">
               <tr>
                 <td width="32%">
                   <select id="selyear" name="selyear" class="form-control chosen-select" data-placeholder="Select Year">
-                    <option value=""></option>
-                    <option value="2015"<?php if ($filteryear == "2015") echo ' selected'; ?>>2015</option>
-                    <option value="2014"<?php if ($filteryear == "2014") echo ' selected'; ?>>2014</option>
+                    <option value="%">All</option>
+<?php $i = 0; ?>
+<?php while(isset($yeararray[$i])) { ?>
+                    <option value="<?php echo $yeararray[$i]; ?>"<?php if ($filteryear == $yeararray[$i]) echo ' selected'; ?>><?php echo $yeararray[$i]; ?></option>
+<?php   $i = $i + 1; ?>
+<?php } ?>
                   </select>
                 </td>
                 <td width="32%">
                   <select id="selmonth" name="selmonth" class="form-control chosen-select" data-placeholder="Select Month">
-                    <option value=""></option>
+                    <option value="%">All</option>
                     <option value="January"<?php if ($filtermonth == "January") echo ' selected'; ?>>January</option>
                     <option value="February"<?php if ($filtermonth == "February") echo ' selected'; ?>>February</option>
                     <option value="March"<?php if ($filtermonth == "March") echo ' selected'; ?>>March</option>
@@ -359,9 +351,15 @@ else {
             <select id="seshidtag" name="seshidtag" class="form-control chosen-select" onchange="this.form.submit()" data-placeholder="Select Session..." style="width:100%;">
               <option value=""></option>
 <?php foreach ($seshdates as $dateid => $datestr) { ?>
-              <option value="<?php echo $dateid; ?>"<?php if ($dateid == $session_id) echo ' selected'; ?>><?php echo $datestr; if ($show_session_length) {echo $seshsizes[$dateid];} ?></option>
+              <option value="<?php echo $dateid; ?>"<?php if ($dateid == $session_id) echo ' selected'; ?>><?php echo $datestr; if ($show_session_length) {echo $seshsizes[$dateid];} ?><?php if ($dateid == $session_id) echo ' (Current Session)'; ?></option>
 <?php } ?>
             </select>
+<?php   if ( $filteryear <> "" ) { ?>
+            <input type="hidden" name="selyear" id="selyear" value="<?php echo $filteryear; ?>" />
+<?php   } ?>
+<?php   if ( $filtermonth <> "" ) { ?>
+            <input type="hidden" name="selmonth" id="selmonth" value="<?php echo $filtermonth; ?>" />
+<?php   } ?>
             <noscript><input type="submit" id="seshidtag" name="seshidtag" class="input-sm"></noscript>
           </form>
 <?php if(isset($session_id) && !empty($session_id)){ ?>
@@ -370,13 +368,13 @@ else {
               <tr>
                 <td>
                   <form method="post" class="form-horizontal" role="form" action="session.php?mergesession=<?php echo $session_id; ?>&mergesessionwith=<?php echo $session_id_next; ?>" id="formmerge">
-                    <div align="center" style="padding-top:6px;"><input class="btn btn-info btn-sm" type="submit" id="formmerge" name="merge" value="Merge" title="Merge this session (<?php echo $seshdates[$session_id]; ?>) with the next session (<?php echo $seshdates[$session_id_next]; ?>)." <?php if(!$session_id_next){ echo 'disabled="disabled"';} ?> /></div>
+                    <div align="center" style="padding-top:6px;"><input class="btn btn-info btn-sm" type="submit" id="formmerge" name="merge" value="Merge" title="Merge this session (<?php echo $seshdates[$session_id]; ?>) with the next session (<?php if ($session_id_next <> "") { echo $seshdates[$session_id_next]; } ?>)." <?php if($session_id_next == ""){  echo 'disabled="disabled"'; } ?> /></div>
                   </form>
                 </td>
                 <script type="text/javascript">
                   //Adding a confirmation dialog to above forms
                   $('#formmerge').submit(function() {
-                  var c = confirm("Click OK to merge sessions (<?php echo $seshdates[$session_id]; ?>) and (<?php echo $seshdates[$session_id_next]; ?>).");
+                  var c = confirm("Click OK to merge sessions (<?php echo $seshdates[$session_id]; ?>) and (<?php if ( $session_id_next <> "") { echo $seshdates[$session_id_next]; } ?>).");
                   return c; //you can just return c because it will be true or false
                   });
                 </script>
@@ -403,17 +401,18 @@ else {
             <form method="post" role="form" action="url.php?makechart=y&seshid=<?php echo $session_id; ?>" id="formplotdata">
               <select data-placeholder="Choose OBD2 data..." multiple class="chosen-select" size="<?php echo $numcols; ?>" style="width:100%;" id="plot_data" onsubmit="onSubmitIt" name="plotdata[]">
                 <option value=""></option>
-<?php   foreach ($coldata as $xcol) { if ( !(($coldataempty[$xcol['colname']]==1) && ($hide_empty_variables))) {?>
-                <option value="<?php echo $xcol['colname']; ?>" <?php echo ($coldataempty[$xcol['colname']]?"class='dataempty'":"") ?><?php $i = 1; while ( ${'var' . $i} <> "" ) { if ( ${'var' . $i} == $xcol['colname'] ) { echo " selected"; } $i = $i + 1; } ?>><?php echo $xcol['colcomment'].($coldataempty[$xcol['colname']]?" &nbsp; [empty]":""); ?></option>
-<?php   } ?>
-<?php } ?>
+<?php   //foreach ($coldata as $xcol) { if ( !(($coldataempty[$xcol['colname']]==1) && ($hide_empty_variables))) {?>
+<?php   foreach ($coldata as $xcol) { ?>
+                <option value="<?php echo $xcol['colname']; ?>" <?php $i = 1; while ( ${'var' . $i} <> "" ) { if ( ${'var' . $i} == $xcol['colname'] ) { echo " selected"; } $i = $i + 1; } ?>><?php echo $xcol['colcomment']; ?></option>
+                <!--<option value="<?php //echo $xcol['colname']; ?>" <?php //echo ($coldataempty[$xcol['colname']]?"class='dataempty'":"") ?><?php //$i = 1; while ( ${'var' . $i} <> "" ) { if ( ${'var' . $i} == $xcol['colname'] ) { echo " selected"; } $i = $i + 1; } ?>><?php //echo $xcol['colcomment'].($coldataempty[$xcol['colname']]?" &nbsp; [empty]":""); ?></option>-->
+<?php   } //} ?>
             </select>
-<?php if ( $filteryear <> "" ) { ?>
+<?php   if ( $filteryear <> "" ) { ?>
             <input type="hidden" name="selyear" id="selyear" value="<?php echo $filteryear; ?>" />
-<?php } ?>
-<?php if ( $filtermonth <> "" ) { ?>
+<?php   } ?>
+<?php   if ( $filtermonth <> "" ) { ?>
             <input type="hidden" name="selmonth" id="selmonth" value="<?php echo $filtermonth; ?>" />
-<?php } ?>
+<?php   } ?>
             <div align="center" style="padding-top:6px;"><input class="btn btn-info btn-sm" type="submit" id="formplotdata" name="plotdata[]" value="Plot!"></div>
           </form>
         </div>

@@ -2,9 +2,28 @@
 require_once("./creds.php");
 
 session_set_cookie_params(0,dirname($_SERVER['SCRIPT_NAME']));
-session_start();
+if (session_status() == PHP_SESSION_NONE) {
+  session_start();
+}
 $timezone = $_SESSION['time'];
-
+$sqlid = "%";
+$sqlyearfilter = date('Y');
+$sqlmonthfilter = date('F');
+if (isset($_GET['id'])) {
+	$sqlid = $_GET['id'];
+}
+if (isset($_POST['selyear'])) {
+	$sqlyearfilter = $_POST['selyear'];
+}
+if (isset($_GET['year'])) {
+	$sqlyearfilter = $_GET['year'];
+}
+if (isset($_POST['selmonth'])) {
+	$sqlmonthfilter = $_POST['selmonth'];
+}
+if (isset($_GET['month'])) {
+	$sqlmonthfilter = $_GET['month'];
+}
 // Connect to Database
 $con = mysql_connect($db_host, $db_user, $db_pass) or die(mysql_error());
 mysql_select_db($db_name, $con) or die(mysql_error());
@@ -12,6 +31,7 @@ mysql_select_db($db_name, $con) or die(mysql_error());
 // Get list of unique session IDs
 $sessionqry = mysql_query("SELECT COUNT(*) as `Session Size`, MIN(time) as `MinTime`, MAX(time) as `MaxTime`, session
                       FROM $db_table
+                      WHERE ( MONTHNAME(FROM_UNIXTIME(session/1000)) LIKE '$sqlmonthfilter' AND YEAR(FROM_UNIXTIME(session/1000)) LIKE '$sqlyearfilter' ) OR ( session LIKE '$sqlid' )
                       GROUP BY session
                       ORDER BY time DESC", $con) or die(mysql_error());
 

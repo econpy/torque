@@ -2,7 +2,9 @@
 require_once("./creds.php");
 require_once("./get_sessions.php");
 
-session_start();
+if (session_status() == PHP_SESSION_NONE) {
+  session_start();
+}
 
 if (isset($_POST["mergesession"])) {
     $mergesession = preg_replace('/\D/', '', $_POST['mergesession']);
