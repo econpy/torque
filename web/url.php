@@ -17,14 +17,22 @@ if (isset($_GET["seshid"])) {
 $baselink = $parts["0"]."session.php";
 $outurl = $baselink."?id=".$seshid;
 if (isset($_POST["selyear"])) {
-	$outurl = $outurl."&year=".$_POST["selyear"];
+	if ($_POST["selyear"]) {
+		$outurl = $outurl."&year=".$_POST["selyear"];
+	}
 } elseif (isset($_GET["year"])) {
-	$outurl = $outurl."&year=".$_GET["year"];
+	if ($_GET["year"]) {
+		$outurl = $outurl."&year=".$_GET["year"];
+	}
 }
 if (isset($_POST["selmonth"])) {
-	$outurl = $outurl."&month=".$_POST["selmonth"];
+	if ($_POST["selmonth"] <> "") {
+		$outurl = $outurl."&month=".$_POST["selmonth"];
+	}
 } elseif (isset($_GET["month"])) {
-	$outurl = $outurl."&month=".$_GET["month"]; 
+	if ($_GET["month"]) {
+		$outurl = $outurl."&month=".$_GET["month"]; 
+	}
 }
 if (isset($_GET["makechart"])) {
     if (isset($_POST["plotdata"])) {

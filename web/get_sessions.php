@@ -5,35 +5,55 @@ session_set_cookie_params(0,dirname($_SERVER['SCRIPT_NAME']));
 if (session_status() == PHP_SESSION_NONE) {
   session_start();
 }
-$timezone = $_SESSION['time'];
-$sqlid = "%";
-$sqlyearfilter = date('Y');
-$sqlmonthfilter = date('F');
-if (isset($_GET['id'])) {
-	$sqlid = $_GET['id'];
-}
-if (isset($_POST['selyear'])) {
-	$sqlyearfilter = $_POST['selyear'];
-}
-if (isset($_GET['year'])) {
-	$sqlyearfilter = $_GET['year'];
-}
-if (isset($_POST['selmonth'])) {
-	$sqlmonthfilter = $_POST['selmonth'];
-}
-if (isset($_GET['month'])) {
-	$sqlmonthfilter = $_GET['month'];
+if ( isset($_SESSION['time'] ) ) {
+	$timezone = $_SESSION['time'];
 }
 // Connect to Database
 $con = mysql_connect($db_host, $db_user, $db_pass) or die(mysql_error());
 mysql_select_db($db_name, $con) or die(mysql_error());
 
+if ( isset($_POST["selyear"]) ) {
+	$filteryear = $_POST["selyear"];
+} elseif ( isset($_GET["year"])) {
+	$filteryear = $_GET["year"];
+} else {
+	$filteryear = date('Y');
+}
+if ( $filteryear == "ALL" ) {
+	$filteryear = "%";
+}
+
+if ( isset($_POST["selmonth"]) ) {
+	$filtermonth = $_POST["selmonth"];
+} elseif ( isset($_GET["month"])) {
+	$filtermonth = $_GET["month"];
+} else {
+	$filtermonth = date('F');
+}
+if ( $filtermonth == "ALL" ) {
+	$filtermonth = "%";
+}
+
+$orselector = "";
+$sessionqrystring = "SELECT COUNT(*) as `Session Size`, MIN(time) as `MinTime`, MAX(time) as `MaxTime`, session FROM $db_table WHERE";
+if ( $filteryear <> "ALL" ) {
+	$sessionqrystring = $sessionqrystring . "( ";
+	$orselector = " OR ";
+	$sessionqrystring = $sessionqrystring . "YEAR(FROM_UNIXTIME(session/1000)) LIKE '" . $filteryear . "' ";
+	if ( $filtermonth <> "ALL" ) {
+		$sessionqrystring = $sessionqrystring . "AND MONTHNAME(FROM_UNIXTIME(session/1000)) LIKE '" . $filtermonth . "' ";
+	}
+	$sessionqrystring = $sessionqrystring . " )";
+} elseif ( $filtermonth <> "ALL" ) {
+	$sessionqrystring = $sessionqrystring . "( MONTHNAME(FROM_UNIXTIME(session/1000)) LIKE '" . $filtermonth . "' )";
+	$orselector = " OR ";
+}
+if ( isset($_GET['id'])) {
+	$sessionqrystring = $sessionqrystring . $orselector . "( session LIKE '" . $_GET['id'] . "' )";
+}
+$sessionqrystring = $sessionqrystring . " GROUP BY session ORDER BY time DESC";
 // Get list of unique session IDs
-$sessionqry = mysql_query("SELECT COUNT(*) as `Session Size`, MIN(time) as `MinTime`, MAX(time) as `MaxTime`, session
-                      FROM $db_table
-                      WHERE ( MONTHNAME(FROM_UNIXTIME(session/1000)) LIKE '$sqlmonthfilter' AND YEAR(FROM_UNIXTIME(session/1000)) LIKE '$sqlyearfilter' ) OR ( session LIKE '$sqlid' )
-                      GROUP BY session
-                      ORDER BY time DESC", $con) or die(mysql_error());
+$sessionqry = mysql_query($sessionqrystring, $con) or die(mysql_error());
 
 // Create an array mapping session IDs to date strings
 $seshdates = array();

@@ -65,8 +65,8 @@ $(document).ready(function(){
 $(document).ready(function(){
   // Activate Chosen on the selection drop down
   $("select#seshidtag").chosen({width: "100%"});
-  $("select#selyear").chosen({width: "100%"});
-  $("select#selmonth").chosen({width: "100%"});
+  $("select#selyear").chosen({width: "100%", disable_search: true, allow_single_deselect: true});
+  $("select#selmonth").chosen({width: "100%", disable_search: true, allow_single_deselect: true});
   $("select#plot_data").chosen({width: "100%"});
   // Center the selected element
   $("div#seshidtag_chosen a.chosen-single span").attr('align', 'center');

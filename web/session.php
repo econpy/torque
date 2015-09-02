@@ -3,7 +3,6 @@
 ini_set('memory_limit', '-1');
 require_once ("./creds.php");
 require_once ("./auth_user.php");
-
 require_once ("./del_session.php");
 require_once ("./merge_sessions.php");
 require_once ("./get_sessions.php");
@@ -12,23 +11,26 @@ require_once ("./plot.php");
 
 $_SESSION['recent_session_id'] = strval(max($sids));
 
-// Connect to Database
+// Define the database connections
 $con = mysql_connect($db_host, $db_user, $db_pass) or die(mysql_error());
 mysql_select_db($db_name, $con) or die(mysql_error());
 
-$filteryear = "";
-$filtermonth = "";
-//$filteryear = date('Y');
-//$filtermonth = date('F');
+// Capture the session ID if one has been chosen already
 if (isset($_GET["id"])) {
   $session_id = preg_replace('/\D/', '', $_GET['id']);
 }
+
+// 2015.08.31 - edit by surfrock66 - Define and capture variables for maintaining
+//  the year and month filters between sessions.
+$filteryear = "";
+$filtermonth = "";
 if (isset($_GET["year"])) {
   $filteryear = $_GET['year'];
 }
 if (isset($_GET["month"])) {
   $filtermonth = $_GET['month'];
 }
+
 // 2015.07.22 - edit by surfrock66 - Define some variables to be used in 
 //  variable management later, specifically when choosing default vars to plot
 $i=1;
@@ -44,6 +46,9 @@ while ( isset($_POST["s$i"]) || isset($_GET["s$i"]) ) {
   $i = $i + 1;
 }
 
+// From the output of the get_sessions.php file, populate the page with info from
+//  the current session. Using successful existense of a session as a trigger, 
+//  populate some other variables as well.
 if (isset($sids[0])) {
   if (!isset($session_id)) {
     $session_id = $sids[0];
@@ -54,13 +59,10 @@ if (isset($sids[0])) {
   if($idx>0) {
     $session_id_next = $sids[$idx-1];
   }
-
-  // Get GPS data for session
-  $sessionqry = mysql_query("SELECT kff1006, kff1005
-              FROM $db_table
+  // Get GPS data for the currently selectedsession
+  $sessionqry = mysql_query("SELECT kff1006, kff1005 FROM $db_table
               WHERE session=$session_id
               ORDER BY time DESC", $con) or die(mysql_error());
-
   $geolocs = array();
   while($geo = mysql_fetch_array($sessionqry)) {
     if (($geo["0"] != 0) && ($geo["1"] != 0)) {
@@ -78,6 +80,7 @@ if (isset($sids[0])) {
   // Don't need to set zoom manually
   $setZoomManually = 0;
 
+  // Query the list of years where sessions have been logged, to be used later
   $yearquery = mysql_query("SELECT YEAR(FROM_UNIXTIME(session/1000)) as 'year'
               FROM $db_table WHERE session <> ''
               GROUP BY YEAR(FROM_UNIXTIME(session/1000)) 
@@ -88,16 +91,19 @@ if (isset($sids[0])) {
     $yeararray[$i] = $row['year'];
     $i = $i + 1;
   }
+
+  //Close the MySQL connection, which is why we can't query years later
   mysql_free_result($sessionqry);
   mysql_close($con);
 } else {
+  //Default map in case there's no sessions to query.  Very unlikely this will get used.
   $imapdata = "new google.maps.LatLng(37.235, -115.8111)";
   $setZoomManually = 1;
 }
 
 ?>
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -105,12 +111,13 @@ if (isset($sids[0])) {
     <title>Open Torque Viewer</title>
     <meta name="description" content="Open Torque Viewer">
     <meta name="author" content="Matt Nicklay">
-    <!--<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">-->
+    <meta name="author" content="Joe Gullo (surfrock66)">
     <link rel="stylesheet" href="static/css/bootstrap.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.0/chosen.min.css">
     <link rel="stylesheet" href="static/css/torque.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
     <script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <!-- Pull the current timezone -->
     <script language="javascript" type="text/javascript">
       $(document).ready(function() {
         if("<?php echo $timezone; ?>".length==0){
@@ -132,6 +139,7 @@ if (isset($sids[0])) {
     <script language="javascript" type="text/javascript" src="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
     <script language="javascript" type="text/javascript" src="static/js/jquery.peity.min.js"></script>
     <script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.1.0/chosen.jquery.min.js"></script>
+    <!-- Initialize the google maps javascript code -->
     <script language="javascript" type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
     <script language="javascript" type="text/javascript">
       function initialize() {
@@ -218,7 +226,7 @@ if (isset($sids[0])) {
       google.maps.event.addDomListener(window, 'load', initialize);
     </script>
 <?php if ($setZoomManually === 0) { ?>
-    <!-- Flot Javascript files -->
+    <!-- Flot Local Javascript files -->
     <script language="javascript" type="text/javascript" src="static/js/jquery.flot.js"></script>
     <script language="javascript" type="text/javascript" src="static/js/jquery.flot.axislabels.js"></script>
     <script language="javascript" type="text/javascript" src="static/js/jquery.flot.hiddengraphs.js"></script>
@@ -228,18 +236,19 @@ if (isset($sids[0])) {
     <script language="javascript" type="text/javascript" src="static/js/jquery.flot.tooltip.min.js"></script>
     <script language="javascript" type="text/javascript" src="static/js/jquery.flot.updater.js"></script>
     <script language="javascript" type="text/javascript" src="static/js/jquery.flot.resize.min.js"></script>
+    <!-- Configure Jquery Flot graph and plot code -->
     <script language="javascript" type="text/javascript">
       $(document).ready(function(){
 <?php   $i=1; ?>
-<?php   while ( ${'var' . $i } <> "" ) { ?>
+<?php   while ( isset(${'var' . $i }) ) { ?>
         var <?php echo "s$i"; ?> = [<?php foreach(${"d".$i} as $b) {echo "[".$b[0].", ".$b[1]."],";} ?>];
 <?php     $i = $i + 1; ?>
 <?php   } ?>
 
         var flotData = [
 <?php   $i=1; ?>
-<?php   while ( ${'var' . $i } <> "" ) { ?>
-            { data: <?php echo "s$i"; ?>, label: <?php echo "${'v'.$i.'_label'}"; ?> }<?php if ( ${'var'.($i+1)} <> "" ) echo ","; ?>
+<?php   while ( isset(${'var' . $i }) ) { ?>
+            { data: <?php echo "s$i"; ?>, label: <?php echo "${'v'.$i.'_label'}"; ?> }<?php if ( isset(${'var'.($i+1)}) ) echo ","; ?>
 <?php     $i = $i + 1; ?>
 <?php   } ?>
         ];
@@ -309,13 +318,16 @@ if (isset($sids[0])) {
       <div id="right-cell">
         <h4>Select Session</h4>
         <div class="row center-block" style="padding-bottom:4px;">
-          <h5>Filter Sessions By Date</h5>
+          <!-- Filter the session list by year and month -->
+          <h5>Filter Sessions By Date (Default is current year/month)</h5>
           <form method="post" class="form-horizontal" role="form" action="url.php?id=<?php echo $session_id; ?>">
             <table width="100%">
               <tr>
+                <!-- Year Filter -->
                 <td width="32%">
                   <select id="selyear" name="selyear" class="form-control chosen-select" data-placeholder="Select Year">
-                    <option value="%">All</option>
+                    <option value=""></option>
+                    <option value="ALL"<?php if ($filteryear == "ALL") echo ' selected'; ?>>Any Year</option>
 <?php $i = 0; ?>
 <?php while(isset($yeararray[$i])) { ?>
                     <option value="<?php echo $yeararray[$i]; ?>"<?php if ($filteryear == $yeararray[$i]) echo ' selected'; ?>><?php echo $yeararray[$i]; ?></option>
@@ -323,9 +335,12 @@ if (isset($sids[0])) {
 <?php } ?>
                   </select>
                 </td>
+                <td width="2%"></td>
+                <!-- Month Filter -->
                 <td width="32%">
                   <select id="selmonth" name="selmonth" class="form-control chosen-select" data-placeholder="Select Month">
-                    <option value="%">All</option>
+                    <option value=""></option>
+                    <option value="ALL"<?php if ($filtermonth == "ALL") echo ' selected'; ?>>Any Month</option>
                     <option value="January"<?php if ($filtermonth == "January") echo ' selected'; ?>>January</option>
                     <option value="February"<?php if ($filtermonth == "February") echo ' selected'; ?>>February</option>
                     <option value="March"<?php if ($filtermonth == "March") echo ' selected'; ?>>March</option>
@@ -340,13 +355,14 @@ if (isset($sids[0])) {
                     <option value="December"<?php if ($filtermonth == "December") echo ' selected'; ?>>December</option>
                   </select>
                 </td>
-                <td width="36%">
+                <td width="34%">
                   <div align="center" style="padding-top:6px;"><input class="btn btn-info btn-sm" type="submit" id="formfilterdates" name="filterdates" value="Filter Dates"></div>
                 </td>
               </tr>
             </table>
             <noscript><input type="submit" id="datefilter" name="datefilter" class="input-sm"></noscript>
           </form><br />
+          <!-- Session Select Drop-Down List -->
           <form method="post" class="form-horizontal" role="form" action="url.php">
             <select id="seshidtag" name="seshidtag" class="form-control chosen-select" onchange="this.form.submit()" data-placeholder="Select Session..." style="width:100%;">
               <option value=""></option>
@@ -392,20 +408,19 @@ if (isset($sids[0])) {
               </tr>
             </table>
           </div>
-<?php } /* END: if(isset($session_id) && !empty($session_id)) */?>
-        </div> <!-- END: Select Session -->
-        <br />
+<?php } ?>
+        </div><br />
+
+<!-- Variable Select Block -->
 <?php if ($setZoomManually === 0) { ?>
         <h4>Select Variables to Compare</h4>
           <div class="row center-block" style="padding-top:3px;">
             <form method="post" role="form" action="url.php?makechart=y&seshid=<?php echo $session_id; ?>" id="formplotdata">
               <select data-placeholder="Choose OBD2 data..." multiple class="chosen-select" size="<?php echo $numcols; ?>" style="width:100%;" id="plot_data" onsubmit="onSubmitIt" name="plotdata[]">
                 <option value=""></option>
-<?php   //foreach ($coldata as $xcol) { if ( !(($coldataempty[$xcol['colname']]==1) && ($hide_empty_variables))) {?>
 <?php   foreach ($coldata as $xcol) { ?>
-                <option value="<?php echo $xcol['colname']; ?>" <?php $i = 1; while ( ${'var' . $i} <> "" ) { if ( ${'var' . $i} == $xcol['colname'] ) { echo " selected"; } $i = $i + 1; } ?>><?php echo $xcol['colcomment']; ?></option>
-                <!--<option value="<?php //echo $xcol['colname']; ?>" <?php //echo ($coldataempty[$xcol['colname']]?"class='dataempty'":"") ?><?php //$i = 1; while ( ${'var' . $i} <> "" ) { if ( ${'var' . $i} == $xcol['colname'] ) { echo " selected"; } $i = $i + 1; } ?>><?php //echo $xcol['colcomment'].($coldataempty[$xcol['colname']]?" &nbsp; [empty]":""); ?></option>-->
-<?php   } //} ?>
+                <option value="<?php echo $xcol['colname']; ?>" <?php $i = 1; while ( isset(${'var' . $i}) ) { if ( ${'var' . $i} == $xcol['colname'] ) { echo " selected"; } $i = $i + 1; } ?>><?php echo $xcol['colcomment']; ?></option>
+<?php   } ?>
             </select>
 <?php   if ( $filteryear <> "" ) { ?>
             <input type="hidden" name="selyear" id="selyear" value="<?php echo $filteryear; ?>" />
@@ -417,12 +432,15 @@ if (isset($sids[0])) {
           </form>
         </div>
 <?php } else { ?>
+
+<!-- Plot Block -->
         <h4>Plot</h4>
         <div align="center" style="padding-top:10px;">
           <h5><span class="label label-warning">Select a session first!</span></h5>
-        </div>
+        </div><br />
 <?php } ?>
-        <br />
+
+<!-- Chart Block -->
         <h4>Chart</h4>
         <div class="row center-block" style="padding-bottom:5px;">
 <?php if ($setZoomManually === 0) { ?>
@@ -441,8 +459,9 @@ if (isset($sids[0])) {
             <h5><span class="label label-warning">Select a session first!</span></h5>
           </div>
 <?php } ?>
-        </div>
-        <br />
+        </div><br />
+
+<!-- Data Summary Block -->
         <h4>Data Summary</h4>
         <div class="row center-block">
 <?php if ($setZoomManually === 0) { ?>
@@ -463,7 +482,7 @@ if (isset($sids[0])) {
               <!-- 2015.08.05 - Edit by surfrock66 - Code to plot unlimited variables -->
               <tbody>
 <?php     $i=1; ?>
-<?php     while ( ${'var' . $i } <> "" ) { ?>
+<?php     while ( isset(${'var' . $i }) ) { ?>
                 <tr>
                   <td><strong><?php echo substr(${'v' . $i . '_label'}, 1, -1); ?></strong></td>
                   <td><?php echo ${'min' . $i}.'/'.${'max' . $i}; ?></td>
@@ -487,8 +506,9 @@ if (isset($sids[0])) {
             <h5><span class="label label-warning">Select a session first!</span></h5>
           </div>
 <?php } ?>
-        </div>
-        <br />
+        </div><br />
+
+<!-- Export Data Block -->
         <h4>Export Data</h4>
         <div class="row center-block" style="padding-bottom:18px;">
 <?php if ($setZoomManually === 0) { ?>
