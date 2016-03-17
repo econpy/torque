@@ -12,6 +12,7 @@ if ( isset($_SESSION['time'] ) ) {
 $con = mysql_connect($db_host, $db_user, $db_pass) or die(mysql_error());
 mysql_select_db($db_name, $con) or die(mysql_error());
 
+// Process the 4 possibilities for the year filter: Set in POST, Set in GET, select all possible years, or the default: select the current year
 if ( isset($_POST["selyear"]) ) {
 	$filteryear = $_POST["selyear"];
 } elseif ( isset($_GET["year"])) {
@@ -23,6 +24,7 @@ if ( $filteryear == "ALL" ) {
 	$filteryear = "%";
 }
 
+// Process the 4 possibilities for the month filter: Set in POST, Set in GET, select all possible months, or the default: select the current month
 if ( isset($_POST["selmonth"]) ) {
 	$filtermonth = $_POST["selmonth"];
 } elseif ( isset($_GET["month"])) {
@@ -34,6 +36,7 @@ if ( $filtermonth == "ALL" ) {
 	$filtermonth = "%";
 }
 
+// Build the MySQL select string based on the inputs (year, month, or session id)
 $orselector = "";
 $sessionqrystring = "SELECT COUNT(*) as `Session Size`, MIN(time) as `MinTime`, MAX(time) as `MaxTime`, session FROM $db_table WHERE";
 if ( $filteryear <> "ALL" ) {

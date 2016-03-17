@@ -5,6 +5,7 @@ session_start();
 // Get the Full URL to the session.php file
 $thisfile = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 $parts = strtok("url.php", $thisfile);
+// Capture the session ID we're going to be working with
 if (isset($_GET["seshid"])) {
 	$seshid = strval(mysql_escape_string($_GET["seshid"]));
 } elseif (isset($_POST["seshidtag"])) {
@@ -14,8 +15,11 @@ if (isset($_GET["seshid"])) {
 } else {
 	$seshid = $_SESSION['recent_session_id'];
 }
+
 $baselink = $parts["0"]."session.php";
 $outurl = $baselink."?id=".$seshid;
+
+// Capture the year we will be working with
 if (isset($_POST["selyear"])) {
 	if ($_POST["selyear"]) {
 		$outurl = $outurl."&year=".$_POST["selyear"];
@@ -25,6 +29,8 @@ if (isset($_POST["selyear"])) {
 		$outurl = $outurl."&year=".$_GET["year"];
 	}
 }
+
+//Capture the month we will be working with
 if (isset($_POST["selmonth"])) {
 	if ($_POST["selmonth"] <> "") {
 		$outurl = $outurl."&month=".$_POST["selmonth"];
@@ -34,6 +40,8 @@ if (isset($_POST["selmonth"])) {
 		$outurl = $outurl."&month=".$_GET["month"]; 
 	}
 }
+
+//If we're gonna be making a graph, capture the variable IDs
 if (isset($_GET["makechart"])) {
     if (isset($_POST["plotdata"])) {
         $plotdataarray = $_POST["plotdata"];

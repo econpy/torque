@@ -1,13 +1,13 @@
 <?php
 
 ini_set('memory_limit', '-1');
-require_once ("./creds.php");
-require_once ("./auth_user.php");
-require_once ("./del_session.php");
-require_once ("./merge_sessions.php");
-require_once ("./get_sessions.php");
-require_once ("./get_columns.php");
-require_once ("./plot.php");
+require_once("./creds.php");
+require_once("./auth_user.php");
+require_once("./del_session.php");
+require_once("./merge_sessions.php");
+require_once("./get_sessions.php");
+require_once("./get_columns.php");
+require_once("./plot.php");
 
 $_SESSION['recent_session_id'] = strval(max($sids));
 
@@ -240,14 +240,14 @@ if (isset($sids[0])) {
     <script language="javascript" type="text/javascript">
       $(document).ready(function(){
 <?php   $i=1; ?>
-<?php   while ( isset(${'var' . $i }) ) { ?>
+<?php   while ( isset(${'var' . $i }) && !empty(${'var' . $i }) ) { ?>
         var <?php echo "s$i"; ?> = [<?php foreach(${"d".$i} as $b) {echo "[".$b[0].", ".$b[1]."],";} ?>];
 <?php     $i = $i + 1; ?>
 <?php   } ?>
 
         var flotData = [
 <?php   $i=1; ?>
-<?php   while ( isset(${'var' . $i }) ) { ?>
+<?php   while ( isset(${'var' . $i }) && !empty(${'var' . $i }) ) { ?>
             { data: <?php echo "s$i"; ?>, label: <?php echo "${'v'.$i.'_label'}"; ?> }<?php if ( isset(${'var'.($i+1)}) ) echo ","; ?>
 <?php     $i = $i + 1; ?>
 <?php   } ?>
@@ -521,6 +521,10 @@ if (isset($sids[0])) {
             <h5><span class="label label-warning">Select a session first!</span></h5>
           </div>
 <?php } ?>
+        </div>
+        <div class="row center-block" style="padding-bottom:18px;">
+          <a href="http://hda.surfrock66.com/torquetest/pid_edit.php" title="Edit PIDs">Edit PIDs</a><br />
+          <a href="https://github.com/surfrock66/torque" title="View Source On Github">View Source On Github</a>
         </div>
       </div>
     </div>
