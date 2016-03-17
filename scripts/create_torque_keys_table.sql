@@ -157,4 +157,4 @@ INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VAL
 INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('k42','Voltage (Control Module)','float','V',1,0,16);
 INSERT INTO torque.keys (id, description, type,  units, populated, min, max) VALUES ('kff1238','Voltage (OBD Adapter)','float','V',1,0,16);
 INSERT INTO torque.keys (id, description, type,  units, populated) VALUES ('kff1269','Volumetric Efficiency (Calculated)','float','%',1);
-
+INSERT INTO torque.keys (id, type, populated) VALUES ('kff1007','float', 0);
