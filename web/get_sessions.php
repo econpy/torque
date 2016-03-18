@@ -38,7 +38,7 @@ if ( $filtermonth == "ALL" ) {
 
 // Build the MySQL select string based on the inputs (year, month, or session id)
 $orselector = "";
-$sessionqrystring = "SELECT COUNT(*) as `Session Size`, MIN(time) as `MinTime`, MAX(time) as `MaxTime`, session FROM $db_table WHERE";
+$sessionqrystring = "SELECT COUNT(*) as `Session Size`, MIN(time) as `MinTime`, MAX(time) as `MaxTime`, session , profileName FROM $db_table WHERE";
 if ( $filteryear <> "ALL" ) {
 	$sessionqrystring = $sessionqrystring . "( ";
 	$orselector = " OR ";
@@ -61,10 +61,12 @@ $sessionqry = mysql_query($sessionqrystring, $con) or die(mysql_error());
 // Create an array mapping session IDs to date strings
 $seshdates = array();
 $seshsizes = array();
+$seshprofile = array();
 while($row = mysql_fetch_assoc($sessionqry)) {
     $session_size = $row["Session Size"];
     $session_duration = $row["MaxTime"] - $row["MinTime"];
     $session_duration_str = gmdate("H:i:s", $session_duration/1000);
+    $session_profileName = $row["profileName"];
 
     // Drop sessions smaller than 60 data points
     if ($session_size >= 60) {
@@ -72,6 +74,7 @@ while($row = mysql_fetch_assoc($sessionqry)) {
         $sids[] = preg_replace('/\D/', '', $sid);
         $seshdates[$sid] = date("F d, Y  h:ia", substr($sid, 0, -3));
         $seshsizes[$sid] = " (Length $session_duration_str)";
+        $seshprofile[$sid] = " ($session_profileName Profile)"; 
     }
     else {}
 }

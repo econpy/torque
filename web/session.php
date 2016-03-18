@@ -367,7 +367,7 @@ if (isset($sids[0])) {
             <select id="seshidtag" name="seshidtag" class="form-control chosen-select" onchange="this.form.submit()" data-placeholder="Select Session..." style="width:100%;">
               <option value=""></option>
 <?php foreach ($seshdates as $dateid => $datestr) { ?>
-              <option value="<?php echo $dateid; ?>"<?php if ($dateid == $session_id) echo ' selected'; ?>><?php echo $datestr; if ($show_session_length) {echo $seshsizes[$dateid];} ?><?php if ($dateid == $session_id) echo ' (Current Session)'; ?></option>
+              <option value="<?php echo $dateid; ?>"<?php if ($dateid == $session_id) echo ' selected'; ?>><?php echo $datestr; echo $seshprofile[$dateid]; if ($show_session_length) {echo $seshsizes[$dateid];} ?><?php if ($dateid == $session_id) echo ' (Current Session)'; ?></option>
 <?php } ?>
             </select>
 <?php   if ( $filteryear <> "" ) { ?>
@@ -522,7 +522,7 @@ if (isset($sids[0])) {
           </div>
 <?php } ?>
         </div>
-        <div class="row center-block" style="padding-bottom:18px;">
+        <div class="row center-block" style="padding-bottom:18px;text-align:center;">
           <a href="http://hda.surfrock66.com/torquetest/pid_edit.php" title="Edit PIDs">Edit PIDs</a><br />
           <a href="https://github.com/surfrock66/torque" title="View Source On Github">View Source On Github</a>
         </div>

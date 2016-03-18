@@ -83,7 +83,6 @@ mysql_close();
         });
       });
     </script>
-    <style>#status { padding:10px; background:#88C4FF; color:#000; font-weight:bold; font-size:12px; margin-bottom:10px; display:none; width:90%; }</style>
   </head>
   <body>
     <div class="navbar navbar-default navbar-fixed-top navbar-inverse" role="navigation">
@@ -93,7 +92,6 @@ mysql_close();
         </div>
       </div>
     </div>
-    <div id="status"></div>
     <table class="table" style="width:98%;margin:0px auto;margin-top:50px;">
       <thead>
         <th>ID</th>
@@ -126,6 +124,7 @@ mysql_close();
 <?php } ?>
       </tbody>
     </table>
+    <div id="status" style="padding:10px; background:#88C4FF; color:#000; font-weight:bold; font-size:12px; margin-bottom:10px; display:none; width:90%;"></div>
   </body>
 </html>
 

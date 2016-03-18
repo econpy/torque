@@ -18,9 +18,17 @@ if(!empty($_POST)) {
     $split_data = explode(':', $field_id);
     $id = $split_data[1];
     $field_name = $split_data[0];
-//echo "\nField Name: '$field_name'\nField ID: '$id'\nValue: '$val'\n";
+echo "\nField Name: '$field_name'\nField ID: '$id'\nValue: '$val'\n";
     if(!empty($id) && !empty($field_name) && !empty($val)) {
+      if($field_name == 'populated') {
+        if($val == 'true'){
+          $val=1;
+        } else {
+          $val=0;
+       }
+      }
       //update the values
+echo "\nUPDATE $db_name.$db_keys_table SET $field_name = '$val' WHERE id = '$id'\n";
       mysql_query("UPDATE $db_name.$db_keys_table SET $field_name = '$val' WHERE id = '$id'") or mysql_error;
       echo "Updated";
     } else {
