@@ -25,13 +25,14 @@ if (sizeof($_GET) > 0) {
             $values[] = $value;
             $submitval = 1;
         }
-        else if (in_array($key, array("v", "eml", "time", "id", "session", "profileName", "notice", "noticeClass"))) {
+        else if (in_array($key, array("v", "eml", "time", "id", "session", "profileName", "profile", "notice", "noticeClass"))) {
             $keys[] = $key;
             $values[] = "'".$value."'";
             $submitval = 1;
         }
         // Skip columns matching userUnit*, defaultUnit*, and profile
-        else if (preg_match("/^userUnit/", $key) or preg_match("/^defaultUnit/", $key) or (preg_match("/^profile/", $key)))) {
+        else if (preg_match("/^userUnit/", $key) or preg_match("/^defaultUnit/", $key))))) {
+        //else if (preg_match("/^userUnit/", $key) or preg_match("/^defaultUnit/", $key) or (preg_match("/^profile/", $key)))) {
             $submitval = 0;
         }
         else {

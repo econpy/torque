@@ -30,6 +30,10 @@ echo "\nField Name: '$field_name'\nField ID: '$id'\nValue: '$val'\n";
       //update the values
 echo "\nUPDATE $db_name.$db_keys_table SET $field_name = '$val' WHERE id = '$id'\n";
       mysql_query("UPDATE $db_name.$db_keys_table SET $field_name = '$val' WHERE id = '$id'") or mysql_error;
+      if($field_name == 'type') {
+echo "ALTER TABLE $db_name.$db_table MODIFY $id $val NOT NULL DEFAULT '0'";
+        mysql_query("ALTER TABLE $db_name.$db_table MODIFY $id $val NOT NULL DEFAULT '0'") or mysql_error;
+      }
       echo "Updated";
     } else {
       echo "Invalid Requests 1";

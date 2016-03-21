@@ -36,9 +36,21 @@ if ( $filtermonth == "ALL" ) {
 	$filtermonth = "%";
 }
 
+// Process the 4 possibilities for the profile filter: Set in POST, Set in GET, select all possible profiles, or no filter as default
+if ( isset($_POST["selprofile"]) ) {
+	$filterprofile = $_POST["selprofile"];
+} elseif ( isset($_GET["profile"])) {
+	$filterprofile = $_GET["profile"];
+} else {
+	$filterprofile = "%";
+}
+if ( $filterprofile == "ALL" ) {
+	$filterprofile = "%";
+}
+
 // Build the MySQL select string based on the inputs (year, month, or session id)
 $orselector = "";
-$sessionqrystring = "SELECT COUNT(*) as `Session Size`, MIN(time) as `MinTime`, MAX(time) as `MaxTime`, session , profileName FROM $db_table WHERE";
+$sessionqrystring = "SELECT COUNT(*) as `Session Size`, MIN(time) as `MinTime`, MAX(time) as `MaxTime`, session , profileName FROM $db_table WHERE profileName LIKE '$filterprofile' AND ";
 if ( $filteryear <> "ALL" ) {
 	$sessionqrystring = $sessionqrystring . "( ";
 	$orselector = " OR ";
