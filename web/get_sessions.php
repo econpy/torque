@@ -49,24 +49,33 @@ if ( $filterprofile == "ALL" ) {
 }
 
 // Build the MySQL select string based on the inputs (year, month, or session id)
-$orselector = "";
-$sessionqrystring = "SELECT COUNT(*) as `Session Size`, MIN(time) as `MinTime`, MAX(time) as `MaxTime`, session , profileName FROM $db_table WHERE profileName LIKE '$filterprofile' AND ";
-if ( $filteryear <> "ALL" ) {
-	$sessionqrystring = $sessionqrystring . "( ";
+$sessionqrystring = "SELECT timestart as `MinTime`, timeend as `MaxTime`, session, profileName, sessionsize FROM $db_sessions_table ";
+$sqlqryyear = "YEAR(FROM_UNIXTIME(session/1000)) LIKE '" . $filteryear . "' ";
+$sqlqrymonth = "MONTHNAME(FROM_UNIXTIME(session/1000)) LIKE '" . $filtermonth . "' ";
+$sqlqryprofile = "profileName LIKE '" . $filterprofile . "' ";
+$orselector = "WHERE ";
+$andselector = "";
+if ( $filteryear <> "%" || $filtermonth <> "%" || $filterprofile <> "%") {
 	$orselector = " OR ";
-	$sessionqrystring = $sessionqrystring . "YEAR(FROM_UNIXTIME(session/1000)) LIKE '" . $filteryear . "' ";
-	if ( $filtermonth <> "ALL" ) {
-		$sessionqrystring = $sessionqrystring . "AND MONTHNAME(FROM_UNIXTIME(session/1000)) LIKE '" . $filtermonth . "' ";
+	$sessionqrystring = $sessionqrystring . "WHERE ( ";
+	if ( $filteryear <> "%" ) {
+		$sessionqrystring = $sessionqrystring . $sqlqryyear;
+		$andselector = " AND ";
 	}
-	$sessionqrystring = $sessionqrystring . " )";
-} elseif ( $filtermonth <> "ALL" ) {
-	$sessionqrystring = $sessionqrystring . "( MONTHNAME(FROM_UNIXTIME(session/1000)) LIKE '" . $filtermonth . "' )";
-	$orselector = " OR ";
+	if ( $filtermonth <> "%" ) {
+		$sessionqrystring = $sessionqrystring . $andselector . $sqlqrymonth;
+		$andselector = " AND ";
+	}
+	if ( $filterprofile <> "%" ) {
+		$sessionqrystring = $sessionqrystring . $andselector . $sqlqryprofile;
+	}
+	$sessionqrystring = $sessionqrystring . " ) ";
 }
 if ( isset($_GET['id'])) {
 	$sessionqrystring = $sessionqrystring . $orselector . "( session LIKE '" . $_GET['id'] . "' )";
 }
 $sessionqrystring = $sessionqrystring . " GROUP BY session ORDER BY time DESC";
+echo $sessionqrystring;
 // Get list of unique session IDs
 $sessionqry = mysql_query($sessionqrystring, $con) or die(mysql_error());
 
@@ -81,7 +90,7 @@ while($row = mysql_fetch_assoc($sessionqry)) {
     $session_profileName = $row["profileName"];
 
     // Drop sessions smaller than 60 data points
-    if ($session_size >= 60) {
+    if ($row["sessionsize"] >= 60) {
         $sid = $row["session"];
         $sids[] = preg_replace('/\D/', '', $sid);
         $seshdates[$sid] = date("F d, Y  h:ia", substr($sid, 0, -3));
