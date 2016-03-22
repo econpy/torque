@@ -9,8 +9,6 @@ CREATE TABLE `sessions` (
   `eml` varchar(255) NOT NULL DEFAULT '0',
   `profile` varchar(255) NOT NULL DEFAULT 'Not Specified',
   `profileName` varchar(255) NOT NULL DEFAULT 'Not Specified',
-  `notice` varchar(255) NOT NULL DEFAULT '0',
-  `noticeClass` varchar(255) NOT NULL DEFAULT '0',
   `timestart` varchar(15) NOT NULL,
   `timeend` varchar(15) NOT NULL,
   `sessionsize` varchar(15) NOT NULL DEFAULT '0',
