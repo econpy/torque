@@ -90,7 +90,8 @@ while($row = mysql_fetch_assoc($sessionqry)) {
     $session_profileName = $row["profileName"];
 
     // Drop sessions smaller than 60 data points
-    if ($row["sessionsize"] >= 60) {
+    //if ($row["sessionsize"] >= 60) {
+    if ($row["sessionsize"] >= 20) {
         $sid = $row["session"];
         $sids[] = preg_replace('/\D/', '', $sid);
         $seshdates[$sid] = date("F d, Y  h:ia", substr($sid, 0, -3));

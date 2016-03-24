@@ -18,7 +18,7 @@ These instructions assume you already have a LAMP-like server (on a Linux/UNIX b
   * Apache webserver
   * PHP server-side scripting
 
-If in doubt, I'd recommend using Ubuntu 12.04 LTS.
+If in doubt, I'd recommend using Ubuntu LTS.
 
 # Server Setup #
 
@@ -41,10 +41,11 @@ GRANT ALL PRIVILEGES ON torque.* TO 'steve'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
-Then create a table in the database to store the logged data using the `create_torque_log_table.sql` and the `create_torque_keys_table.sql` files provided in the `scripts` folder of this repo: 
+Then create a table in the database to store the logged data using the `create_torque_log_table.sql`, the `create_torque_sessions_table.sql`, and the `create_torque_keys_table.sql` files provided in the `scripts` folder of this repo: 
 
 ```bash
 mysql -u yoursqlusername -p < scripts/create_torque_log_table.sql
+mysql -u yoursqlusername -p < scripts/create_torque_sessions_table.sql
 mysql -u yoursqlusername -p < scripts/create_torque_keys_table.sql
 ```
 
@@ -70,11 +71,13 @@ Then edit/enter your MySQL username and password in the empty **$db_user** and *
 
 ```php
 ...
-$db_host = "localhost";
-$db_user = "steve";
-$db_pass = "zissou";
-$db_name = "torque";
-$db_table = "raw_logs";
+$db_host = 'localhost';
+$db_user = '**steve**';
+$db_pass = '**zissou**';
+$db_name = 'torque';
+$db_table = 'raw_logs';
+$db_keys_table = 'keys';
+$db_sessions_table = 'sessions';
 ...
 ```
 
@@ -84,13 +87,20 @@ $db_table = "raw_logs";
 To use your database/server with Torque, open the app on your phone and navigate to:
 
 ```
-Settings -> Data Logging & Upload -> Webserver URL
+Settings -> Data Logging & Upload
 ```
+Below are the options which seem to work best for optimal logging, the suggested "File Logging" interval is 1s:
 
-Enter the URL to your **upload_data.php** script and press `OK`. Test that it works by clicking `Test settings` and you should see a success message like the image on the right:
+<div align="center" style="padding:15px; display:block;"><img src="http://www.surfrock66.com/images/torque_screenshot_1.png" width="45%" float="left" /><img src="http://www.surfrock66.com/images/torque_screenshot_2.png" width="45%" float="right" /></div>
 
-<div align="center" style="padding-bottom:15px;"><a href="https://storage.googleapis.com/torque_github/torque_webserver_url.png" target="_blank"><img src="https://storage.googleapis.com/torque_github/torque_webserver_url.png" width="49%" align="left"></img></a><a href="https://storage.googleapis.com/torque_github/torque_test_passed.png" target="_blank"><img src="https://storage.googleapis.com/torque_github/torque_test_passed.png" width="49%" align="right"></img></a></div>
+Additionally, I recommend changing the web logging interval to >5s.  This staggers the amount of time between upload attempts to the server, though it DOESN'T reduce the datapoints, simply spreads out their upload:
 
-The final thing you'll want to do before going for a drive is to check the appropriate boxes on the `Data Logging & Upload` page under the `REALTIME WEB UPLOAD` section. Personally, I have both **Upload to webserver** and **Only when ODB connected** checked.
+<div align="center" style="padding-bottom:15px; display:block;"><img src="http://www.surfrock66.com/images/torque_screenshot_3.png" width="45%" float="left" /><img src="http://www.surfrock66.com/images/torque_screenshot_4.png" width="45%" float="right" /></div>
+
+Enter the URL to your **upload_data.php** script under "Webserver URL" and press `OK`. Test that it works by clicking `Test settings` and you should see a success message like the image on the right:
+
+<div align="center" style="padding-bottom:15px; display:block;"><img src="http://www.surfrock66.com/images/torque_screenshot_5.png" width="45%" float="left" /><img src="http://www.surfrock66.com/images/torque_screenshot_6.png" width="45%" float="right" /></div>
+
 
 At this point, you should be all setup. The next time you connect to Torque in your car, data will begin syncing into your MySQL database in real-time!
+

@@ -70,8 +70,7 @@ if (sizeof($_GET) > 0) {
   //  update the ending time and the count of datapoints.  If there isn't a row, insert one.
   if ((sizeof($sesskeys) === sizeof($sessvalues)) && sizeof($sesskeys) > 0) {
     // See if there is already an entry in the sessions table for this session
-    $sessionqrystring = "SELECT session, sessionsize FROM $db_sessions_table WHERE session LIKE '$sessuploadid'";
-    $sessionqry = mysql_query($sessionqrystring, $con) or die(mysql_error());
+    $sessionqry = mysql_query("SELECT session, sessionsize FROM $db_sessions_table WHERE session LIKE '$sessuploadid'", $con) or die(mysql_error());
     if (mysql_num_rows($sessionqry) > 0) {
       // If there's an entry in the session table for this session, update the session end time and the datapoint count
       while($row = mysql_fetch_assoc($sessionqry)) {
