@@ -1,5 +1,6 @@
 <?php
 
+echo "<!-- Begin creds.php -->\r\n";
 // MySQL Credentials
 $db_host = 'localhost';
 $db_user = '';     // Enter your MySQL username
@@ -29,5 +30,6 @@ $use_miles = false;
 
 $hide_empty_variables = true;
 $show_session_length = true;
+echo "<!-- End creds.php -->\r\n";
 
 ?>

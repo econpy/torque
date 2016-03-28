@@ -55,5 +55,4 @@ if (isset($_GET["makechart"])) {
 }
 
 header("Location: ".$outurl);
-
 ?>

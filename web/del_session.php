@@ -1,4 +1,5 @@
 <?php
+echo "<!-- Begin del_session.php at ".date("H:i:s", microtime(true))." -->\r\n";
 require_once("./creds.php");
 
 if (session_status() == PHP_SESSION_NONE) {
@@ -23,5 +24,5 @@ if (isset($deletesession) && !empty($deletesession)) {
     mysql_free_result($delresult);
     mysql_close($con);
 }
-
+echo "<!-- End del_session.php at ".date("H:i:s", microtime(true))." -->\r\n";
 ?>

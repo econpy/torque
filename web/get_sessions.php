@@ -1,4 +1,5 @@
 <?php
+echo "<!-- Begin get_session.php at ".date("H:i:s", microtime(true))." -->\r\n";
 require_once("./creds.php");
 
 session_set_cookie_params(0,dirname($_SERVER['SCRIPT_NAME']));
@@ -49,7 +50,7 @@ if ( $filterprofile == "ALL" ) {
 }
 
 // Build the MySQL select string based on the inputs (year, month, or session id)
-$sessionqrystring = "SELECT timestart as `MinTime`, timeend as `MaxTime`, session, profileName, sessionsize FROM $db_sessions_table ";
+$sessionqrystring = "SELECT timestart, timeend, session, profileName, sessionsize FROM $db_sessions_table ";
 $sqlqryyear = "YEAR(FROM_UNIXTIME(session/1000)) LIKE '" . $filteryear . "' ";
 $sqlqrymonth = "MONTHNAME(FROM_UNIXTIME(session/1000)) LIKE '" . $filtermonth . "' ";
 $sqlqryprofile = "profileName LIKE '" . $filterprofile . "' ";
@@ -75,7 +76,6 @@ if ( isset($_GET['id'])) {
 	$sessionqrystring = $sessionqrystring . $orselector . "( session LIKE '" . $_GET['id'] . "' )";
 }
 $sessionqrystring = $sessionqrystring . " GROUP BY session ORDER BY time DESC";
-echo $sessionqrystring;
 // Get list of unique session IDs
 $sessionqry = mysql_query($sessionqrystring, $con) or die(mysql_error());
 
@@ -84,9 +84,7 @@ $seshdates = array();
 $seshsizes = array();
 $seshprofile = array();
 while($row = mysql_fetch_assoc($sessionqry)) {
-    $session_size = $row["sessionsize"];
-    $session_duration = $row["MaxTime"] - $row["MinTime"];
-    $session_duration_str = gmdate("H:i:s", $session_duration/1000);
+    $session_duration_str = gmdate("H:i:s", ($row["timeend"] - $row["timestart"])/1000);
     $session_profileName = $row["profileName"];
 
     // Drop sessions smaller than 60 data points
@@ -103,5 +101,6 @@ while($row = mysql_fetch_assoc($sessionqry)) {
 
 mysql_free_result($sessionqry);
 mysql_close($con);
+echo "<!-- End get_session.php at ".date("H:i:s", microtime(true))." -->\r\n";
 
 ?>

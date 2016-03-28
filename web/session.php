@@ -1,5 +1,5 @@
 <?php
-
+echo "<!-- Begin session.php at ".date("H:i:s", microtime(true))." -->\r\n";
 ini_set('memory_limit', '-1');
 require_once("./creds.php");
 require_once("./auth_user.php");
@@ -47,7 +47,7 @@ while ( isset($_POST["s$i"]) || isset($_GET["s$i"]) ) {
 }
 
 // From the output of the get_sessions.php file, populate the page with info from
-//  the current session. Using successful existense of a session as a trigger, 
+//  the current session. Using successful existence of a session as a trigger, 
 //  populate some other variables as well.
 if (isset($sids[0])) {
   if (!isset($session_id)) {
@@ -82,7 +82,7 @@ if (isset($sids[0])) {
 
   // Query the list of years where sessions have been logged, to be used later
   $yearquery = mysql_query("SELECT YEAR(FROM_UNIXTIME(session/1000)) as 'year'
-              FROM $db_table WHERE session <> ''
+              FROM $db_sessions_table WHERE session <> ''
               GROUP BY YEAR(FROM_UNIXTIME(session/1000)) 
               ORDER BY YEAR(FROM_UNIXTIME(session/1000))", $con) or die(mysql_error());
   $yeararray = array();
@@ -140,7 +140,7 @@ if (isset($sids[0])) {
     <script language="javascript" type="text/javascript" src="static/js/jquery.peity.min.js"></script>
     <script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.1.0/chosen.jquery.min.js"></script>
     <!-- Initialize the google maps javascript code -->
-    <script language="javascript" type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+    <script language="javascript" type="text/javascript" src="https://maps.googleapis.com/maps/api/js"></script>
     <script language="javascript" type="text/javascript">
       function initialize() {
         var mapDiv = document.getElementById('map-canvas');
@@ -530,3 +530,4 @@ if (isset($sids[0])) {
     </div>
   </body>
 </html>
+<?php echo "<!-- End session.php at ".date("H:i:s", microtime(true))." -->\r\n"; ?>

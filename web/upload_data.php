@@ -26,7 +26,12 @@ if (sizeof($_GET) > 0) {
     if (preg_match("/^k/", $key)) {
       // Keep columns starting with k
       $keys[] = $key;
-      $values[] = $value;
+      // My Torque app tries to pass "Infinity" in for some values...catch that error, set to -1
+      if ($value == 'Infinity') {
+        $values[] = -1;
+      } else {
+        $values[] = $value;
+      }
       $submitval = 1;
     } else if (in_array($key, array("v", "eml", "time", "id", "session", "profileName", "profile", "notice", "noticeClass"))) {
       // Keep non k* columns listed here
@@ -36,8 +41,8 @@ if (sizeof($_GET) > 0) {
       if ($key == 'time') {
         $sesstime = $value;
       }
-      $keys[] = $key;
-      $values[] = "'".$value."'";
+//      $keys[] = $key;
+//      $values[] = "'".$value."'";
       $sesskeys[] = $key;
       $sessvalues[] = "'".$value."'";
       $submitval = 1;
@@ -59,16 +64,14 @@ if (sizeof($_GET) > 0) {
       mysql_query($sqlalterkey, $con) or die(mysql_error());
     }
   }
-  if ((sizeof($keys) === sizeof($values)) && sizeof($keys) > 0) {
-    // Now insert the data for all the fields into the raw logs table
-    $sql = "INSERT INTO $db_table (".implode(",", $keys).") VALUES (".implode(",", $values).")";
-    mysql_query($sql, $con) or die(mysql_error());
-  }
   // The way session uploads work, there's a separate HTTP call for each datapoint.  This is why raw logs is
   //  so huge, and has so much repeating data. This is my attempt to flatten the redundant data into the
   //  sessions table; this code checks if there is already a row for the current session, and if there is, only 
   //  update the ending time and the count of datapoints.  If there isn't a row, insert one.
-  if ((sizeof($sesskeys) === sizeof($sessvalues)) && sizeof($sesskeys) > 0) {
+  if ((sizeof($keys) === sizeof($values)) && sizeof($keys) > 0 && (sizeof($sesskeys) === sizeof($sessvalues)) && sizeof($sesskeys) > 0) {
+    // Now insert the data for all the fields into the raw logs table
+    $sql = "INSERT INTO $db_table (".implode(",", $keys).",".implode(",", $sesskeys).") VALUES (".implode(",", $values).",".implode(",", $sessvalues).")";
+    mysql_query($sql, $con) or die(mysql_error());
     // See if there is already an entry in the sessions table for this session
     $sessionqry = mysql_query("SELECT session, sessionsize FROM $db_sessions_table WHERE session LIKE '$sessuploadid'", $con) or die(mysql_error());
     if (mysql_num_rows($sessionqry) > 0) {
@@ -80,10 +83,10 @@ if (sizeof($_GET) > 0) {
       }
     } else {
       // If this is a new session, insert an entry in the sessions table and then update the start time and datapoint count
-      $sql = "INSERT INTO $db_sessions_table (".implode(",", $sesskeys).") VALUES (".implode(",", $sessvalues).")";
+      $sql = "INSERT INTO $db_sessions_table (".implode(",", $sesskeys).", timestart, sessionsize) VALUES (".implode(",", $sessvalues).", $sesstime, '1')";
       mysql_query($sql, $con) or die(mysql_error());
-      $sql = "UPDATE $db_sessions_table SET timestart='$sesstime', sessionsize='1' WHERE session LIKE '$sessuploadid'";
-      mysql_query($sql, $con) or die(mysql_error());
+//      $sql = "UPDATE $db_sessions_table SET timestart='$sesstime', sessionsize='1' WHERE session LIKE '$sessuploadid'";
+//      mysql_query($sql, $con) or die(mysql_error());
     }
   }
 }

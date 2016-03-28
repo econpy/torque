@@ -93,7 +93,7 @@ Below are the options which seem to work best for optimal logging, the suggested
 
 <div align="center" style="padding:15px; display:block;"><img src="http://www.surfrock66.com/images/torque_screenshot_1.png" width="45%" float="left" /><img src="http://www.surfrock66.com/images/torque_screenshot_2.png" width="45%" float="right" /></div>
 
-Additionally, I recommend changing the web logging interval to >5s.  This staggers the amount of time between upload attempts to the server, though it DOESN'T reduce the datapoints, simply spreads out their upload:
+Additionally, I recommend changing the web logging interval to >5s.  
 
 <div align="center" style="padding-bottom:15px; display:block;"><img src="http://www.surfrock66.com/images/torque_screenshot_3.png" width="45%" float="left" /><img src="http://www.surfrock66.com/images/torque_screenshot_4.png" width="45%" float="right" /></div>
 
@@ -104,3 +104,10 @@ Enter the URL to your **upload_data.php** script under "Webserver URL" and press
 
 At this point, you should be all setup. The next time you connect to Torque in your car, data will begin syncing into your MySQL database in real-time!
 
+### Gotchas ###
+
+If you log a ton of PID's (as I do for debugging) you may encounter an apache bug; Torque uploads data through a huge $_GET request.  Apache, by default, allows $_GET requests up to 8190 characters.  My sample data upload was 13,619 characters long...this led to some data uploads returning 414 errors instead of 200 responses, which resulted in the app trying over-and-over to re-upload the datapoint, essentially DDoS'ing myself.  For this; you can edit your apache configuration to allow any value you like; this is, in general, not recommended and should be set to limit a value as close as possible to what your longest query would be.  On my configuration, I edited /etc/apache2/sites-available/000-default.conf and added the following line:
+
+```
+LimitRequestLine 15000
+```

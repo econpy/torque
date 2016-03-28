@@ -1,4 +1,5 @@
 <?php
+echo "<!-- Begin plot.php at ".date("H:i:s", microtime(true))." -->\r\n";
 require_once("./creds.php");
 require_once("./parse_functions.php");
 // Connect to Database
@@ -88,4 +89,5 @@ if (isset($_GET["id"]) and in_array($_GET["id"], $sids)) {
 		$i = $i + 1;
 	}
 }
+echo "<!-- End plot.php at ".date("H:i:s", microtime(true))." -->\r\n";
 ?>

@@ -1,4 +1,5 @@
 <?php
+echo "<!-- Begin merge_sessions.php at ".date("H:i:s", microtime(true))." -->\r\n";
 require_once("./creds.php");
 require_once("./get_sessions.php");
 
@@ -42,5 +43,5 @@ if (isset($mergesession) && !empty($mergesession) && isset($mergesessionwith) &&
     //Show merged session
     $session_id = $mergesession;
 }
-
+echo "<!-- End merge_sessions.php at ".date("H:i:s", microtime(true))." -->\r\n";
 ?>
