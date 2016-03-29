@@ -20,6 +20,14 @@ These instructions assume you already have a LAMP-like server (on a Linux/UNIX b
 
 If in doubt, I'd recommend using Ubuntu LTS.
 
+You also need a Bluetooth ODBII adapter, I recommend this one which I've used since 2014:
+
+[BAFX Products 34t5 Bluetooth OBDII Scan Tool for Android Devices](http://www.amazon.com/gp/product/B005NLQAHS)
+
+I also use this to position the adapter in a better location:
+
+[Oem OBD-II OBD2 16Pin Male to Female Extension Cable Diagnostic Extender 100cm](http://www.amazon.com/OBD-II-Female-Extension-Diagnostic-Extender/dp/B007PAHHWM)
+
 # Server Setup #
 
 First clone the repo:
