@@ -84,7 +84,7 @@ $db_user = '**steve**';
 $db_pass = '**zissou**';
 $db_name = 'torque';
 $db_table = 'raw_logs';
-$db_keys_table = 'keys';
+$db_keys_table = 'torque_keys';
 $db_sessions_table = 'sessions';
 ...
 ```
@@ -101,7 +101,7 @@ Below are the options which seem to work best for optimal logging, the suggested
 
 <div align="center" style="padding:15px; display:block;"><img src="http://www.surfrock66.com/images/torque_screenshot_1.png" width="45%" float="left" /><img src="http://www.surfrock66.com/images/torque_screenshot_2.png" width="45%" float="right" /></div>
 
-Additionally, I recommend changing the web logging interval to >5s.  
+Additionally, I recommend changing the web logging interval to 1s, though this produces a LOT of data.  Some users may want to set this to >=5s.  
 
 <div align="center" style="padding-bottom:15px; display:block;"><img src="http://www.surfrock66.com/images/torque_screenshot_3.png" width="45%" float="left" /><img src="http://www.surfrock66.com/images/torque_screenshot_4.png" width="45%" float="right" /></div>
 

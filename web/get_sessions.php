@@ -1,14 +1,10 @@
 <?php
-echo "<!-- Begin get_session.php at ".date("H:i:s", microtime(true))." -->\r\n";
+//echo "<!-- Begin get_session.php at ".date("H:i:s", microtime(true))." -->\r\n";
 require_once("./creds.php");
 
 session_set_cookie_params(0,dirname($_SERVER['SCRIPT_NAME']));
-if (session_status() == PHP_SESSION_NONE) {
-  session_start();
-}
-if ( isset($_SESSION['time'] ) ) {
-	$timezone = $_SESSION['time'];
-}
+if (!isset($_SESSION)) { session_start(); }
+
 // Connect to Database
 $con = mysql_connect($db_host, $db_user, $db_pass) or die(mysql_error());
 mysql_select_db($db_name, $con) or die(mysql_error());
@@ -101,6 +97,6 @@ while($row = mysql_fetch_assoc($sessionqry)) {
 
 mysql_free_result($sessionqry);
 mysql_close($con);
-echo "<!-- End get_session.php at ".date("H:i:s", microtime(true))." -->\r\n";
+//echo "<!-- End get_session.php at ".date("H:i:s", microtime(true))." -->\r\n";
 
 ?>

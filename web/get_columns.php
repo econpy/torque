@@ -1,5 +1,5 @@
 <?php
-echo "<!-- Begin get_columns.php at ".date("H:i:s", microtime(true))." -->\r\n";
+//echo "<!-- Begin get_columns.php at ".date("H:i:s", microtime(true))." -->\r\n";
 require_once("./creds.php");
 
 // Connect to Database
@@ -30,5 +30,5 @@ elseif (isset($_GET["id"])) {
 
 $coldataempty = array();
 mysql_close($colcon);
-echo "<!-- End get_columns.php at ".date("H:i:s", microtime(true))." -->\r\n";
+//echo "<!-- End get_columns.php at ".date("H:i:s", microtime(true))." -->\r\n";
 ?>

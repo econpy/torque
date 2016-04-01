@@ -1,6 +1,6 @@
 <?php
 session_set_cookie_params(0,dirname($_SERVER['SCRIPT_NAME']));
-session_start();
+if (!isset($_SESSION)) { session_start(); }
 
 // Get the Full URL to the session.php file
 $thisfile = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";

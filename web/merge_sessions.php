@@ -1,11 +1,9 @@
 <?php
-echo "<!-- Begin merge_sessions.php at ".date("H:i:s", microtime(true))." -->\r\n";
+//echo "<!-- Begin merge_sessions.php at ".date("H:i:s", microtime(true))." -->\r\n";
 require_once("./creds.php");
 require_once("./get_sessions.php");
 
-if (session_status() == PHP_SESSION_NONE) {
-  session_start();
-}
+if (!isset($_SESSION)) { session_start(); }
 
 if (isset($_POST["mergesession"])) {
     $mergesession = preg_replace('/\D/', '', $_POST['mergesession']);
@@ -43,5 +41,5 @@ if (isset($mergesession) && !empty($mergesession) && isset($mergesessionwith) &&
     //Show merged session
     $session_id = $mergesession;
 }
-echo "<!-- End merge_sessions.php at ".date("H:i:s", microtime(true))." -->\r\n";
+//echo "<!-- End merge_sessions.php at ".date("H:i:s", microtime(true))." -->\r\n";
 ?>

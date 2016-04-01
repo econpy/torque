@@ -121,9 +121,7 @@ function auth_id()
     {
         return true;
     }
-
     return false;
 }
-
 
 ?>

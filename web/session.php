@@ -1,5 +1,5 @@
 <?php
-echo "<!-- Begin session.php at ".date("H:i:s", microtime(true))." -->\r\n";
+//echo "<!-- Begin session.php at ".date("H:i:s", microtime(true))." -->\r\n";
 ini_set('memory_limit', '-1');
 require_once("./creds.php");
 require_once("./auth_user.php");
@@ -10,6 +10,9 @@ require_once("./get_columns.php");
 require_once("./plot.php");
 
 $_SESSION['recent_session_id'] = strval(max($sids));
+if ( isset($_SESSION['time'] ) ) {
+        $timezone = $_SESSION['time'];
+}
 
 // Define the database connections
 $con = mysql_connect($db_host, $db_user, $db_pass) or die(mysql_error());
@@ -530,4 +533,4 @@ if (isset($sids[0])) {
     </div>
   </body>
 </html>
-<?php echo "<!-- End session.php at ".date("H:i:s", microtime(true))." -->\r\n"; ?>
+<?php //echo "<!-- End session.php at ".date("H:i:s", microtime(true))." -->\r\n"; ?>
