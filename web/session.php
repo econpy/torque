@@ -95,6 +95,15 @@ if (isset($sids[0])) {
     $i = $i + 1;
   }
 
+  // Query the list of profiles where sessions have been logged, to be used later
+  $profilequery = mysql_query("SELECT distinct profileName FROM $db_sessions_table ORDER BY profileName asc", $con) or die(mysql_error());
+  $profilearray = array();
+  $i = 0;
+  while($row = mysql_fetch_assoc($profilequery)) {
+    $profilearray[$i] = $row['profileName'];
+    $i = $i + 1;
+  }
+
   //Close the MySQL connection, which is why we can't query years later
   mysql_free_result($sessionqry);
   mysql_close($con);
@@ -322,12 +331,25 @@ if (isset($sids[0])) {
         <h4>Select Session</h4>
         <div class="row center-block" style="padding-bottom:4px;">
           <!-- Filter the session list by year and month -->
-          <h5>Filter Sessions By Date (Default is current year/month)</h5>
+          <h5>Filter Sessions (Default date filter is current year/month)</h5>
           <form method="post" class="form-horizontal" role="form" action="url.php?id=<?php echo $session_id; ?>">
             <table width="100%">
               <tr>
+                <!-- Profile Filter -->
+                <td width="25%">
+                  <select id="selprofile" name="selprofile" class="form-control chosen-select" data-placeholder="Select Profile">
+                    <option value=""></option>
+                    <option value="ALL"<?php if ($filterprofile == "ALL") echo ' selected'; ?>>Any Profile</option>
+<?php $i = 0; ?>
+<?php while(isset($profilearray[$i])) { ?>
+                    <option value="<?php echo $profilearray[$i]; ?>"<?php if ($filterprofile == $profilearray[$i]) echo ' selected'; ?>><?php echo $profilearray[$i]; ?></option>
+<?php   $i = $i + 1; ?>
+<?php } ?>
+                  </select>
+                </td>
+                <td width="2%"></td>
                 <!-- Year Filter -->
-                <td width="32%">
+                <td width="25%">
                   <select id="selyear" name="selyear" class="form-control chosen-select" data-placeholder="Select Year">
                     <option value=""></option>
                     <option value="ALL"<?php if ($filteryear == "ALL") echo ' selected'; ?>>Any Year</option>
@@ -340,7 +362,7 @@ if (isset($sids[0])) {
                 </td>
                 <td width="2%"></td>
                 <!-- Month Filter -->
-                <td width="32%">
+                <td width="25%">
                   <select id="selmonth" name="selmonth" class="form-control chosen-select" data-placeholder="Select Month">
                     <option value=""></option>
                     <option value="ALL"<?php if ($filtermonth == "ALL") echo ' selected'; ?>>Any Month</option>
@@ -358,8 +380,8 @@ if (isset($sids[0])) {
                     <option value="December"<?php if ($filtermonth == "December") echo ' selected'; ?>>December</option>
                   </select>
                 </td>
-                <td width="34%">
-                  <div align="center" style="padding-top:6px;"><input class="btn btn-info btn-sm" type="submit" id="formfilterdates" name="filterdates" value="Filter Dates"></div>
+                <td width="13%">
+                  <div align="center" style="padding-top:2px;"><input class="btn btn-info btn-sm" type="submit" id="formfilterdates" name="filterdates" value="Filter Sessions"></div>
                 </td>
               </tr>
             </table>

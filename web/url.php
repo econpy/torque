@@ -19,6 +19,17 @@ if (isset($_GET["seshid"])) {
 $baselink = $parts["0"]."session.php";
 $outurl = $baselink."?id=".$seshid;
 
+// Capture the profile we will be working with
+if (isset($_POST["selprofile"])) {
+	if ($_POST["selprofile"]) {
+		$outurl = $outurl."&profile=".$_POST["selprofile"];
+	}
+} elseif (isset($_GET["profile"])) {
+	if ($_GET["profile"]) {
+		$outurl = $outurl."&profile=".$_GET["profile"];
+	}
+}
+
 // Capture the year we will be working with
 if (isset($_POST["selyear"])) {
 	if ($_POST["selyear"]) {
