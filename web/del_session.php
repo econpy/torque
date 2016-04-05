@@ -20,6 +20,11 @@ if (isset($deletesession) && !empty($deletesession)) {
                           WHERE session=$deletesession;", $con) or die(mysql_error());
 
     mysql_free_result($delresult);
+
+    $delresult = mysql_query("DELETE FROM $db_sessions_table
+                          WHERE session=$deletesession;", $con) or die(mysql_error());
+
+    mysql_free_result($delresult);
     mysql_close($con);
 }
 //echo "<!-- End del_session.php at ".date("H:i:s", microtime(true))." -->\r\n";

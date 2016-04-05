@@ -10,8 +10,12 @@ require_once("./get_columns.php");
 require_once("./plot.php");
 
 $_SESSION['recent_session_id'] = strval(max($sids));
+// Check if there is time set in the session; if not, set it
 if ( isset($_SESSION['time'] ) ) {
         $timezone = $_SESSION['time'];
+} else {
+  date_default_timezone_set(date_default_timezone_get());
+  $timezone = "GMT ".date('Z')/3600;
 }
 
 // Define the database connections
@@ -130,7 +134,7 @@ if (isset($sids[0])) {
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
     <script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <!-- Pull the current timezone -->
-    <script language="javascript" type="text/javascript">
+<!--    <script language="javascript" type="text/javascript">
       $(document).ready(function() {
         if("<?php echo $timezone; ?>".length==0){
           var visitortime = new Date();
@@ -146,7 +150,7 @@ if (isset($sids[0])) {
           });
         }
       });
-    </script>
+    </script>-->
     <script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
     <script language="javascript" type="text/javascript" src="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
     <script language="javascript" type="text/javascript" src="static/js/jquery.peity.min.js"></script>
