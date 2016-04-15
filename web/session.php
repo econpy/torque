@@ -4,7 +4,7 @@ ini_set('memory_limit', '-1');
 require_once("./creds.php");
 require_once("./auth_user.php");
 require_once("./del_session.php");
-require_once("./merge_sessions.php");
+//require_once("./merge_sessions.php");
 require_once("./get_sessions.php");
 require_once("./get_columns.php");
 require_once("./plot.php");
@@ -340,7 +340,7 @@ if (isset($sids[0])) {
             <table width="100%">
               <tr>
                 <!-- Profile Filter -->
-                <td width="25%">
+                <td width="22%">
                   <select id="selprofile" name="selprofile" class="form-control chosen-select" data-placeholder="Select Profile">
                     <option value=""></option>
                     <option value="ALL"<?php if ($filterprofile == "ALL") echo ' selected'; ?>>Any Profile</option>
@@ -353,7 +353,7 @@ if (isset($sids[0])) {
                 </td>
                 <td width="2%"></td>
                 <!-- Year Filter -->
-                <td width="25%">
+                <td width="22%">
                   <select id="selyear" name="selyear" class="form-control chosen-select" data-placeholder="Select Year">
                     <option value=""></option>
                     <option value="ALL"<?php if ($filteryear == "ALL") echo ' selected'; ?>>Any Year</option>
@@ -366,7 +366,7 @@ if (isset($sids[0])) {
                 </td>
                 <td width="2%"></td>
                 <!-- Month Filter -->
-                <td width="25%">
+                <td width="22%">
                   <select id="selmonth" name="selmonth" class="form-control chosen-select" data-placeholder="Select Month">
                     <option value=""></option>
                     <option value="ALL"<?php if ($filtermonth == "ALL") echo ' selected'; ?>>Any Month</option>
@@ -412,16 +412,19 @@ if (isset($sids[0])) {
             <table style="width:100%">
               <tr>
                 <td>
-                  <form method="post" class="form-horizontal" role="form" action="session.php?mergesession=<?php echo $session_id; ?>&mergesessionwith=<?php echo $session_id_next; ?>" id="formmerge">
-                    <div align="center" style="padding-top:6px;"><input class="btn btn-info btn-sm" type="submit" id="formmerge" name="merge" value="Merge" title="Merge this session (<?php echo $seshdates[$session_id]; ?>) with the next session (<?php if ($session_id_next <> "") { echo $seshdates[$session_id_next]; } ?>)." <?php if($session_id_next == ""){  echo 'disabled="disabled"'; } ?> /></div>
+                  <form method="post" class="form-horizontal" role="form" action="merge_sessions.php?mergesession=<?php echo $session_id; ?>" id="formmerge">
+                    <div align="center" style="padding-top:6px;"><input class="btn btn-info btn-sm" type="submit" id="formmerge" name="merge" value="Merge" title="Merge this session (<?php echo $seshdates[$session_id]; ?>) with the other sessions." /></div>
                   </form>
+<!--                  <form method="post" class="form-horizontal" role="form" action="session.php?mergesession=<?php //echo $session_id; ?>&mergesessionwith=<?php //echo $session_id_next; ?>" id="formmerge">
+                    <div align="center" style="padding-top:6px;"><input class="btn btn-info btn-sm" type="submit" id="formmerge" name="merge" value="Merge" title="Merge this session (<?php //echo $seshdates[$session_id]; ?>) with the next session (<?php //if ($session_id_next <> "") { echo $seshdates[$session_id_next]; } ?>)." <?php //if($session_id_next == ""){  echo 'disabled="disabled"'; } ?> /></div>
+                  </form>-->
                 </td>
                 <script type="text/javascript">
                   //Adding a confirmation dialog to above forms
-                  $('#formmerge').submit(function() {
-                  var c = confirm("Click OK to merge sessions (<?php echo $seshdates[$session_id]; ?>) and (<?php if ( $session_id_next <> "") { echo $seshdates[$session_id_next]; } ?>).");
-                  return c; //you can just return c because it will be true or false
-                  });
+//                  $('#formmerge').submit(function() {
+//                  var c = confirm("Click OK to merge sessions (<?php echo $seshdates[$session_id]; ?>) and (<?php if ( $session_id_next <> "") { echo $seshdates[$session_id_next]; } ?>).");
+//                  return c; //you can just return c because it will be true or false
+//                  });
                 </script>
                 <td>
                   <form method="post" class="form-horizontal" role="form" action="session.php?deletesession=<?php echo $session_id; ?>" id="formdelete">
