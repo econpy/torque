@@ -532,7 +532,7 @@ if (isset($sids[0])) {
           <div align="center" style="padding-top:10px;">
             <h5><span class="label label-warning">No Variables Selected to Plot!</span></h5>
           </div>
-<?      } ?>
+<?php   } ?>
 <?php } else { ?>
           <div align="center" style="padding-top:5px;">
             <h5><span class="label label-warning">Select a session first!</span></h5>

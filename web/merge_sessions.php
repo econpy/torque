@@ -93,10 +93,10 @@ if (isset($mergesession) && !empty($mergesession) && isset($mergesess1) && !empt
         </div>
       </div>
     </div>
-    <form action="merge_sessions.php" method="get">
+    <form style="margin-top:50px;" action="merge_sessions.php" method="get">
       <input type="hidden" name="mergesession" value="<?php echo $mergesession; ?>" />
-      <div style="margin:0px auto;" width="100%" ><input type="submit" value="Merge Selected Sessions" /></div>
-      <table class="table" style="width:98%;margin:0px auto;margin-top:50px;">
+      <div width="100%" align="center"><input class="btn btn-info btn-sm" type="submit" value="Merge Selected Sessions" /></div>
+      <table class="table" style="width:98%;margin:0px auto;">
         <thead>
           <th>Merge?</th>
           <th>Start Time</th>
