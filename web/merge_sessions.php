@@ -34,7 +34,7 @@ mysql_select_db($db_name, $con) or die(mysql_error());
 
 //if (isset($mergesession) && !empty($mergesession) && isset($mergesessionwith) && !empty($mergesessionwith) ) {
 if (isset($mergesession) && !empty($mergesession) && isset($mergesess1) && !empty($mergesess1) ) {
-    $qrystr = "SELECT MIN(timestart) as timestart, MIN(timeend) as timeend, MIN(session) as session, SUM(sessionsize) as sessionsize FROM $db_sessions_table WHERE session = '$mergesession'";
+    $qrystr = "SELECT MIN(timestart) as timestart, MAX(timeend) as timeend, MIN(session) as session, SUM(sessionsize) as sessionsize FROM $db_sessions_table WHERE session = '$mergesession'";
     $i=1;
     while (isset(${'mergesess' . $i}) || !empty(${'mergesess' . $i})) {
         $qrystr = $qrystr . " OR session = '" . ${'mergesess' . $i} . "'";
