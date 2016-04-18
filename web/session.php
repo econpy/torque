@@ -415,17 +415,7 @@ if (isset($sids[0])) {
                   <form method="post" class="form-horizontal" role="form" action="merge_sessions.php?mergesession=<?php echo $session_id; ?>" id="formmerge">
                     <div align="center" style="padding-top:6px;"><input class="btn btn-info btn-sm" type="submit" id="formmerge" name="merge" value="Merge" title="Merge this session (<?php echo $seshdates[$session_id]; ?>) with the other sessions." /></div>
                   </form>
-<!--                  <form method="post" class="form-horizontal" role="form" action="session.php?mergesession=<?php //echo $session_id; ?>&mergesessionwith=<?php //echo $session_id_next; ?>" id="formmerge">
-                    <div align="center" style="padding-top:6px;"><input class="btn btn-info btn-sm" type="submit" id="formmerge" name="merge" value="Merge" title="Merge this session (<?php //echo $seshdates[$session_id]; ?>) with the next session (<?php //if ($session_id_next <> "") { echo $seshdates[$session_id_next]; } ?>)." <?php //if($session_id_next == ""){  echo 'disabled="disabled"'; } ?> /></div>
-                  </form>-->
                 </td>
-                <script type="text/javascript">
-                  //Adding a confirmation dialog to above forms
-//                  $('#formmerge').submit(function() {
-//                  var c = confirm("Click OK to merge sessions (<?php echo $seshdates[$session_id]; ?>) and (<?php if ( $session_id_next <> "") { echo $seshdates[$session_id_next]; } ?>).");
-//                  return c; //you can just return c because it will be true or false
-//                  });
-                </script>
                 <td>
                   <form method="post" class="form-horizontal" role="form" action="session.php?deletesession=<?php echo $session_id; ?>" id="formdelete">
                     <div align="center" style="padding-top:6px;"><input class="btn btn-info btn-sm" type="submit" id="formdelete" name="delete" value="Delete" title="Delete this session (<?php echo $seshdates[$session_id]; ?>)." /></div>

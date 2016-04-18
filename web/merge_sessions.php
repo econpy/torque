@@ -93,7 +93,7 @@ if (isset($mergesession) && !empty($mergesession) && isset($mergesess1) && !empt
         </div>
       </div>
     </div>
-    <form style="margin-top:50px;" action="merge_sessions.php" method="get">
+    <form style="margin-top:50px;" action="merge_sessions.php" method="get" id="formmerge" >
       <input type="hidden" name="mergesession" value="<?php echo $mergesession; ?>" />
       <div width="100%" align="center"><input class="btn btn-info btn-sm" type="submit" value="Merge Selected Sessions" /></div>
       <table class="table" style="width:98%;margin:0px auto;">
@@ -125,6 +125,12 @@ if (isset($mergesession) && !empty($mergesession) && isset($mergesess1) && !empt
         </tbody>
       </table>
     </form>
+    <script type="text/javascript">
+      $('#formmerge').submit(function() {
+        var c = confirm("Click OK to merge the selected session(s) with session <?php echo $mergesession; ?>.");
+        return c; //you can just return c because it will be true or false
+      });
+    </script>
     <div id="status" style="padding:10px; background:#88C4FF; color:#000; font-weight:bold; font-size:12px; margin-bottom:10px; display:none; width:90%;"></div>
   </body>
 </html>

@@ -119,3 +119,12 @@ If you log a ton of PID's (as I do for debugging) you may encounter an apache bu
 ```
 LimitRequestLine 15000
 ```
+
+### Roadmap ###
+
+* Sanity Checks and Warnings for merges and deletes
+* Fix csv and json exports...which don't work
+* Allow for csv imports...captures un-uploaded but recorded data when emailed from torque
+  * Email-receiver for this?  LONG SHOT, but have the server read an email address so you can email tracks from the app
+* Ian Hawkins has a google map pin show up when hovering over his graphs on his reference viewer...different system, but it'd be cool to implement.
+* Idea: speed heatmap for the map track.
