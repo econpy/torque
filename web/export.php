@@ -9,7 +9,7 @@ if (isset($_GET["sid"])) {
     $session_id = mysql_real_escape_string($_GET['sid']);
     // Get data for session
     $output = "";
-    $sql = mysql_query("SELECT * FROM $db_table WHERE session=$session_id ORDER BY time DESC;") or die(mysql_error());
+    $sql = mysql_query("SELECT * FROM $db_table join $db_sessions_table on $db_table.session = $db_sessions_table.session WHERE $db_table.session=$session_id ORDER BY $db_table.time DESC;") or die(mysql_error());
 
     if ($_GET["filetype"] == "csv") {
         $columns_total = mysql_num_fields($sql);
