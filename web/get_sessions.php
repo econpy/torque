@@ -71,7 +71,7 @@ if ( $filteryear <> "%" || $filtermonth <> "%" || $filterprofile <> "%") {
 if ( isset($_GET['id'])) {
 	$sessionqrystring = $sessionqrystring . $orselector . "( session LIKE '" . $_GET['id'] . "' )";
 }
-$sessionqrystring = $sessionqrystring . " GROUP BY session ORDER BY time DESC";
+$sessionqrystring = $sessionqrystring . " GROUP BY session, profileName, timestart, timeend, sessionsize ORDER BY session DESC";
 // Get list of unique session IDs
 $sessionqry = mysql_query($sessionqrystring, $con) or die(mysql_error());
 
@@ -94,7 +94,7 @@ while($row = mysql_fetch_assoc($sessionqry)) {
     }
     else {}
 }
-
+echo "debug07";
 mysql_free_result($sessionqry);
 mysql_close($con);
 //echo "<!-- End get_session.php at ".date("H:i:s", microtime(true))." -->\r\n";

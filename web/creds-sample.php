@@ -9,6 +9,7 @@ $db_name = 'torque';
 $db_table = 'raw_logs';
 $db_keys_table = 'torque_keys';
 $db_sessions_table = 'sessions';
+$gmapsApiKey = ''; // OPTIONAL: Create a key at https://developers.google.com/maps/documentation/javascript/
 
 // User credentials for Browser login
 $auth_user = '';    //Sample: 'torque'

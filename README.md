@@ -57,6 +57,13 @@ mysql -u yoursqlusername -p < scripts/create_torque_sessions_table.sql
 mysql -u yoursqlusername -p < scripts/create_torque_keys_table.sql
 ```
 
+### OPTIONAL: Create Google Maps Javascript API Key ###
+
+It's optional, but to be above board, you should create an API key for the google maps javascript API.  If you go here [Google Maps JavaScript API](https://developers.google.com/maps/documentation/javascript/) Click the "Get A Key" button, and follow the procedure to create a new project, then go to "Credentials" and make a new API Key, choosing "Server".  You'll be using it below.
+
+More guidance is available [here](https://developers.google.com/maps/documentation/javascript/get-api-key).
+
+You don't NEED to do this, but it's the proper way and will actually squash some javascript warnings if you like to keep your debug logs clean.
 
 ### Configure Webserver ###
 
@@ -86,9 +93,11 @@ $db_name = 'torque';
 $db_table = 'raw_logs';
 $db_keys_table = 'torque_keys';
 $db_sessions_table = 'sessions';
+$gmapsApiKey = ''; // OPTIONAL Create a key at https://developers.google.com/maps/documentation/javascript/
 ...
 ```
 
+If you created a google maps API key above, place that in the variable here.
 
 # Settings in Torque App #
 
@@ -123,8 +132,7 @@ LimitRequestLine 15000
 ### Roadmap ###
 
 * Sanity Checks and Warnings for merges and deletes
-* Fix csv and json exports...which don't work
 * Allow for csv imports...captures un-uploaded but recorded data when emailed from torque
   * Email-receiver for this?  LONG SHOT, but have the server read an email address so you can email tracks from the app
 * Ian Hawkins has a google map pin show up when hovering over his graphs on his reference viewer...different system, but it'd be cool to implement.
-* Idea: speed heatmap for the map track.
+* Idea: speed heatmap for the map track. (Google Maps iOS API has gradient polylines, javascript API does not...may not be possible for now).

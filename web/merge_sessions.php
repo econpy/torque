@@ -127,7 +127,7 @@ if (isset($mergesession) && !empty($mergesession) && isset($mergesess1) && !empt
     </form>
     <script type="text/javascript">
       $('#formmerge').submit(function() {
-        var c = confirm("Click OK to merge the selected session(s) with session <?php echo $mergesession; ?>.");
+        var c = confirm("Click OK to merge the selected session(s) with session <?php echo $mergesession; ?>.\nPlease make sure what you're trying to do makes sense, this cannot be easily undone!");
         return c; //you can just return c because it will be true or false
       });
     </script>

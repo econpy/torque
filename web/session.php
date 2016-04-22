@@ -1,5 +1,8 @@
 <?php
 //echo "<!-- Begin session.php at ".date("H:i:s", microtime(true))." -->\r\n";
+$loadstart = date("g:i:s A", microtime(true));
+$loadmicrostart = explode(' ', microtime());
+$loadmicrostart = $loadmicrostart[1] + $loadmicrostart[0];
 ini_set('memory_limit', '-1');
 require_once("./creds.php");
 require_once("./auth_user.php");
@@ -133,30 +136,13 @@ if (isset($sids[0])) {
     <link rel="stylesheet" href="static/css/torque.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
     <script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-    <!-- Pull the current timezone -->
-<!--    <script language="javascript" type="text/javascript">
-      $(document).ready(function() {
-        if("<?php echo $timezone; ?>".length==0){
-          var visitortime = new Date();
-          var visitortimezone = "GMT " + -visitortime.getTimezoneOffset()/60;
-          var timezoneurl = $(location).attr('href').split('?')[0].replace('session', 'timezone');
-          $.ajax({
-            type: "GET",
-            url: timezoneurl,
-            data: 'time='+ visitortimezone,
-            success: function(){
-              location.reload();
-            }
-          });
-        }
-      });
-    </script>-->
     <script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
     <script language="javascript" type="text/javascript" src="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
     <script language="javascript" type="text/javascript" src="static/js/jquery.peity.min.js"></script>
     <script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.1.0/chosen.jquery.min.js"></script>
     <!-- Initialize the google maps javascript code -->
-    <script language="javascript" type="text/javascript" src="https://maps.googleapis.com/maps/api/js"></script>
+    <script language="javascript" type="text/javascript" defer src="https://maps.googleapis.com/maps/api/js<?php if(!empty($gmapsApiKey)) { echo "?key=$gmapsApiKey&callback=initialize"; } ?>"></script>
+<!--    <script language="javascript" type="text/javascript" src="https://maps.googleapis.com/maps/api/js"></script>-->
     <script language="javascript" type="text/javascript">
       function initialize() {
         var mapDiv = document.getElementById('map-canvas');
@@ -413,7 +399,7 @@ if (isset($sids[0])) {
               <tr>
                 <td>
                   <form method="post" class="form-horizontal" role="form" action="merge_sessions.php?mergesession=<?php echo $session_id; ?>" id="formmerge">
-                    <div align="center" style="padding-top:6px;"><input class="btn btn-info btn-sm" type="submit" id="formmerge" name="merge" value="Merge" title="Merge this session (<?php echo $seshdates[$session_id]; ?>) with the other sessions." /></div>
+                    <div align="center" style="padding-top:6px;"><input class="btn btn-info btn-sm" type="submit" id="formmerge" name="merge" value="Merge..." title="Merge this session (<?php echo $seshdates[$session_id]; ?>) with the other sessions." /></div>
                   </form>
                 </td>
                 <td>
@@ -547,6 +533,11 @@ if (isset($sids[0])) {
         <div class="row center-block" style="padding-bottom:18px;text-align:center;">
           <a href="http://hda.surfrock66.com/torquetest/pid_edit.php" title="Edit PIDs">Edit PIDs</a><br />
           <a href="https://github.com/surfrock66/torque" title="View Source On Github">View Source On Github</a>
+          <p style="font-size:10px;margin-top:20px;" >
+            Render Start: <?php echo $loadstart; ?>; Render End: <?php $loadend = date("h:i:s A", microtime(true)); echo $loadend; ?><br />
+            Load Time: <?php $loadmicroend = explode(' ', microtime()); $loadmicroend = $loadmicroend[1] + $loadmicroend[0]; echo $loadmicroend-$loadmicrostart; ?> seconds<br />
+            Session ID: <?php echo $session_id; ?>
+          </p>
         </div>
       </div>
     </div>
