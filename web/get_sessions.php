@@ -27,7 +27,11 @@ if ( isset($_POST["selmonth"]) ) {
 } elseif ( isset($_GET["month"])) {
 	$filtermonth = $_GET["month"];
 } else {
-	$filtermonth = date('F');
+	if ( isset($_POST["selyear"]) || isset($_GET["year"]) ) {
+		$filtermonth = "%";
+	} else {
+		$filtermonth = date('F');
+	}
 }
 if ( $filtermonth == "ALL" ) {
 	$filtermonth = "%";
@@ -94,7 +98,7 @@ while($row = mysql_fetch_assoc($sessionqry)) {
     }
     else {}
 }
-echo "debug07";
+
 mysql_free_result($sessionqry);
 mysql_close($con);
 //echo "<!-- End get_session.php at ".date("H:i:s", microtime(true))." -->\r\n";
