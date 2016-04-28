@@ -51,6 +51,8 @@ if (sizeof($_GET) > 0) {
       $sessprofilequery = $sessprofilequery.", ".$key."='".$value."'";
       $sessprofilekeys[] = $key;
       $sessprofilevalues[] = "'".$value."'";
+      $sesskeys[] = $key;
+      $sessvalues[] = "'".$value."'";
       $submitval = 1;
     } else {
       $submitval = 0;
