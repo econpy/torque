@@ -15,7 +15,7 @@ CREATE TABLE `sessions` (
   `timestart` varchar(15) NOT NULL,
   `timeend` varchar(15) NOT NULL,
   `sessionsize` varchar(15) NOT NULL DEFAULT '0',
-  KEY `session` (`session`,`id`),
+  UNIQUE KEY `session` (`session`,`id`),
   KEY `id` (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 

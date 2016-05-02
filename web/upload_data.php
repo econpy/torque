@@ -25,6 +25,7 @@ if (sizeof($_GET) > 0) {
   $sessuploadid = "";
   $sesstime = "0";
   $sessprofilequery = "";
+//print_r($_GET);
   foreach ($_GET as $key => $value) {
     if (preg_match("/^k/", $key)) {
       // Keep columns starting with k
@@ -36,7 +37,7 @@ if (sizeof($_GET) > 0) {
         $values[] = $value;
       }
       $submitval = 1;
-    } else if (in_array($key, array("v", "eml", "time", "id", "session", "notice", "noticeClass"))) {
+    } else if (in_array($key, array("v", "eml", "time", "id", "session"))) {
       // Keep non k* columns listed here
       if ($key == 'session') {
         $sessuploadid = $value;
@@ -47,12 +48,14 @@ if (sizeof($_GET) > 0) {
       $sesskeys[] = $key;
       $sessvalues[] = "'".$value."'";
       $submitval = 1;
+    } else if (in_array($key, array("notice", "noticeClass"))) {
+      $keys[] = $key;
+      $values[] = "'".$value."'";
+      $submitval = 1;
     } else if (preg_match("/^profile/", $key)) {
       $sessprofilequery = $sessprofilequery.", ".$key."='".$value."'";
       $sessprofilekeys[] = $key;
       $sessprofilevalues[] = "'".$value."'";
-      $sesskeys[] = $key;
-      $sessvalues[] = "'".$value."'";
       $submitval = 1;
     } else {
       $submitval = 0;
@@ -81,22 +84,24 @@ if (sizeof($_GET) > 0) {
   if ((sizeof($rawkeys) === sizeof($rawvalues)) && sizeof($rawkeys) > 0 && (sizeof($sesskeys) === sizeof($sessvalues)) && sizeof($sesskeys) > 0) {
     // Now insert the data for all the fields into the raw logs table
     $sql = "INSERT INTO $db_table (".implode(",", $rawkeys).") VALUES (".implode(",", $rawvalues).")";
+//echo $sql;
     mysql_query($sql, $con) or die(mysql_error());
     // See if there is already an entry in the sessions table for this session
     $sessionqry = mysql_query("SELECT session, sessionsize FROM $db_sessions_table WHERE session LIKE '$sessuploadid'", $con) or die(mysql_error());
-    if (mysql_num_rows($sessionqry) > 0) {
+    $sesssizecount=1;
+//    if (mysql_num_rows($sessionqry) > 0) {
       // If there's an entry in the session table for this session, update the session end time and the datapoint count
       while($row = mysql_fetch_assoc($sessionqry)) {
         $sesssizecount = $row["sessionsize"] + 1;
-//        $sessionqrystring = "UPDATE $db_sessions_table SET timeend='$sesstime', sessionsize='$sesssizecount' WHERE session LIKE '$sessuploadid'";
-        $sessionqrystring = "UPDATE $db_sessions_table SET timeend='$sesstime', sessionsize='$sesssizecount'$sessprofilequery WHERE session LIKE '$sessuploadid'";
-        mysql_query($sessionqrystring, $con) or die(mysql_error());
+//        $sessionqrystring = "UPDATE $db_sessions_table SET timeend='$sesstime', sessionsize='$sesssizecount'$sessprofilequery WHERE session LIKE '$sessuploadid'";
       }
-    } else {
-      // If this is a new session, insert an entry in the sessions table and then update the start time and datapoint count
-      $sql = "INSERT INTO $db_sessions_table (".implode(",", $sesskeys).", timestart, sessionsize) VALUES (".implode(",", $sessvalues).", $sesstime, '1')";
-      mysql_query($sql, $con) or die(mysql_error());
-    }
+//    } else {
+//      // If this is a new session, insert an entry in the sessions table and then update the start time and datapoint count
+//      $sessionqrystring = "INSERT INTO $db_sessions_table (".implode(",", $sesskeys).", timestart, sessionsize) VALUES (".implode(",", $sessvalues).", $sesstime, '1')";
+//    }
+    $sessionqrystring = "INSERT INTO $db_sessions_table (".implode(",", $sesskeys).", timestart, sessionsize) VALUES (".implode(",", $sessvalues).", $sesstime, '1') ON DUPLICATE KEY UPDATE timeend='$sesstime', sessionsize='$sesssizecount'$sessprofilequery";
+//echo $sessionqrystring;
+    mysql_query($sessionqrystring, $con) or die(mysql_error());
   }
 }
 mysql_close($con);
