@@ -160,4 +160,4 @@ CREATE TABLE `raw_logs` (
   `kff5203` float NOT NULL DEFAULT '0',
   KEY `session` (`session`,`id`),
   KEY `id` (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

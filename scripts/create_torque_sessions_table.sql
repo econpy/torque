@@ -17,5 +17,5 @@ CREATE TABLE `sessions` (
   `sessionsize` varchar(15) NOT NULL DEFAULT '0',
   UNIQUE KEY `session` (`session`,`id`),
   KEY `id` (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

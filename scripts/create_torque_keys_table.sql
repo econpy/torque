@@ -10,7 +10,7 @@ CREATE TABLE `torque_keys` (
   `min` float COMMENT 'Minimum Value',
   `max` float COMMENT 'Maximum Value',
   KEY `id` (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO torque_keys (id, description, type,  units, populated, min, max) VALUES ('kff122e','0-100kph Time','float','s',1,0,16);
 INSERT INTO torque_keys (id, description, type,  units, populated, min, max) VALUES ('kff124f','0-200kph Time','float','s',1,0,16);
