@@ -1,6 +1,20 @@
 USE `torque`;
 
-DROP TABLE IF EXISTS `raw_logs`;
+SELECT Count(*)
+INTO @exists
+FROM information_schema.tables 
+WHERE table_schema = [DATABASE_NAME]
+    AND table_type = 'BASE TABLE'
+    AND table_name = 'raw_logs';
+
+SET @query = If(@exists>0,
+    'RENAME TABLE raw_logs TO raw_logs_old',
+    'SELECT \'nothing to rename\' status');
+
+PREPARE stmt FROM @query;
+
+EXECUTE stmt;
+#DROP TABLE IF EXISTS `raw_logs`;
 CREATE TABLE `raw_logs` (
   `v` varchar(1) NOT NULL,
   `session` varchar(15) NOT NULL,
