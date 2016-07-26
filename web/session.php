@@ -91,13 +91,15 @@ else {
                         var visitortime = new Date();
                         var visitortimezone = "GMT " + -visitortime.getTimezoneOffset()/60;
                         var timezoneurl = $(location).attr('href').split('?')[0].replace('session', 'timezone');
-                        $.ajax({
-                            type: "GET",
-                            url: timezoneurl,
-                            data: 'time='+ visitortimezone,
-                            success: function(){
-                                location.reload();
-                            }
+                        // Removed 20160725 as it was causing a reload loop.
+                        // $.ajax({
+                        //     type: "GET",
+                        //     url: timezoneurl,
+                        //     data: 'time='+ visitortimezone,
+                        //     success: function(){
+                        //         location.reload();
+                        //     }
+                        // Removed 20160725 as it was causing a reload loop.
                         });
                     }
                 });
