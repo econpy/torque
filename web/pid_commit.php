@@ -1,11 +1,7 @@
 <?php
 
-require_once ("./creds.php");
+require_once ("./db.php");
 require_once ("./auth_user.php");
-
-// Define the database connections
-$con = mysql_connect($db_host, $db_user, $db_pass) or die(mysql_error());
-mysql_select_db($db_name, $con) or die(mysql_error());
 
 if(!empty($_POST)) {
   //database settings

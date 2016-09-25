@@ -1,9 +1,5 @@
 <?php
-require("./creds.php");
-
-// Connect to Database
-mysql_connect($db_host, $db_user, $db_pass) or die(mysql_error());
-mysql_select_db($db_name) or die(mysql_error());
+require_once("./db.php");
 
 if (isset($_GET["sid"])) {
     $session_id = mysql_real_escape_string($_GET['sid']);
@@ -30,7 +26,6 @@ if (isset($_GET["sid"])) {
         }
 
         mysql_free_result($sql);
-        mysql_close($con);
 
         // Download the file
         $csvfilename = "torque_session_".$session_id.".csv";
@@ -48,7 +43,6 @@ if (isset($_GET["sid"])) {
         $jsonrows = json_encode($rows);
 
         mysql_free_result($sql);
-        mysql_close($con);
 
         // Download the file
         $jsonfilename = "torque_session_".$session_id.".json";
@@ -56,14 +50,9 @@ if (isset($_GET["sid"])) {
         header('Content-Disposition: attachment; filename='.$jsonfilename);
 
         echo $jsonrows;
-        exit;
-    }
-    else {
-        exit;
     }
 }
-else {
-    exit;
-}
+
+mysql_close($con);
 
 ?>

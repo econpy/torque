@@ -1,16 +1,13 @@
 <?php
 
-require_once ("./creds.php");
+require_once ("./db.php");
 require_once ("./auth_user.php");
-
-// Connect to Database
-mysql_connect($db_host, $db_user, $db_pass) or die(mysql_error());
 
 // Create array of column name/comments for chart data selector form
 // 2015.08.21 - edit by surfrock66 - Rather than pull from the column comments,
 //   oull from a new database created which manages variables. Include
 //   a column flagging whether a variable is populated or not.
-$keyqry = mysql_query("SELECT id,description,units,type,min,max,populated FROM ".$db_name.".".$db_keys_table." ORDER BY description") or die(mysql_error());
+$keyqry = mysql_query("SELECT id,description,units,type,min,max,populated FROM ".$db_name.".".$db_keys_table." ORDER BY description", $con) or die(mysql_error());
 $i = 0;
 while ($x = mysql_fetch_array($keyqry)) {
 	if ((substr($x[0], 0, 1) == "k") ) {

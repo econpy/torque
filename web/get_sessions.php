@@ -1,13 +1,9 @@
 <?php
 //echo "<!-- Begin get_session.php at ".date("H:i:s", microtime(true))." -->\r\n";
-require_once("./creds.php");
+// this page relies on being included from another page that has already connected to db
 
 session_set_cookie_params(0,dirname($_SERVER['SCRIPT_NAME']));
 if (!isset($_SESSION)) { session_start(); }
-
-// Connect to Database
-$con = mysql_connect($db_host, $db_user, $db_pass) or die(mysql_error());
-mysql_select_db($db_name, $con) or die(mysql_error());
 
 // Process the 4 possibilities for the year filter: Set in POST, Set in GET, select all possible years, or the default: select the current year
 if ( isset($_POST["selyear"]) ) {
@@ -100,7 +96,6 @@ while($row = mysql_fetch_assoc($sessionqry)) {
 }
 
 mysql_free_result($sessionqry);
-mysql_close($con);
 //echo "<!-- End get_session.php at ".date("H:i:s", microtime(true))." -->\r\n";
 
 ?>

@@ -4,7 +4,7 @@ $loadstart = date("g:i:s A", microtime(true));
 $loadmicrostart = explode(' ', microtime());
 $loadmicrostart = $loadmicrostart[1] + $loadmicrostart[0];
 ini_set('memory_limit', '-1');
-require_once("./creds.php");
+require_once("./db.php");
 require_once("./auth_user.php");
 require_once("./del_session.php");
 //require_once("./merge_sessions.php");
@@ -20,10 +20,6 @@ if ( isset($_SESSION['time'] ) ) {
   date_default_timezone_set(date_default_timezone_get());
   $timezone = "GMT ".date('Z')/3600;
 }
-
-// Define the database connections
-$con = mysql_connect($db_host, $db_user, $db_pass) or die(mysql_error());
-mysql_select_db($db_name, $con) or die(mysql_error());
 
 // Capture the session ID if one has been chosen already
 if (isset($_GET["id"])) {

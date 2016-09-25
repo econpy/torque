@@ -1,6 +1,6 @@
 <?php
 //echo "<!-- Begin merge_sessions.php at ".date("H:i:s", microtime(true))." -->\r\n";
-require_once("./creds.php");
+require_once("./db.php");
 require_once("./get_sessions.php");
 
 if (!isset($_SESSION)) { session_start(); }
@@ -27,10 +27,6 @@ foreach ($_GET as $key => $value) {
         array_push($sessionids, $value);
     }
 }
-
-// Connect to Database
-$con = mysql_connect($db_host, $db_user, $db_pass) or die(mysql_error());
-mysql_select_db($db_name, $con) or die(mysql_error());
 
 //if (isset($mergesession) && !empty($mergesession) && isset($mergesessionwith) && !empty($mergesessionwith) ) {
 if (isset($mergesession) && !empty($mergesession) && isset($mergesess1) && !empty($mergesess1) ) {
