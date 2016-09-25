@@ -47,9 +47,9 @@ if ( $filterprofile == "ALL" ) {
 
 // Build the MySQL select string based on the inputs (year, month, or session id)
 $sessionqrystring = "SELECT timestart, timeend, session, profileName, sessionsize FROM $db_sessions_table ";
-$sqlqryyear = "YEAR(FROM_UNIXTIME(session/1000)) LIKE '" . $filteryear . "' ";
-$sqlqrymonth = "MONTHNAME(FROM_UNIXTIME(session/1000)) LIKE '" . $filtermonth . "' ";
-$sqlqryprofile = "profileName LIKE '" . $filterprofile . "' ";
+$sqlqryyear = "YEAR(FROM_UNIXTIME(session/1000)) LIKE " . quote_value($filteryear) . " ";
+$sqlqrymonth = "MONTHNAME(FROM_UNIXTIME(session/1000)) LIKE " . quote_value($filtermonth) . " ";
+$sqlqryprofile = "profileName LIKE " . quote_value($filterprofile) . " " ;
 $orselector = "WHERE ";
 $andselector = "";
 if ( $filteryear <> "%" || $filtermonth <> "%" || $filterprofile <> "%") {
@@ -69,7 +69,7 @@ if ( $filteryear <> "%" || $filtermonth <> "%" || $filterprofile <> "%") {
 	$sessionqrystring = $sessionqrystring . " ) ";
 }
 if ( isset($_GET['id'])) {
-	$sessionqrystring = $sessionqrystring . $orselector . "( session LIKE '" . $_GET['id'] . "' )";
+	$sessionqrystring = $sessionqrystring . $orselector . "( session LIKE " . quote_value($_GET['id']) . " )";
 }
 $sessionqrystring = $sessionqrystring . " GROUP BY session, profileName, timestart, timeend, sessionsize ORDER BY session DESC";
 // Get list of unique session IDs

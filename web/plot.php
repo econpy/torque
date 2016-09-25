@@ -50,12 +50,12 @@ if (isset($_GET["id"]) and in_array($_GET["id"], $sids)) {
 	$selectstring = "time";
 	$i = 1;
 	while ( isset($_GET["s$i"]) ) {
-		${'v' . $i} = mysql_real_escape_string($_GET["s$i"]);
-		$selectstring = $selectstring.",${'v' . $i}";
+		${'v' . $i} = $_GET["s$i"];
+		$selectstring = $selectstring.",".quote_name(${'v' . $i});
 		$i = $i + 1;
 	}
 	// Get data for session
-	$sessionqry = mysql_query("SELECT $selectstring FROM $db_table WHERE session=$session_id ORDER BY time DESC;") or die(mysql_error());
+	$sessionqry = mysql_query("SELECT $selectstring FROM $db_table WHERE session=".quote_value($session_id)." ORDER BY time DESC;") or die(mysql_error());
 	while($row = mysql_fetch_assoc($sessionqry)) {
 	    $i = 1;
 		while (isset(${'v' . $i})) {

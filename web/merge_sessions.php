@@ -30,7 +30,7 @@ foreach ($_GET as $key => $value) {
 
 //if (isset($mergesession) && !empty($mergesession) && isset($mergesessionwith) && !empty($mergesessionwith) ) {
 if (isset($mergesession) && !empty($mergesession) && isset($mergesess1) && !empty($mergesess1) ) {
-    $qrystr = "SELECT MIN(timestart) as timestart, MAX(timeend) as timeend, MIN(session) as session, SUM(sessionsize) as sessionsize FROM $db_sessions_table WHERE session = '$mergesession'";
+    $qrystr = "SELECT MIN(timestart) as timestart, MAX(timeend) as timeend, MIN(session) as session, SUM(sessionsize) as sessionsize FROM $db_sessions_table WHERE session = ".quote_value($mergesession);
     $i=1;
     while (isset(${'mergesess' . $i}) || !empty(${'mergesess' . $i})) {
         $qrystr = $qrystr . " OR session = '" . ${'mergesess' . $i} . "'";
@@ -51,7 +51,7 @@ if (isset($mergesession) && !empty($mergesession) && isset($mergesess1) && !empt
         } else {
             $delquery = "DELETE FROM $db_sessions_table WHERE session = '$value'";
             mysql_query($delquery, $con) or die(mysql_error());
-            $updatequery = "UPDATE $db_table SET session=$newsession WHERE session=$value";
+            $updatequery = "UPDATE $db_table SET session=$newsession WHERE session=".quote_value($value);
             mysql_query($updatequery, $con) or die(mysql_error());
         }
     }

@@ -8,7 +8,7 @@ if(!empty($_POST)) {
   foreach($_POST as $field_name => $val) {
     //clean post values
     $field_id = strip_tags(trim($field_name));
-    $val = strip_tags(trim(mysql_real_escape_string($val)));
+    $val = strip_tags(trim($val));
 
     //from the fieldname:id we need to get id
     $split_data = explode(':', $field_id);
@@ -24,11 +24,13 @@ echo "\nField Name: '$field_name'\nField ID: '$id'\nValue: '$val'\n";
        }
       }
       //update the values
-echo "\nUPDATE $db_name.$db_keys_table SET $field_name = '$val' WHERE id = '$id'\n";
-      mysql_query("UPDATE $db_name.$db_keys_table SET $field_name = '$val' WHERE id = '$id'") or mysql_error;
+      $query = "UPDATE $db_name.$db_keys_table SET ".quote_name($field_name)." = ".quote_value($val)." WHERE id = ".quote_value($id);
+echo "\n$query\n";
+      mysql_query($query) || die(mysql_error());
       if($field_name == 'type') {
-echo "ALTER TABLE $db_name.$db_table MODIFY $id $val NOT NULL DEFAULT '0'";
-        mysql_query("ALTER TABLE $db_name.$db_table MODIFY $id $val NOT NULL DEFAULT '0'") or mysql_error;
+      $query = "ALTER TABLE $db_name.$db_table MODIFY ".quote_name($id)." ".mysql_real_escape_string($val)." NOT NULL DEFAULT '0'";
+echo $query;
+        mysql_query($query) || die(mysql_error());
       }
       echo "Updated";
     } else {
