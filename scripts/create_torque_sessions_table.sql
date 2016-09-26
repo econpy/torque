@@ -3,7 +3,7 @@ USE `torque`;
 SELECT Count(*)
 INTO @exists
 FROM information_schema.tables 
-WHERE table_schema = [DATABASE_NAME]
+WHERE table_schema = 'torque'
     AND table_type = 'BASE TABLE'
     AND table_name = 'sessions';
 
