@@ -1,10 +1,7 @@
 <?php
-require_once ('creds.php');
+require_once ('db.php');
 require_once ('auth_app.php');
 
-// Connect to Database
-$con = mysql_connect($db_host, $db_user, $db_pass) or die(mysql_error());
-mysql_select_db($db_name, $con) or die(mysql_error());
 
 // Create an array of all the existing fields in the database
 $result = mysql_query("SHOW COLUMNS FROM $db_table", $con) or die(mysql_error());
@@ -46,16 +43,16 @@ if (sizeof($_GET) > 0) {
         $sesstime = $value;
       }
       $sesskeys[] = $key;
-      $sessvalues[] = "'".$value."'";
+      $sessvalues[] = $value;
       $submitval = 1;
     } else if (in_array($key, array("notice", "noticeClass"))) {
       $keys[] = $key;
-      $values[] = "'".$value."'";
+      $values[] = $value;
       $submitval = 1;
     } else if (preg_match("/^profile/", $key)) {
-      $sessprofilequery = $sessprofilequery.", ".$key."='".$value."'";
+      $sessprofilequery = $sessprofilequery.", ".quote_name($key)."=".quote_value($value);
       $sessprofilekeys[] = $key;
-      $sessprofilevalues[] = "'".$value."'";
+      $sessprofilevalues[] = $value;
       $submitval = 1;
     } else {
       $submitval = 0;
@@ -64,12 +61,12 @@ if (sizeof($_GET) > 0) {
     if (!in_array($key, $dbfields) and $submitval == 1) {
       if ( is_float($value) ) {
         // Add field if it's a float
-        $sqlalter = "ALTER TABLE $db_table ADD $key float NOT NULL default '0'";
-        $sqlalterkey = "INSERT INTO $db_keys_table (id, description, type, populated) VALUES ('$key', '$key', 'float', '1')";
+        $sqlalter = "ALTER TABLE $db_table ADD ".quote_name($key)." float NOT NULL default '0'";
+        $sqlalterkey = "INSERT INTO $db_keys_table (id, description, type, populated) VALUES (".quote_value($key).", ".quote_value($key).", 'float', '1')";
       } else {
         // Add field if it's a string, specifically varchar(255)
-        $sqlalter = "ALTER TABLE $db_table ADD $key VARCHAR(255) NOT NULL default 'Not Specified'";
-        $sqlalterkey = "INSERT INTO $db_keys_table (id, description, type, populated) VALUES ('$key', '$key', 'varchar(255)', '1')";
+        $sqlalter = "ALTER TABLE $db_table ADD ".quote_name($key)." VARCHAR(255) NOT NULL default 'Not Specified'";
+        $sqlalterkey = "INSERT INTO $db_keys_table (id, description, type, populated) VALUES (".quote_value($key).", ".quote_value($key).", 'varchar(255)', '1')";
       }
       mysql_query($sqlalter, $con) or die(mysql_error());
       mysql_query($sqlalterkey, $con) or die(mysql_error());
@@ -83,23 +80,17 @@ if (sizeof($_GET) > 0) {
   $rawvalues = array_merge($values, $sessvalues, $sessprofilevalues);
   if ((sizeof($rawkeys) === sizeof($rawvalues)) && sizeof($rawkeys) > 0 && (sizeof($sesskeys) === sizeof($sessvalues)) && sizeof($sesskeys) > 0) {
     // Now insert the data for all the fields into the raw logs table
-    $sql = "INSERT INTO $db_table (".implode(",", $rawkeys).") VALUES (".implode(",", $rawvalues).")";
+    $sql = "INSERT INTO $db_table (".quote_names($rawkeys).") VALUES (".quote_values($rawvalues).")";
 //echo $sql;
     mysql_query($sql, $con) or die(mysql_error());
     // See if there is already an entry in the sessions table for this session
-    $sessionqry = mysql_query("SELECT session, sessionsize FROM $db_sessions_table WHERE session LIKE '$sessuploadid'", $con) or die(mysql_error());
+    $sessionqry = mysql_query("SELECT session, sessionsize FROM $db_sessions_table WHERE session LIKE ".quote_value($sessuploadid), $con) or die(mysql_error());
     $sesssizecount=1;
-//    if (mysql_num_rows($sessionqry) > 0) {
-      // If there's an entry in the session table for this session, update the session end time and the datapoint count
-      while($row = mysql_fetch_assoc($sessionqry)) {
-        $sesssizecount = $row["sessionsize"] + 1;
-//        $sessionqrystring = "UPDATE $db_sessions_table SET timeend='$sesstime', sessionsize='$sesssizecount'$sessprofilequery WHERE session LIKE '$sessuploadid'";
-      }
-//    } else {
-//      // If this is a new session, insert an entry in the sessions table and then update the start time and datapoint count
-//      $sessionqrystring = "INSERT INTO $db_sessions_table (".implode(",", $sesskeys).", timestart, sessionsize) VALUES (".implode(",", $sessvalues).", $sesstime, '1')";
-//    }
-    $sessionqrystring = "INSERT INTO $db_sessions_table (".implode(",", $sesskeys).", timestart, sessionsize) VALUES (".implode(",", $sessvalues).", $sesstime, '1') ON DUPLICATE KEY UPDATE timeend='$sesstime', sessionsize='$sesssizecount'$sessprofilequery";
+    // If there's an entry in the session table for this session, update the session end time and the datapoint count
+    while($row = mysql_fetch_assoc($sessionqry)) {
+      $sesssizecount = $row["sessionsize"] + 1;
+    }
+    $sessionqrystring = "INSERT INTO $db_sessions_table (".quote_names($sesskeys).", timestart, sessionsize) VALUES (".quote_values($sessvalues).", $sesstime, '1') ON DUPLICATE KEY UPDATE timeend='$sesstime', sessionsize='$sesssizecount'$sessprofilequery";
 //echo $sessionqrystring;
     mysql_query($sessionqrystring, $con) or die(mysql_error());
   }

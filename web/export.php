@@ -1,15 +1,11 @@
 <?php
-require("./creds.php");
-
-// Connect to Database
-mysql_connect($db_host, $db_user, $db_pass) or die(mysql_error());
-mysql_select_db($db_name) or die(mysql_error());
+require_once("./db.php");
 
 if (isset($_GET["sid"])) {
-    $session_id = mysql_real_escape_string($_GET['sid']);
+    $session_id = $_GET['sid'];
     // Get data for session
     $output = "";
-    $sql = mysql_query("SELECT * FROM $db_table join $db_sessions_table on $db_table.session = $db_sessions_table.session WHERE $db_table.session=$session_id ORDER BY $db_table.time DESC;") or die(mysql_error());
+    $sql = mysql_query("SELECT * FROM $db_table join $db_sessions_table on $db_table.session = $db_sessions_table.session WHERE $db_table.session=".quote_value($session_id)." ORDER BY $db_table.time DESC;") or die(mysql_error());
 
     if ($_GET["filetype"] == "csv") {
         $columns_total = mysql_num_fields($sql);
@@ -30,7 +26,6 @@ if (isset($_GET["sid"])) {
         }
 
         mysql_free_result($sql);
-        mysql_close($con);
 
         // Download the file
         $csvfilename = "torque_session_".$session_id.".csv";
@@ -48,7 +43,6 @@ if (isset($_GET["sid"])) {
         $jsonrows = json_encode($rows);
 
         mysql_free_result($sql);
-        mysql_close($con);
 
         // Download the file
         $jsonfilename = "torque_session_".$session_id.".json";
@@ -56,14 +50,9 @@ if (isset($_GET["sid"])) {
         header('Content-Disposition: attachment; filename='.$jsonfilename);
 
         echo $jsonrows;
-        exit;
-    }
-    else {
-        exit;
     }
 }
-else {
-    exit;
-}
+
+mysql_close($con);
 
 ?>

@@ -1,10 +1,7 @@
 <?php
 //echo "<!-- Begin plot.php at ".date("H:i:s", microtime(true))." -->\r\n";
-require_once("./creds.php");
+require_once("./db.php");
 require_once("./parse_functions.php");
-// Connect to Database
-mysql_connect($db_host, $db_user, $db_pass) or die(mysql_error());
-mysql_select_db($db_name) or die(mysql_error());
 
 // Convert data units
 // TODO: Use the userDefault fields to do these conversions dynamically
@@ -53,12 +50,12 @@ if (isset($_GET["id"]) and in_array($_GET["id"], $sids)) {
 	$selectstring = "time";
 	$i = 1;
 	while ( isset($_GET["s$i"]) ) {
-		${'v' . $i} = mysql_real_escape_string($_GET["s$i"]);
-		$selectstring = $selectstring.",${'v' . $i}";
+		${'v' . $i} = $_GET["s$i"];
+		$selectstring = $selectstring.",".quote_name(${'v' . $i});
 		$i = $i + 1;
 	}
 	// Get data for session
-	$sessionqry = mysql_query("SELECT $selectstring FROM $db_table WHERE session=$session_id ORDER BY time DESC;") or die(mysql_error());
+	$sessionqry = mysql_query("SELECT $selectstring FROM $db_table WHERE session=".quote_value($session_id)." ORDER BY time DESC;") or die(mysql_error());
 	while($row = mysql_fetch_assoc($sessionqry)) {
 	    $i = 1;
 		while (isset(${'v' . $i})) {
