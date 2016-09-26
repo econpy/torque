@@ -527,7 +527,7 @@ if (isset($sids[0])) {
 <?php } ?>
         </div>
         <div class="row center-block" style="padding-bottom:18px;text-align:center;">
-          <a href="http://hda.surfrock66.com/torquetest/pid_edit.php" title="Edit PIDs">Edit PIDs</a><br />
+          <a href="./pid_edit.php" title="Edit PIDs">Edit PIDs</a><br />
           <a href="https://github.com/surfrock66/torque" title="View Source On Github">View Source On Github</a>
           <p style="font-size:10px;margin-top:20px;" >
             Render Start: <?php echo $loadstart; ?>; Render End: <?php $loadend = date("h:i:s A", microtime(true)); echo $loadend; ?><br />
