@@ -7,9 +7,9 @@ $thisfile = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 $parts = strtok("url.php", $thisfile);
 // Capture the session ID we're going to be working with
 if (isset($_GET["seshid"])) {
-	$seshid = strval(mysql_escape_string($_GET["seshid"]));
+	$seshid = strval(mysqli_escape_string($_GET["seshid"]));
 } elseif (isset($_POST["seshidtag"])) {
-	$seshid = strval(mysql_escape_string($_POST["seshidtag"]));
+	$seshid = strval(mysqli_escape_string($_POST["seshidtag"]));
 } elseif (isset($_GET["id"])) {
 	$seshid = $_GET["id"];
 } else {

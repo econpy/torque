@@ -4,8 +4,8 @@
 require_once ('creds.php');
 
 // Connect to Database
-$con = mysql_connect($db_host, $db_user, $db_pass) or die(mysql_error());
-mysql_select_db($db_name, $con) or die(mysql_error());
+$con = mysqli_connect($db_host, $db_user, $db_pass) or die(mysqli_error());
+mysqli_select_db($con, $db_name) or die(mysqli_error());
 
 // helper function to quote a single identifier
 // suitable for a single column name or table name
@@ -29,7 +29,9 @@ function quote_names($column_names) {
 // suitable for a single value
 // the value will have quotes around it
 function quote_value($value) {
-  return "'" . mysql_real_escape_string($value) . "'";
+  require ('creds.php');
+  $con = mysqli_connect($db_host, $db_user, $db_pass) or die(mysqli_error());
+  return "'" . mysqli_real_escape_string($con, $value) . "'";
 }
 
 // helper function to quote multiple values

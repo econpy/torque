@@ -36,23 +36,23 @@ if (isset($mergesession) && !empty($mergesession) && isset($mergesess1) && !empt
         $qrystr = $qrystr . " OR session = '" . ${'mergesess' . $i} . "'";
         $i = $i + 1;
     }
-    $mergeqry = mysql_query($qrystr) or die(mysql_error());
-    $mergerow = mysql_fetch_assoc($mergeqry);
+    $mergeqry = mysqli_query($qrystr) or die(mysqli_error());
+    $mergerow = mysqli_fetch_assoc($mergeqry);
     $newsession = $mergerow['session'];
     $newtimestart = $mergerow['timestart'];
     $newtimeend = $mergerow['timeend'];
     $newsessionsize = $mergerow['sessionsize'];
-    mysql_free_result($mergeqry);
+    mysqli_free_result($mergeqry);
 
     foreach ($sessionids as $value) {
         if ($value == $newsession) {
             $updatequery = "UPDATE $db_sessions_table SET timestart=$newtimestart, timeend=$newtimeend, sessionsize=$newsessionsize where session=$newsession";
-            mysql_query($updatequery, $con) or die(mysql_error());
+            mysqli_query($con, $updatequery) or die(mysqli_error());
         } else {
             $delquery = "DELETE FROM $db_sessions_table WHERE session = '$value'";
-            mysql_query($delquery, $con) or die(mysql_error());
+            mysqli_query($con, $delquery) or die(mysqli_error());
             $updatequery = "UPDATE $db_table SET session=$newsession WHERE session=".quote_value($value);
-            mysql_query($updatequery, $con) or die(mysql_error());
+            mysqli_query($con, $updatequery) or die(mysqli_error());
         }
     }
     //Show merged session
@@ -103,9 +103,9 @@ if (isset($mergesession) && !empty($mergesession) && isset($mergesess1) && !empt
         </thead>
         <tbody>
 <?php
-    $sessqry = mysql_query("SELECT timestart, timeend, session, profileName, sessionsize FROM $db_sessions_table WHERE sessionsize >= 20 ORDER BY session desc") or die(mysql_error());
+    $sessqry = mysqli_query("SELECT timestart, timeend, session, profileName, sessionsize FROM $db_sessions_table WHERE sessionsize >= 20 ORDER BY session desc") or die(mysqli_error());
     $i = 0;
-    while ($x = mysql_fetch_array($sessqry)) {
+    while ($x = mysqli_fetch_array($sessqry)) {
 ?>
           <tr>
             <td><input type="checkbox" name="<?php echo $x['session']; ?>" <?php if ($x['session'] == $mergesession) { echo "checked disabled"; } ?>/></td>
@@ -131,8 +131,8 @@ if (isset($mergesession) && !empty($mergesession) && isset($mergesess1) && !empt
   </body>
 </html>
 <?php
-    mysql_free_result($sessqry);
+    mysqli_free_result($sessqry);
 }
-mysql_close();
+mysqli_close();
 //echo "<!-- End merge_sessions.php at ".date("H:i:s", microtime(true))." -->\r\n";
 ?>

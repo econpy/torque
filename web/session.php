@@ -66,11 +66,11 @@ if (isset($sids[0])) {
     $session_id_next = $sids[$idx-1];
   }
   // Get GPS data for the currently selectedsession
-  $sessionqry = mysql_query("SELECT kff1006, kff1005 FROM $db_table
+  $sessionqry = mysqli_query($con, "SELECT kff1006, kff1005 FROM $db_table
               WHERE session=$session_id
-              ORDER BY time DESC", $con) or die(mysql_error());
+              ORDER BY time DESC") or die(mysqli_error());
   $geolocs = array();
-  while($geo = mysql_fetch_array($sessionqry)) {
+  while($geo = mysqli_fetch_array($sessionqry)) {
     if (($geo["0"] != 0) && ($geo["1"] != 0)) {
       $geolocs[] = array("lat" => $geo["0"], "lon" => $geo["1"]);
     }
@@ -87,29 +87,29 @@ if (isset($sids[0])) {
   $setZoomManually = 0;
 
   // Query the list of years where sessions have been logged, to be used later
-  $yearquery = mysql_query("SELECT YEAR(FROM_UNIXTIME(session/1000)) as 'year'
+  $yearquery = mysqli_query($con, "SELECT YEAR(FROM_UNIXTIME(session/1000)) as 'year'
               FROM $db_sessions_table WHERE session <> ''
               GROUP BY YEAR(FROM_UNIXTIME(session/1000)) 
-              ORDER BY YEAR(FROM_UNIXTIME(session/1000))", $con) or die(mysql_error());
+              ORDER BY YEAR(FROM_UNIXTIME(session/1000))") or die(mysqli_error());
   $yeararray = array();
   $i = 0;
-  while($row = mysql_fetch_assoc($yearquery)) {
+  while($row = mysqli_fetch_assoc($yearquery)) {
     $yeararray[$i] = $row['year'];
     $i = $i + 1;
   }
 
   // Query the list of profiles where sessions have been logged, to be used later
-  $profilequery = mysql_query("SELECT distinct profileName FROM $db_sessions_table ORDER BY profileName asc", $con) or die(mysql_error());
+  $profilequery = mysqli_query($con, "SELECT distinct profileName FROM $db_sessions_table ORDER BY profileName asc") or die(mysqli_error());
   $profilearray = array();
   $i = 0;
-  while($row = mysql_fetch_assoc($profilequery)) {
+  while($row = mysqli_fetch_assoc($profilequery)) {
     $profilearray[$i] = $row['profileName'];
     $i = $i + 1;
   }
 
   //Close the MySQL connection, which is why we can't query years later
-  mysql_free_result($sessionqry);
-  mysql_close($con);
+  mysqli_free_result($sessionqry);
+  mysqli_close($con);
 } else {
   //Default map in case there's no sessions to query.  Very unlikely this will get used.
   $imapdata = "new google.maps.LatLng(37.235, -115.8111)";

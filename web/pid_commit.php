@@ -26,11 +26,11 @@ echo "\nField Name: '$field_name'\nField ID: '$id'\nValue: '$val'\n";
       //update the values
       $query = "UPDATE $db_name.$db_keys_table SET ".quote_name($field_name)." = ".quote_value($val)." WHERE id = ".quote_value($id);
 echo "\n$query\n";
-      mysql_query($query) || die(mysql_error());
+      mysqli_query($query) || die(mysqli_error());
       if($field_name == 'type') {
-      $query = "ALTER TABLE $db_name.$db_table MODIFY ".quote_name($id)." ".mysql_real_escape_string($val)." NOT NULL DEFAULT '0'";
+      $query = "ALTER TABLE $db_name.$db_table MODIFY ".quote_name($id)." ".mysqli_real_escape_string($val)." NOT NULL DEFAULT '0'";
 echo $query;
-        mysql_query($query) || die(mysql_error());
+        mysqli_query($query) || die(mysqli_error());
       }
       echo "Updated";
     } else {
@@ -41,6 +41,6 @@ echo $query;
   echo "Invalid Requests 2";
 }
 
-mysql_close($con);
+mysqli_close($con);
 
 ?>

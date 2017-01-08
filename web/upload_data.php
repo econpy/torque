@@ -4,9 +4,9 @@ require_once ('auth_app.php');
 
 
 // Create an array of all the existing fields in the database
-$result = mysql_query("SHOW COLUMNS FROM $db_table", $con) or die(mysql_error());
-if (mysql_num_rows($result) > 0) {
-  while ($row = mysql_fetch_assoc($result)) {
+$result = mysqli_query($con, "SHOW COLUMNS FROM $db_table") or die(mysqli_error());
+if (mysqli_num_rows($result) > 0) {
+  while ($row = mysqli_fetch_assoc($result)) {
     $dbfields[]=($row['Field']);
   }
 }
@@ -68,8 +68,8 @@ if (sizeof($_GET) > 0) {
         $sqlalter = "ALTER TABLE $db_table ADD ".quote_name($key)." VARCHAR(255) NOT NULL default 'Not Specified'";
         $sqlalterkey = "INSERT INTO $db_keys_table (id, description, type, populated) VALUES (".quote_value($key).", ".quote_value($key).", 'varchar(255)', '1')";
       }
-      mysql_query($sqlalter, $con) or die(mysql_error());
-      mysql_query($sqlalterkey, $con) or die(mysql_error());
+      mysqli_query($con, $sqlalter) or die(mysqli_error());
+      mysqli_query($con, $sqlalterkey) or die(mysqli_error());
     }
   }
   // The way session uploads work, there's a separate HTTP call for each datapoint.  This is why raw logs is
@@ -82,20 +82,20 @@ if (sizeof($_GET) > 0) {
     // Now insert the data for all the fields into the raw logs table
     $sql = "INSERT INTO $db_table (".quote_names($rawkeys).") VALUES (".quote_values($rawvalues).")";
 //echo $sql;
-    mysql_query($sql, $con) or die(mysql_error());
+    mysqli_query($con, $sql) or die(mysqli_error());
     // See if there is already an entry in the sessions table for this session
-    $sessionqry = mysql_query("SELECT session, sessionsize FROM $db_sessions_table WHERE session LIKE ".quote_value($sessuploadid), $con) or die(mysql_error());
+    $sessionqry = mysqli_query($con, "SELECT session, sessionsize FROM $db_sessions_table WHERE session LIKE ".quote_value($sessuploadid)) or die(mysqli_error());
     $sesssizecount=1;
     // If there's an entry in the session table for this session, update the session end time and the datapoint count
-    while($row = mysql_fetch_assoc($sessionqry)) {
+    while($row = mysqli_fetch_assoc($sessionqry)) {
       $sesssizecount = $row["sessionsize"] + 1;
     }
     $sessionqrystring = "INSERT INTO $db_sessions_table (".quote_names($sesskeys).", timestart, sessionsize) VALUES (".quote_values($sessvalues).", $sesstime, '1') ON DUPLICATE KEY UPDATE timeend='$sesstime', sessionsize='$sesssizecount'$sessprofilequery";
 //echo $sessionqrystring;
-    mysql_query($sessionqrystring, $con) or die(mysql_error());
+    mysqli_query($con, $sessionqrystring) or die(mysqli_error());
   }
 }
-mysql_close($con);
+mysqli_close($con);
 
 // Return the response required by Torque
 echo "OK!";

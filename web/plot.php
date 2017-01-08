@@ -38,11 +38,11 @@ if (!$source_is_fahrenheit && $use_fahrenheit) { //From Celsius to Fahrenheit
 
 // Grab the session number
 if (isset($_GET["id"]) and in_array($_GET["id"], $sids)) {
-    $session_id = mysql_real_escape_string($_GET['id']);
+    $session_id = mysqli_real_escape_string($_GET['id']);
     // Get the torque key->val mappings
-    $keyquery = mysql_query("SELECT id,description,units FROM $db_name.$db_keys_table;") or die(mysql_error());
+    $keyquery = mysqli_query("SELECT id,description,units FROM $db_name.$db_keys_table;") or die(mysqli_error());
     $keyarr = [];
-    while($row = mysql_fetch_assoc($keyquery)) {
+    while($row = mysqli_fetch_assoc($keyquery)) {
       $keyarr[$row['id']] = array($row['description'], $row['units']);
     }
 	// 2015.08.04 - edit by surfrock66 - Adding experimental support for unlimited vars, 
@@ -55,8 +55,8 @@ if (isset($_GET["id"]) and in_array($_GET["id"], $sids)) {
 		$i = $i + 1;
 	}
 	// Get data for session
-	$sessionqry = mysql_query("SELECT $selectstring FROM $db_table WHERE session=".quote_value($session_id)." ORDER BY time DESC;") or die(mysql_error());
-	while($row = mysql_fetch_assoc($sessionqry)) {
+	$sessionqry = mysqli_query("SELECT $selectstring FROM $db_table WHERE session=".quote_value($session_id)." ORDER BY time DESC;") or die(mysqli_error());
+	while($row = mysqli_fetch_assoc($sessionqry)) {
 	    $i = 1;
 		while (isset(${'v' . $i})) {
 	        if (substri_count($keyarr[${'v' . $i}][0], "Speed") > 0) {

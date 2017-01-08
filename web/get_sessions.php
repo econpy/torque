@@ -73,13 +73,18 @@ if ( isset($_GET['id'])) {
 }
 $sessionqrystring = $sessionqrystring . " GROUP BY session, profileName, timestart, timeend, sessionsize ORDER BY session DESC";
 // Get list of unique session IDs
-$sessionqry = mysql_query($sessionqrystring, $con) or die(mysql_error());
+$sessionqry = mysqli_query($con, $sessionqrystring) or die(mysqli_error());
+
+// If you get no results, just pull the last 20
+if ( mysqli_num_rows( $sessionqry ) == 0 ) {
+	$sessionqry = mysqli_query($con, "SELECT timestart, timeend, session, profileName, sessionsize FROM $db_sessions_table GROUP BY session, profileName, timestart, timeend, sessionsize ORDER BY session DESC LIMIT 20") or die(mysqli_error());
+}
 
 // Create an array mapping session IDs to date strings
 $seshdates = array();
 $seshsizes = array();
 $seshprofile = array();
-while($row = mysql_fetch_assoc($sessionqry)) {
+while($row = mysqli_fetch_assoc($sessionqry)) {
     $session_duration_str = gmdate("H:i:s", ($row["timeend"] - $row["timestart"])/1000);
     $session_profileName = $row["profileName"];
 
@@ -95,7 +100,7 @@ while($row = mysql_fetch_assoc($sessionqry)) {
     else {}
 }
 
-mysql_free_result($sessionqry);
+mysqli_free_result($sessionqry);
 //echo "<!-- End get_session.php at ".date("H:i:s", microtime(true))." -->\r\n";
 
 ?>
