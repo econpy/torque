@@ -5,7 +5,7 @@ if (isset($_GET["sid"])) {
     $session_id = $_GET['sid'];
     // Get data for session
     $output = "";
-    $sql = mysqli_query("SELECT * FROM $db_table join $db_sessions_table on $db_table.session = $db_sessions_table.session WHERE $db_table.session=".quote_value($session_id)." ORDER BY $db_table.time DESC;") or die(mysqli_error());
+    $sql = mysqli_query("SELECT * FROM $db_table join $db_sessions_table on $db_table.session = $db_sessions_table.session WHERE $db_table.session=".quote_value($session_id)." ORDER BY $db_table.time DESC;") or die(mysqli_error($con));
 
     if ($_GET["filetype"] == "csv") {
         $columns_total = mysqli_num_fields($sql);

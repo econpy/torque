@@ -13,12 +13,12 @@ elseif (isset($_GET["deletesession"])) {
 
 if (isset($deletesession) && !empty($deletesession)) {
     $delresult = mysqli_query($con, "DELETE FROM $db_table
-                          WHERE session=".quote_value($deletesession)) or die(mysqli_error());
+                          WHERE session=".quote_value($deletesession)) or die(mysqli_error($con));
 
     mysqli_free_result($delresult);
 
     $delresult = mysqli_query($con, "DELETE FROM $db_sessions_table
-                          WHERE session=".quote_value($deletesession)) or die(mysqli_error());
+                          WHERE session=".quote_value($deletesession)) or die(mysqli_error($con));
 
     mysqli_free_result($delresult);
 }

@@ -36,7 +36,7 @@ if (isset($mergesession) && !empty($mergesession) && isset($mergesess1) && !empt
         $qrystr = $qrystr . " OR session = '" . ${'mergesess' . $i} . "'";
         $i = $i + 1;
     }
-    $mergeqry = mysqli_query($qrystr) or die(mysqli_error());
+    $mergeqry = mysqli_query($qrystr) or die(mysqli_error($con));
     $mergerow = mysqli_fetch_assoc($mergeqry);
     $newsession = $mergerow['session'];
     $newtimestart = $mergerow['timestart'];
@@ -47,12 +47,12 @@ if (isset($mergesession) && !empty($mergesession) && isset($mergesess1) && !empt
     foreach ($sessionids as $value) {
         if ($value == $newsession) {
             $updatequery = "UPDATE $db_sessions_table SET timestart=$newtimestart, timeend=$newtimeend, sessionsize=$newsessionsize where session=$newsession";
-            mysqli_query($con, $updatequery) or die(mysqli_error());
+            mysqli_query($con, $updatequery) or die(mysqli_error($con));
         } else {
             $delquery = "DELETE FROM $db_sessions_table WHERE session = '$value'";
-            mysqli_query($con, $delquery) or die(mysqli_error());
+            mysqli_query($con, $delquery) or die(mysqli_error($con));
             $updatequery = "UPDATE $db_table SET session=$newsession WHERE session=".quote_value($value);
-            mysqli_query($con, $updatequery) or die(mysqli_error());
+            mysqli_query($con, $updatequery) or die(mysqli_error($con));
         }
     }
     //Show merged session
@@ -103,7 +103,7 @@ if (isset($mergesession) && !empty($mergesession) && isset($mergesess1) && !empt
         </thead>
         <tbody>
 <?php
-    $sessqry = mysqli_query("SELECT timestart, timeend, session, profileName, sessionsize FROM $db_sessions_table WHERE sessionsize >= 20 ORDER BY session desc") or die(mysqli_error());
+    $sessqry = mysqli_query("SELECT timestart, timeend, session, profileName, sessionsize FROM $db_sessions_table WHERE sessionsize >= 20 ORDER BY session desc") or die(mysqli_error($con));
     $i = 0;
     while ($x = mysqli_fetch_array($sessqry)) {
 ?>

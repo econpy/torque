@@ -68,7 +68,7 @@ if (isset($sids[0])) {
   // Get GPS data for the currently selectedsession
   $sessionqry = mysqli_query($con, "SELECT kff1006, kff1005 FROM $db_table
               WHERE session=$session_id
-              ORDER BY time DESC") or die(mysqli_error());
+              ORDER BY time DESC") or die(mysqli_error($con));
   $geolocs = array();
   while($geo = mysqli_fetch_array($sessionqry)) {
     if (($geo["0"] != 0) && ($geo["1"] != 0)) {
@@ -90,7 +90,7 @@ if (isset($sids[0])) {
   $yearquery = mysqli_query($con, "SELECT YEAR(FROM_UNIXTIME(session/1000)) as 'year'
               FROM $db_sessions_table WHERE session <> ''
               GROUP BY YEAR(FROM_UNIXTIME(session/1000)) 
-              ORDER BY YEAR(FROM_UNIXTIME(session/1000))") or die(mysqli_error());
+              ORDER BY YEAR(FROM_UNIXTIME(session/1000))") or die(mysqli_error($con));
   $yeararray = array();
   $i = 0;
   while($row = mysqli_fetch_assoc($yearquery)) {
@@ -99,7 +99,7 @@ if (isset($sids[0])) {
   }
 
   // Query the list of profiles where sessions have been logged, to be used later
-  $profilequery = mysqli_query($con, "SELECT distinct profileName FROM $db_sessions_table ORDER BY profileName asc") or die(mysqli_error());
+  $profilequery = mysqli_query($con, "SELECT distinct profileName FROM $db_sessions_table ORDER BY profileName asc") or die(mysqli_error($con));
   $profilearray = array();
   $i = 0;
   while($row = mysqli_fetch_assoc($profilequery)) {

@@ -7,7 +7,7 @@ require_once ("./auth_user.php");
 // 2015.08.21 - edit by surfrock66 - Rather than pull from the column comments,
 //   oull from a new database created which manages variables. Include
 //   a column flagging whether a variable is populated or not.
-$keyqry = mysqli_query($con, "SELECT id,description,units,type,min,max,populated FROM ".$db_name.".".$db_keys_table." ORDER BY description") or die(mysqli_error());
+$keyqry = mysqli_query($con, "SELECT id,description,units,type,min,max,populated FROM ".$db_name.".".$db_keys_table." ORDER BY description") or die(mysqli_error($con));
 $i = 0;
 while ($x = mysqli_fetch_array($keyqry)) {
 	if ((substr($x[0], 0, 1) == "k") ) {

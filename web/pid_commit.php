@@ -26,11 +26,11 @@ echo "\nField Name: '$field_name'\nField ID: '$id'\nValue: '$val'\n";
       //update the values
       $query = "UPDATE $db_name.$db_keys_table SET ".quote_name($field_name)." = ".quote_value($val)." WHERE id = ".quote_value($id);
 echo "\n$query\n";
-      mysqli_query($query) || die(mysqli_error());
+      mysqli_query($query) || die(mysqli_error($con));
       if($field_name == 'type') {
       $query = "ALTER TABLE $db_name.$db_table MODIFY ".quote_name($id)." ".mysqli_real_escape_string($val)." NOT NULL DEFAULT '0'";
 echo $query;
-        mysqli_query($query) || die(mysqli_error());
+        mysqli_query($query) || die(mysqli_error($con));
       }
       echo "Updated";
     } else {
