@@ -36,7 +36,7 @@ if (isset($mergesession) && !empty($mergesession) && isset($mergesess1) && !empt
         $qrystr = $qrystr . " OR session = '" . ${'mergesess' . $i} . "'";
         $i = $i + 1;
     }
-    $mergeqry = mysqli_query($qrystr) or die(mysqli_error($con));
+    $mergeqry = mysqli_query($con, $qrystr) or die(mysqli_error($con));
     $mergerow = mysqli_fetch_assoc($mergeqry);
     $newsession = $mergerow['session'];
     $newtimestart = $mergerow['timestart'];
@@ -103,7 +103,7 @@ if (isset($mergesession) && !empty($mergesession) && isset($mergesess1) && !empt
         </thead>
         <tbody>
 <?php
-    $sessqry = mysqli_query("SELECT timestart, timeend, session, profileName, sessionsize FROM $db_sessions_table WHERE sessionsize >= 20 ORDER BY session desc") or die(mysqli_error($con));
+    $sessqry = mysqli_query($con, "SELECT timestart, timeend, session, profileName, sessionsize FROM $db_sessions_table WHERE sessionsize >= 20 ORDER BY session desc") or die(mysqli_error($con));
     $i = 0;
     while ($x = mysqli_fetch_array($sessqry)) {
 ?>
@@ -115,7 +115,7 @@ if (isset($mergesession) && !empty($mergesession) && isset($mergesess1) && !empt
             <td id="size:<?php echo $x['session']; ?>"><?php echo $x["sessionsize"]; ?></td>
             <td id="profile:<?php echo $x['session']; ?>"><?php echo $x["profileName"]; ?></td>
           </tr>
-<?php        
+<?php
     }
 ?>
         </tbody>
@@ -133,6 +133,6 @@ if (isset($mergesession) && !empty($mergesession) && isset($mergesess1) && !empt
 <?php
     mysqli_free_result($sessqry);
 }
-mysqli_close();
+mysqli_close($con);
 //echo "<!-- End merge_sessions.php at ".date("H:i:s", microtime(true))." -->\r\n";
 ?>
