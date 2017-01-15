@@ -28,7 +28,7 @@ echo "\nField Name: '$field_name'\nField ID: '$id'\nValue: '$val'\n";
 echo "\n$query\n";
       mysqli_query($query) || die(mysqli_error($con));
       if($field_name == 'type') {
-      $query = "ALTER TABLE $db_name.$db_table MODIFY ".quote_name($id)." ".mysqli_real_escape_string($val)." NOT NULL DEFAULT '0'";
+      $query = "ALTER TABLE $db_name.$db_table MODIFY ".quote_name($id)." ".mysqli_real_escape_string($con, $val)." NOT NULL DEFAULT '0'";
 echo $query;
         mysqli_query($query) || die(mysqli_error($con));
       }
