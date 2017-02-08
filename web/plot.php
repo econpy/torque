@@ -66,7 +66,7 @@ if (isset($_GET["id"]) and in_array($_GET["id"], $sids)) {
 	            $x = $temp_func ( floatval($row[${'v' . $i}]) );
 	            ${'v' . $i . '_measurand'} = $temp_measurand;
 	        } else {
-	            $x = intval($row[${'v' . $i}]);
+	            $x = $row[${'v' . $i}];
 	            ${'v' . $i . '_measurand'} = ' ('.$keyarr[${'v' . $i}][1].')';
 	        }
 	        ${'d' . $i}[] = array($row['time'], $x);

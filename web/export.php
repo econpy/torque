@@ -11,9 +11,8 @@ if (isset($_GET["sid"])) {
         $columns_total = mysqli_num_fields($sql);
 
         // Get The Field Name
-        for ($i = 0; $i < $columns_total; $i++) {
-            $heading = mysqli_field_name($sql, $i);
-            $output .= '"'.$heading.'",';
+        while ($property = mysqli_fetch_field($sql)) {
+            $output .='"'.$property->name.'",';
         }
         $output .="\n";
 
