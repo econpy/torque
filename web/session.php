@@ -106,7 +106,7 @@ else {
         <script language="javascript" type="text/javascript" src="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
         <script language="javascript" type="text/javascript" src="static/js/jquery.peity.min.js"></script>
         <script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.1.0/chosen.jquery.min.js"></script>
-        <script language="javascript" type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+        <script language="javascript" type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=<?php echo $googleAPI_Key;?>"></script>
 
         <script language="javascript" type="text/javascript">
           function initialize() {

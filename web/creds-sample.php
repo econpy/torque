@@ -11,6 +11,8 @@ $db_table = 'raw_logs';
 $auth_user = '';    //Sample: 'torque'
 $auth_pass = '';    //Sample: 'open'
 
+// Google API Key for Google Map
+$googleAPI_Key= '';
 //If you want to restrict access to upload_data.php, 
 // either enter your torque ID as shown in the torque app, 
 // or enter the hashed ID as it can found in the uploaded data.
