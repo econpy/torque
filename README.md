@@ -62,7 +62,7 @@ find . -type f -exec chmod 644 {} +
 Rename the `creds-sample.php` file to `creds.php`:
 
 ```bash
-mv creds-sample.php creds.php
+mv web/creds-sample.php web/creds.php
 ```
 
 Then edit/enter your MySQL username and password in the empty **$db_user** and **$db_pass** fields:
