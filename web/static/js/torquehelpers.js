@@ -65,15 +65,26 @@ $(document).ready(function(){
 $(document).ready(function(){
   // Activate Chosen on the selection drop down
   $("select#seshidtag").chosen({width: "100%"});
+  $("select#selprofile").chosen({width: "100%", disable_search: true, allow_single_deselect: true});
+  $("select#selyear").chosen({width: "100%", disable_search: true, allow_single_deselect: true});
+  $("select#selmonth").chosen({width: "100%", disable_search: true, allow_single_deselect: true});
   $("select#plot_data").chosen({width: "100%"});
   // Center the selected element
   $("div#seshidtag_chosen a.chosen-single span").attr('align', 'center');
-  // Limit number of multi selects to 2
-  $("select#plot_data").chosen({max_selected_options: 2, no_results_text: "Oops, nothing found!"});
+  $("div#selprofile_chosen a.chosen-single span").attr('align', 'center');
+  $("div#selyear_chosen a.chosen-single span").attr('align', 'center');
+  $("div#selmonth_chosen a.chosen-single span").attr('align', 'center');
+  $("select#plot_data").chosen({no_results_text: "Oops, nothing found!"});
   $("select#plot_data").chosen({placeholder_text_multiple: "Choose OBD2 data.."});
   // When the selection drop down is open, force all elements to align left with padding
   $('select#seshidtag').on('chosen:showing_dropdown', function() { $('li.active-result').attr('align', 'left');});
   $('select#seshidtag').on('chosen:showing_dropdown', function() { $('li.active-result').css('padding-left', '20px');});
+  $('select#selprofile').on('chosen:showing_dropdown', function() { $('li.active-result').attr('align', 'left');});
+  $('select#selprofile').on('chosen:showing_dropdown', function() { $('li.active-result').attr('align', 'left');});
+  $('select#selyear').on('chosen:showing_dropdown', function() { $('li.active-result').attr('align', 'left');});
+  $('select#selyear').on('chosen:showing_dropdown', function() { $('li.active-result').attr('align', 'left');});
+  $('select#selmonth').on('chosen:showing_dropdown', function() { $('li.active-result').css('padding-left', '20px');});
+  $('select#selmonth').on('chosen:showing_dropdown', function() { $('li.active-result').css('padding-left', '20px');});
   $('select#plot_data').on('chosen:showing_dropdown', function() { $('li.active-result').attr('align', 'left');});
   $('select#plot_data').on('chosen:showing_dropdown', function() { $('li.active-result').css('padding-left', '20px');});
 });
