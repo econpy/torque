@@ -54,7 +54,7 @@ html,body {
     font-size: 80%;
 }
 
-#seshidtag_chosen {
+#seshidtag_chosen #selyear_chosen #selmonth_chosen #selprofile_chosen {
     font-size: 15px;
 }
 
@@ -106,4 +106,7 @@ background-color: #428bca;
 }
 .clickable{
   cursor: pointer;
+}
+.btn-sm {
+    padding: 3px 8px;
 }

@@ -28,7 +28,8 @@
         mode: 'x',
         tooltipOffsetX: 20,
         tooltipOffsetY: 20,
-        tooltipTemplate: '<table class="table" style="font-size:.8em;"><thead><tr><th></th><th>Value</th><th>Change</th></tr></thead><tbody><%= body %></tbody></table>',
+		// 2015.08.17 - edit by surfrock66 - Added variable for displaying time in tooltip
+        tooltipTemplate: '<table class="table" style="font-size:.8em;"><thead><tr><th><%= time[0] %></th><th>Value</th><th>Change</th></tr></thead><tbody><%= body %></tbody></table>',
         dataPointTemplate: '<tr><td><%= series.label %></td><td><%= datapoint[1] %></td><td><%= (delta > 0 ? "+" : "") %><%= delta %></td></tr>',
         transformDataPointData: false,
         tooltipStyles: {
@@ -161,6 +162,8 @@
         }
 
         var childrenTexts = [];
+		// 2015.08.17 - edit by surfrock66 - define variable array to display the time in the tooltip
+		var timeArray = [];
         for (var i = 0 , ii = matchingDataPoints.length; i < ii; i++) {
           var seriesData = matchingDataPoints[i].seriesData;
           var dataPoint = matchingDataPoints[i].dataPoint;
@@ -176,10 +179,16 @@
             data = options.transformDataPointData(data);
           }
           var text = this.dataPointTemplate(data);
-          childrenTexts.push(text);
+		  childrenTexts.push(text);
+		  // 2015.08.17 - edit by surfrock66 - populate the variable to be passed to display the time in the tooltip
+		  var timestamp = new Date(dataPoint[0]);
+		  var xDateFormat =  "%m/%d/%Y  %I:%M:%S%p";
+		  timeArray[0] = $.plot.formatDate(timestamp, xDateFormat);
+//		  timeArray[0] = dataPoint[0];
         }
 
         var tooltipText = this.tooltipTemplate({
+          time: timeArray,
           body: childrenTexts.join('\n')
         });
 

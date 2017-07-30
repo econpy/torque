@@ -1,11 +1,15 @@
 <?php
 
+//echo "<!-- Begin creds.php -->\r\n";
 // MySQL Credentials
 $db_host = 'localhost';
 $db_user = '';     // Enter your MySQL username
 $db_pass = '';     // Enter your MySQL password
 $db_name = 'torque';
 $db_table = 'raw_logs';
+$db_keys_table = 'torque_keys';
+$db_sessions_table = 'sessions';
+$gmapsApiKey = ''; // OPTIONAL: Create a key at https://developers.google.com/maps/documentation/javascript/
 
 // User credentials for Browser login
 $auth_user = '';    //Sample: 'torque'
@@ -27,5 +31,5 @@ $use_miles = false;
 
 $hide_empty_variables = true;
 $show_session_length = true;
-
+//echo "<!-- End creds.php -->\r\n";
 ?>
