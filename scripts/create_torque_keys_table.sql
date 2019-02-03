@@ -20,7 +20,7 @@ CREATE TABLE `torque_keys` (
   `description` varchar(255) COMMENT 'Description',
   `type` varchar(255) NOT NULL DEFAULT 'varchar(255)' COMMENT 'Variable Type',
   `units` varchar(255) COMMENT 'Units',
-  `populated, favorite` boolean NOT NULL DEFAULT '0' COMMENT 'Is This Variable Populated?',
+  `populated` boolean NOT NULL DEFAULT '0' COMMENT 'Is This Variable Populated?',
   `favorite` boolean NOT NULL DEFAULT '0' COMMENT 'Pre-select this variable for plotting?',
   `min` float COMMENT 'Minimum Value',
   `max` float COMMENT 'Maximum Value',
@@ -104,7 +104,7 @@ INSERT INTO torque_keys (id, description, type, units, populated, favorite, min,
 INSERT INTO torque_keys (id, description, type, units, populated, favorite, min, max) VALUES ('k19','Fuel Trim Bank 2 Sensor 2','float','%',1,0,-100,100);
 INSERT INTO torque_keys (id, description, type, units, populated, favorite, min, max) VALUES ('k1a','Fuel Trim Bank 2 Sensor 3','float','%',1,0,-100,100);
 INSERT INTO torque_keys (id, description, type, units, populated, favorite, min, max) VALUES ('k1b','Fuel Trim Bank 2 Sensor 4','float','%',1,0,-100,100);
-INSERT INTO torque_keys (id, description, type, units, populated, favorite, min, max) VALUES ('k8','Fuel Trim Bank 2 Short Term','float','%',1,0.-25,25);
+INSERT INTO torque_keys (id, description, type, units, populated, favorite, min, max) VALUES ('k8','Fuel Trim Bank 2 Short Term','float','%',1,0,-25,25);
 INSERT INTO torque_keys (id, description, type, units, populated, favorite, min, max) VALUES ('kff1271','Fuel Used (Trip)','float','l',1,0,0,100);
 INSERT INTO torque_keys (id, description, type, units, populated, favorite, min, max) VALUES ('kff1239','GPS Accuracy','float','m',1,0,0,100);
 INSERT INTO torque_keys (id, description, type, units, populated, favorite, min, max) VALUES ('kff1010','GPS Altitude','float','m',1,0,0,100);

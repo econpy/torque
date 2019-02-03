@@ -168,6 +168,5 @@ CREATE TABLE `raw_logs` (
   `kff5201` float NOT NULL DEFAULT '0',
   `kff5202` float NOT NULL DEFAULT '0',
   `kff5203` float NOT NULL DEFAULT '0',
-  KEY `session` (`session`,`id`),
-  KEY `id` (`id`)
+  KEY `session` (`session`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
