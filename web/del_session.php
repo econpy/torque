@@ -12,13 +12,14 @@ elseif (isset($_GET["deletesession"])) {
 }
 
 if (isset($deletesession) && !empty($deletesession)) {
-    $delresult = mysqli_query($con, "DELETE FROM $db_table
-                          WHERE session=".quote_value($deletesession)) or die(mysqli_error($con));
+    $tableYear = date( "Y", $deletesession/1000 );
+    $tableMonth = date( "m", $deletesession/1000 );
+    $db_table_full = "{$db_table}_{$tableYear}_{$tableMonth}";
+    $delresult = mysqli_query($con, "DELETE FROM $db_table_full WHERE session=".quote_value($deletesession)) or die(mysqli_error($con));
 
     mysqli_free_result($delresult);
 
-    $delresult = mysqli_query($con, "DELETE FROM $db_sessions_table
-                          WHERE session=".quote_value($deletesession)) or die(mysqli_error($con));
+    $delresult = mysqli_query($con, "DELETE FROM $db_sessions_table WHERE session=".quote_value($deletesession)) or die(mysqli_error($con));
 
     mysqli_free_result($delresult);
 }

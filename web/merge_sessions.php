@@ -44,6 +44,10 @@ if (isset($mergesession) && !empty($mergesession) && isset($mergesess1) && !empt
     $newsessionsize = $mergerow['sessionsize'];
     mysqli_free_result($mergeqry);
 
+    $tableYear = date( "Y", $mergesession/1000 );
+    $tableMonth = date( "m", $mergesession/1000 );
+    $db_table_full = "{$db_table}_{$tableYear}_{$tableMonth}";
+
     foreach ($sessionids as $value) {
         if ($value == $newsession) {
             $updatequery = "UPDATE $db_sessions_table SET timestart=$newtimestart, timeend=$newtimeend, sessionsize=$newsessionsize where session=$newsession";
@@ -51,7 +55,7 @@ if (isset($mergesession) && !empty($mergesession) && isset($mergesess1) && !empt
         } else {
             $delquery = "DELETE FROM $db_sessions_table WHERE session = '$value'";
             mysqli_query($con, $delquery) or die(mysqli_error($con));
-            $updatequery = "UPDATE $db_table SET session=$newsession WHERE session=".quote_value($value);
+            $updatequery = "UPDATE $db_table_full SET session=$newsession WHERE session=".quote_value($value);
             mysqli_query($con, $updatequery) or die(mysqli_error($con));
         }
     }

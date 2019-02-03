@@ -136,3 +136,10 @@ LimitRequestLine 15000
   * Email-receiver for this?  LONG SHOT, but have the server read an email address so you can email tracks from the app
 * Ian Hawkins has a google map pin show up when hovering over his graphs on his reference viewer...different system, but it'd be cool to implement.
 * Idea: speed heatmap for the map track. (Google Maps iOS API has gradient polylines, javascript API does not...may not be possible for now).
+
+### Credits and Thanks ###
+
+* [Ian Hawkins](http://ian-hawkins.com/) - Creator of the Torque app, none of this happens without that
+* [Matt Nicklay/econpy](https://github.com/econpy) - This is the project I forked from, so all credit where credit is due
+* [Takashi Saito/takashisite](https://github.com/takashisite) - Spawn for the patch to change the GPS from float to double; I didn't take his pull request because it came with a greater structural update, but he deserves credit for pointing it out
+* [marvinwankersteen](https://github.com/marvinwankersteen) - Gave me the idea to implement the "favorite variables" system.

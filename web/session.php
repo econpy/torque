@@ -26,19 +26,13 @@ if (isset($_GET["id"])) {
   $session_id = preg_replace('/\D/', '', $_GET['id']);
 }
 
-// 2015.08.31 - edit by surfrock66 - Define and capture variables for maintaining
-//  the year and month filters between sessions.
-$filteryear = "";
-$filtermonth = "";
-if (isset($_GET["year"])) {
-  $filteryear = $_GET['year'];
-}
-if (isset($_GET["month"])) {
-  $filtermonth = $_GET['month'];
+// Define and capture variables for maintaining the year and month filters between sessions.
+$filteryearmonth = "";
+if (isset($_GET["yearmonth"])) {
+  $filteryearmonth = $_GET['yearmonth'];
 }
 
-// 2015.07.22 - edit by surfrock66 - Define some variables to be used in 
-//  variable management later, specifically when choosing default vars to plot
+// Define some variables to be used in variable management later, specifically when choosing default vars to plot
 $i=1;
 $var1 = "";
 while ( isset($_POST["s$i"]) || isset($_GET["s$i"]) ) {
@@ -65,8 +59,11 @@ if (isset($sids[0])) {
   if($idx>0) {
     $session_id_next = $sids[$idx-1];
   }
+  $tableYear = date( "Y", $session_id/1000 );
+  $tableMonth = date( "m", $session_id/1000 );
+  $db_table_full = "{$db_table}_{$tableYear}_{$tableMonth}";
   // Get GPS data for the currently selectedsession
-  $sessionqry = mysqli_query($con, "SELECT kff1006, kff1005 FROM $db_table
+  $sessionqry = mysqli_query($con, "SELECT kff1006, kff1005 FROM $db_table_full
               WHERE session=$session_id
               ORDER BY time DESC") or die(mysqli_error($con));
   $geolocs = array();
@@ -86,15 +83,16 @@ if (isset($sids[0])) {
   // Don't need to set zoom manually
   $setZoomManually = 0;
 
-  // Query the list of years where sessions have been logged, to be used later
-  $yearquery = mysqli_query($con, "SELECT YEAR(FROM_UNIXTIME(session/1000)) as 'year'
-              FROM $db_sessions_table WHERE session <> ''
-              GROUP BY YEAR(FROM_UNIXTIME(session/1000)) 
-              ORDER BY YEAR(FROM_UNIXTIME(session/1000))") or die(mysqli_error($con));
-  $yeararray = array();
+  // Query the list of years and months where sessions have been logged, to be used later
+  $yearmonthquery = mysqli_query($con, "SELECT DISTINCT CONCAT(YEAR(FROM_UNIXTIME(session/1000)), '_', DATE_FORMAT(FROM_UNIXTIME(session/1000),'%m')) as Suffix, 
+		CONCAT(MONTHNAME(FROM_UNIXTIME(session/1000)), ' ', YEAR(FROM_UNIXTIME(session/1000))) as Description 
+		FROM $db_sessions_table ORDER BY Suffix DESC") or die(mysqli_error($con));
+  $yearmonthsuffixarray = array();
+  $yearmonthdescarray = array();
   $i = 0;
-  while($row = mysqli_fetch_assoc($yearquery)) {
-    $yeararray[$i] = $row['year'];
+  while($row = mysqli_fetch_assoc($yearmonthquery)) {
+    $yearmonthsuffixarray[$i] = $row['Suffix'];
+    $yearmonthdescarray[$i] = $row['Description'];
     $i = $i + 1;
   }
 
@@ -322,7 +320,7 @@ if (isset($sids[0])) {
             <table width="100%">
               <tr>
                 <!-- Profile Filter -->
-                <td width="22%">
+                <td width="34%">
                   <select id="selprofile" name="selprofile" class="form-control chosen-select" data-placeholder="Select Profile">
                     <option value=""></option>
                     <option value="ALL"<?php if ($filterprofile == "ALL") echo ' selected'; ?>>Any Profile</option>
@@ -334,38 +332,19 @@ if (isset($sids[0])) {
                   </select>
                 </td>
                 <td width="2%"></td>
-                <!-- Year Filter -->
-                <td width="22%">
-                  <select id="selyear" name="selyear" class="form-control chosen-select" data-placeholder="Select Year">
+
+                <!-- Year Month Filter -->
+                <td width="34%">
+                  <select id="selyearmonth" name="selyearmonth" class="form-control chosen-select" data-placeholder="Select Year/Month">
                     <option value=""></option>
-                    <option value="ALL"<?php if ($filteryear == "ALL") echo ' selected'; ?>>Any Year</option>
 <?php $i = 0; ?>
-<?php while(isset($yeararray[$i])) { ?>
-                    <option value="<?php echo $yeararray[$i]; ?>"<?php if ($filteryear == $yeararray[$i]) echo ' selected'; ?>><?php echo $yeararray[$i]; ?></option>
+<?php while(isset($yearmonthsuffixarray[$i])) { ?>
+                    <option value="<?php echo $yearmonthsuffixarray[$i]; ?>"<?php if ($filteryearmonth == $yearmonthsuffixarray[$i]) { echo ' selected'; } else if ($i == 0) { echo 'selected'; } ?>><?php echo $yearmonthdescarray[$i]; ?></option>
 <?php   $i = $i + 1; ?>
 <?php } ?>
                   </select>
                 </td>
-                <td width="2%"></td>
-                <!-- Month Filter -->
-                <td width="22%">
-                  <select id="selmonth" name="selmonth" class="form-control chosen-select" data-placeholder="Select Month">
-                    <option value=""></option>
-                    <option value="ALL"<?php if ($filtermonth == "ALL") echo ' selected'; ?>>Any Month</option>
-                    <option value="January"<?php if ($filtermonth == "January") echo ' selected'; ?>>January</option>
-                    <option value="February"<?php if ($filtermonth == "February") echo ' selected'; ?>>February</option>
-                    <option value="March"<?php if ($filtermonth == "March") echo ' selected'; ?>>March</option>
-                    <option value="April"<?php if ($filtermonth == "April") echo ' selected'; ?>>April</option>
-                    <option value="May"<?php if ($filtermonth == "May") echo ' selected'; ?>>May</option>
-                    <option value="June"<?php if ($filtermonth == "June") echo ' selected'; ?>>June</option>
-                    <option value="July"<?php if ($filtermonth == "July") echo ' selected'; ?>>July</option>
-                    <option value="August"<?php if ($filtermonth == "August") echo ' selected'; ?>>August</option>
-                    <option value="September"<?php if ($filtermonth == "September") echo ' selected'; ?>>September</option>
-                    <option value="October"<?php if ($filtermonth == "October") echo ' selected'; ?>>October</option>
-                    <option value="November"<?php if ($filtermonth == "November") echo ' selected'; ?>>November</option>
-                    <option value="December"<?php if ($filtermonth == "December") echo ' selected'; ?>>December</option>
-                  </select>
-                </td>
+
                 <td width="13%">
                   <div align="center" style="padding-top:2px;"><input class="btn btn-info btn-sm" type="submit" id="formfilterdates" name="filterdates" value="Filter Sessions"></div>
                 </td>
@@ -381,11 +360,8 @@ if (isset($sids[0])) {
               <option value="<?php echo $dateid; ?>"<?php if ($dateid == $session_id) echo ' selected'; ?>><?php echo $datestr; echo $seshprofile[$dateid]; if ($show_session_length) {echo $seshsizes[$dateid];} ?><?php if ($dateid == $session_id) echo ' (Current Session)'; ?></option>
 <?php } ?>
             </select>
-<?php   if ( $filteryear <> "" ) { ?>
-            <input type="hidden" name="selyear" id="selyear" value="<?php echo $filteryear; ?>" />
-<?php   } ?>
-<?php   if ( $filtermonth <> "" ) { ?>
-            <input type="hidden" name="selmonth" id="selmonth" value="<?php echo $filtermonth; ?>" />
+<?php   if ( $filteryearmonth <> "" ) { ?>
+            <input type="hidden" name="selyearmonth" id="selyearmonth" value="<?php echo $filteryearmonth; ?>" />
 <?php   } ?>
             <noscript><input type="submit" id="seshidtag" name="seshidtag" class="input-sm"></noscript>
           </form>
@@ -423,14 +399,11 @@ if (isset($sids[0])) {
               <select data-placeholder="Choose OBD2 data..." multiple class="chosen-select" size="<?php echo $numcols; ?>" style="width:100%;" id="plot_data" onsubmit="onSubmitIt" name="plotdata[]">
                 <option value=""></option>
 <?php   foreach ($coldata as $xcol) { ?>
-                <option value="<?php echo $xcol['colname']; ?>" <?php $i = 1; while ( isset(${'var' . $i}) ) { if ( ${'var' . $i} == $xcol['colname'] ) { echo " selected"; } $i = $i + 1; } ?>><?php echo $xcol['colcomment']; ?></option>
+                <option value="<?php echo $xcol['colname']; ?>" <?php $i = 1; while ( isset(${'var' . $i}) ) { if ( (${'var' . $i} == $xcol['colname'] ) OR ( $xcol['colfavorite'] == 1 ) ) { echo " selected"; } $i = $i + 1; } ?>><?php echo $xcol['colcomment']; ?></option>
 <?php   } ?>
             </select>
-<?php   if ( $filteryear <> "" ) { ?>
-            <input type="hidden" name="selyear" id="selyear" value="<?php echo $filteryear; ?>" />
-<?php   } ?>
-<?php   if ( $filtermonth <> "" ) { ?>
-            <input type="hidden" name="selmonth" id="selmonth" value="<?php echo $filtermonth; ?>" />
+<?php   if ( $filteryearmonth <> "" ) { ?>
+            <input type="hidden" name="selyearmonth" id="selyearmonth" value="<?php echo $filteryearmonth; ?>" />
 <?php   } ?>
             <div align="center" style="padding-top:6px;"><input class="btn btn-info btn-sm" type="submit" id="formplotdata" name="plotdata[]" value="Plot!"></div>
           </form>

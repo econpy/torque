@@ -5,7 +5,10 @@ if (isset($_GET["sid"])) {
     $session_id = $_GET['sid'];
     // Get data for session
     $output = "";
-    $sql = mysqli_query($con, "SELECT * FROM $db_table join $db_sessions_table on $db_table.session = $db_sessions_table.session WHERE $db_table.session=".quote_value($session_id)." ORDER BY $db_table.time DESC;") or die(mysqli_error($con));
+    $tableYear = date( "Y", $session_id/1000 );
+    $tableMonth = date( "m", $session_id/1000 );
+    $db_table_full = "{$db_table}_{$tableYear}_{$tableMonth}";
+    $sql = mysqli_query($con, "SELECT * FROM $db_table_full join $db_sessions_table on $db_table_full.session = $db_sessions_table.session WHERE $db_table_full.session=".quote_value($session_id)." ORDER BY $db_table_full.time DESC;") or die(mysqli_error($con));
 
     if ($_GET["filetype"] == "csv") {
         $columns_total = mysqli_num_fields($sql);

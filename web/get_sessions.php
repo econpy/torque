@@ -1,36 +1,17 @@
 <?php
-//echo "<!-- Begin get_session.php at ".date("H:i:s", microtime(true))." -->\r\n";
+//echo "<!-- Begin get_sessions.php at ".date("H:i:s", microtime(true))." -->\r\n";
 // this page relies on being included from another page that has already connected to db
 
 session_set_cookie_params(0,dirname($_SERVER['SCRIPT_NAME']));
 if (!isset($_SESSION)) { session_start(); }
 
-// Process the 4 possibilities for the year filter: Set in POST, Set in GET, select all possible years, or the default: select the current year
-if ( isset($_POST["selyear"]) ) {
-	$filteryear = $_POST["selyear"];
-} elseif ( isset($_GET["year"])) {
-	$filteryear = $_GET["year"];
+// Process the possibilities for the year and month filter: Set in POST, Set in GET, select all possible year/months, or the default: select the current year/month
+if ( isset($_POST["selyearmonth"]) ) {
+	$filteryearmonth = $_POST["selyearmonth"];
+} elseif ( isset($_GET["yearmonth"])) {
+	$filteryearmonth = $_GET["yearmonth"];
 } else {
-	$filteryear = date('Y');
-}
-if ( $filteryear == "ALL" ) {
-	$filteryear = "%";
-}
-
-// Process the 4 possibilities for the month filter: Set in POST, Set in GET, select all possible months, or the default: select the current month
-if ( isset($_POST["selmonth"]) ) {
-	$filtermonth = $_POST["selmonth"];
-} elseif ( isset($_GET["month"])) {
-	$filtermonth = $_GET["month"];
-} else {
-	if ( isset($_POST["selyear"]) || isset($_GET["year"]) ) {
-		$filtermonth = "%";
-	} else {
-		$filtermonth = date('F');
-	}
-}
-if ( $filtermonth == "ALL" ) {
-	$filtermonth = "%";
+	$filteryearmonth = date('Y_m');
 }
 
 // Process the 4 possibilities for the profile filter: Set in POST, Set in GET, select all possible profiles, or no filter as default
@@ -45,22 +26,18 @@ if ( $filterprofile == "ALL" ) {
 	$filterprofile = "%";
 }
 
-// Build the MySQL select string based on the inputs (year, month, or session id)
+
+// Build the MySQL select string based on the inputs (year_month or session id)
 $sessionqrystring = "SELECT timestart, timeend, session, profileName, sessionsize FROM $db_sessions_table ";
-$sqlqryyear = "YEAR(FROM_UNIXTIME(session/1000)) LIKE " . quote_value($filteryear) . " ";
-$sqlqrymonth = "MONTHNAME(FROM_UNIXTIME(session/1000)) LIKE " . quote_value($filtermonth) . " ";
+$sqlqryyearmonth = "CONCAT(YEAR(FROM_UNIXTIME(session/1000)), '_', DATE_FORMAT(FROM_UNIXTIME(session/1000),'%m')) LIKE " . quote_value($filteryearmonth) . " ";
 $sqlqryprofile = "profileName LIKE " . quote_value($filterprofile) . " " ;
 $orselector = "WHERE ";
 $andselector = "";
-if ( $filteryear <> "%" || $filtermonth <> "%" || $filterprofile <> "%") {
+if ( $filteryearmonth <> "%" || $filterprofile <> "%") {
 	$orselector = " OR ";
 	$sessionqrystring = $sessionqrystring . "WHERE ( ";
-	if ( $filteryear <> "%" ) {
-		$sessionqrystring = $sessionqrystring . $sqlqryyear;
-		$andselector = " AND ";
-	}
-	if ( $filtermonth <> "%" ) {
-		$sessionqrystring = $sessionqrystring . $andselector . $sqlqrymonth;
+	if ( $filteryearmonth <> "%" ) {
+		$sessionqrystring = $sessionqrystring . $sqlqryyearmonth;
 		$andselector = " AND ";
 	}
 	if ( $filterprofile <> "%" ) {
@@ -101,6 +78,6 @@ while($row = mysqli_fetch_assoc($sessionqry)) {
 }
 
 mysqli_free_result($sessionqry);
-//echo "<!-- End get_session.php at ".date("H:i:s", microtime(true))." -->\r\n";
+//echo "<!-- End get_sessions.php at ".date("H:i:s", microtime(true))." -->\r\n";
 
 ?>

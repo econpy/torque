@@ -7,11 +7,11 @@ require_once ("./auth_user.php");
 // 2015.08.21 - edit by surfrock66 - Rather than pull from the column comments,
 //   oull from a new database created which manages variables. Include
 //   a column flagging whether a variable is populated or not.
-$keyqry = mysqli_query($con, "SELECT id,description,units,type,min,max,populated FROM ".$db_name.".".$db_keys_table." ORDER BY description") or die(mysqli_error($con));
+$keyqry = mysqli_query($con, "SELECT id,description,units,type,min,max,populated,favorite FROM ".$db_name.".".$db_keys_table." ORDER BY description") or die(mysqli_error($con));
 $i = 0;
 while ($x = mysqli_fetch_array($keyqry)) {
 	if ((substr($x[0], 0, 1) == "k") ) {
-		$keydata[$i] = array("id"=>$x[0], "description"=>$x[1], "units"=>$x[2], "type"=>$x[3], "min"=>$x[4], "max"=>$x[5], "populated"=>$x[6]);
+		$keydata[$i] = array("id"=>$x[0], "description"=>$x[1], "units"=>$x[2], "type"=>$x[3], "min"=>$x[4], "max"=>$x[5], "populated"=>$x[6], "favorite"=>$x[7]);
 		$i = $i + 1;
 	}
 }
@@ -38,7 +38,7 @@ mysqli_close($con);
     <script language="javascript" type="text/javascript" src="static/js/jquery.peity.min.js"></script>
     <script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.1.0/chosen.jquery.min.js"></script>
     <script language="javascript" type="text/javascript" src="static/js/torquehelpers.js"></script>
-    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script>
       $(function(){
         var message_status = $("#status");
@@ -97,7 +97,8 @@ mysqli_close($con);
         <th>Variable Type</th>
         <th>Min Value</th>
         <th>Max Value</th>
-        <th>In Use?</th>
+        <th>Visible?</th>
+        <th>Favorite?</th>
       </thead>
       <tbody>
 <?php $i = 1; ?>
@@ -109,6 +110,7 @@ mysqli_close($con);
           <td>
             <select  id="type:<?php echo $keycol['id']; ?>" contenteditable="true">
               <!--<option value="boolean"<?php //if ($keycol['type'] == "boolean") echo ' selected'; ?>>boolean</option>-->
+              <option value="double"<?php if ($keycol['type'] == "double") echo ' selected'; ?>>double</option>
               <option value="float"<?php if ($keycol['type'] == "float") echo ' selected'; ?>>float</option>
               <option value="varchar(255)"<?php if ($keycol['type'] == "varchar(255)") echo ' selected'; ?>>varchar(255)</option>
             </selecT>
@@ -116,6 +118,7 @@ mysqli_close($con);
           <td id="min:<?php echo $keycol['id']; ?>" contenteditable="true"><?php echo $keycol['min']; ?></td>
           <td id="max:<?php echo $keycol['id']; ?>" contenteditable="true"><?php echo $keycol['max']; ?></td>
           <td><input type="checkbox" id="populated:<?php echo $keycol['id']; ?>" contenteditable="true"<?php if ( $keycol['populated'] ) echo " CHECKED"; ?>/></td>
+          <td><input type="checkbox" id="favorite:<?php echo $keycol['id']; ?>" contenteditable="true"<?php if ( $keycol['favorite'] ) echo " CHECKED"; ?>/></td>
         </tr>
 <?php   $i = $i + 1; ?>
 <?php } ?>

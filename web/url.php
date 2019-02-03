@@ -32,25 +32,14 @@ if (isset($_POST["selprofile"])) {
 	}
 }
 
-// Capture the year we will be working with
-if (isset($_POST["selyear"])) {
-	if ($_POST["selyear"]) {
-		$outurl = $outurl."&year=".$_POST["selyear"];
+// Capture the year/month we will be working with
+if (isset($_POST["selyearmonth"])) {
+	if ($_POST["selyearmonth"]) {
+		$outurl = $outurl."&yearmonth=".$_POST["selyearmonth"];
 	}
-} elseif (isset($_GET["year"])) {
-	if ($_GET["year"]) {
-		$outurl = $outurl."&year=".$_GET["year"];
-	}
-}
-
-//Capture the month we will be working with
-if (isset($_POST["selmonth"])) {
-	if ($_POST["selmonth"] <> "") {
-		$outurl = $outurl."&month=".$_POST["selmonth"];
-	}
-} elseif (isset($_GET["month"])) {
-	if ($_GET["month"]) {
-		$outurl = $outurl."&month=".$_GET["month"]; 
+} elseif (isset($_GET["yearmonth"])) {
+	if ($_GET["yearmonth"]) {
+		$outurl = $outurl."&yearmonth=".$_GET["yearmonth"];
 	}
 }
 
