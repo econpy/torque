@@ -10,15 +10,19 @@ require_once("./parse_functions.php");
 if (!$source_is_miles && $use_miles) {
     $speed_factor = 0.621371;
     $speed_measurand = ' (mph)';
+    $distance_measurand = ' (miles)';
 } elseif ($source_is_miles && $use_miles) {
     $speed_factor = 1.0;
     $speed_measurand = ' (mph)';
+    $distance_measurand = ' (miles)';
 } elseif ($source_is_miles && !$use_miles) {
     $speed_factor = 1.609344;
     $speed_measurand = ' (km/h)';
+    $distance_measurand = ' (km)';
 } else {
     $speed_factor = 1.0;
     $speed_measurand = ' (km/h)';
+    $distance_measurand = ' (km)';
 }
 
 //Temperature Conversion
@@ -65,6 +69,9 @@ if (isset($_GET["id"]) and in_array($_GET["id"], $sids)) {
 	        if (substri_count($keyarr[${'v' . $i}][0], "Speed") > 0) {
 	            $x = intval($row[${'v' . $i}]) * $speed_factor;
 	            ${'v' . $i . '_measurand'} = $speed_measurand;
+	        } elseif (substri_count($keyarr[${'v' . $i}][0], "Distance") > 0) {
+	            $x = intval($row[${'v' . $i}]) * $speed_factor;
+	            ${'v' . $i . '_measurand'} = $distance_measurand;
 	        } elseif (substri_count($keyarr[${'v' . $i}][0], "Temp") > 0) {
 	            $x = $temp_func ( floatval($row[${'v' . $i}]) );
 	            ${'v' . $i . '_measurand'} = $temp_measurand;
