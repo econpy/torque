@@ -14,7 +14,6 @@ if(!empty($_POST)) {
     $split_data = explode(':', $field_id);
     $id = $split_data[1];
     $field_name = $split_data[0];
-//echo "ID: '$id' Field Name: '$field_name' Field ID: '$id' Value: '$val'";
     if (!empty($id) && !empty($field_name)) {
       if ($field_name == 'populated') {
         if ($val == 'true') {
@@ -31,14 +30,12 @@ if(!empty($_POST)) {
       }
       //update the values
       $query = "UPDATE $db_name.$db_keys_table SET ".quote_name($field_name)." = ".quote_value($val)." WHERE id = ".quote_value($id);
-//echo "<br />$query<br />";
       mysqli_query($con, $query) || die(mysqli_error($con));
       if($field_name == 'type') {
         $table_list = mysqli_query($con, "SELECT table_name FROM INFORMATION_SCHEMA.tables WHERE table_schema = '$db_name' and table_name like '$db_table%' ORDER BY table_name DESC;");
         while( $row = mysqli_fetch_assoc($table_list) ) {
           $db_table_name = $row["table_name"];
           $query = "ALTER TABLE $db_name.$db_table_name MODIFY ".quote_name($id)." ".mysqli_real_escape_string($con, $val)." NOT NULL DEFAULT '0'";
-//echo "<br />$query<br />";
           mysqli_query($con, $query) || die(mysqli_error($con));
         }
       }

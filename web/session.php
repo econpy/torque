@@ -26,6 +26,11 @@ if (isset($_GET["id"])) {
   $session_id = preg_replace('/\D/', '', $_GET['id']);
 }
 
+// Call exit function
+if (isset($_GET['logout'])) {
+    logout_user();
+}
+
 // Define and capture variables for maintaining the year and month filters between sessions.
 $filteryearmonth = "";
 if (isset($_GET["yearmonth"])) {
@@ -303,7 +308,11 @@ if (isset($sids[0])) {
     <div class="navbar navbar-default navbar-fixed-top navbar-inverse" role="navigation">
       <div class="container">
         <div class="navbar-header">
+<?php    if ( empty($_SESSION['torque_user']) ) { ?>
           <a class="navbar-brand" href="session.php">Open Torque Viewer</a>
+<?php    } else { ?>
+          <a class="navbar-brand" href="session.php">Open Torque Viewer</a><span class="navbar-brand" style="margin-left:25px;">{ <?php echo $_SESSION['torque_user'] ?><a><img width="20" heigth="20" style="margin-left:10px;margin-top:-2px;" src="./static/logout.png" onClick="location.href='session.php?logout=true'" /></a> }</span>
+<?php    } ?>
         </div>
       </div>
     </div>

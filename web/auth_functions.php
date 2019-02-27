@@ -62,18 +62,22 @@ function get_id()
 //If both $auth_user and $auth_pass are empty, all passwords are accepted.
 function auth_user()
 {
-    global $auth_user, $auth_pass;
+    //global $auth_user, $auth_pass;
+    global $users;
     
     $user = get_user();
     $pass = get_pass();
 
     //No User/Pass defined: Allow everything
-    if ( empty($auth_user) && empty($auth_pass) ) {
+    if ( !isset($users) || empty($users) ) {
         return true;
-    }
-
-    if ( ($user == $auth_user) && ($pass == $auth_pass) ) {
-        return true;
+    } else {
+        foreach ($users as $key => $value) {
+            if ($user == $users[$key]['user'] && $pass == $users[$key]['pass']) {
+                $_SESSION['torque_user'] = $users[$key]['user'];
+                return true;
+            }
+        }
     }
 
     return false;
@@ -122,6 +126,13 @@ function auth_id()
         return true;
     }
     return false;
+}
+
+function logout_user()
+{
+    session_destroy();
+    header("Location: ./session.php");
+    die();
 }
 
 ?>

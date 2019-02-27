@@ -10,7 +10,7 @@ if (!isset($_SESSION)) { session_start(); }
 $logged_in = false;
 
 if (!isset($_SESSION['torque_logged_in'])) {
-    $_SESSION['torque_logged_in'] = false;
+  $_SESSION['torque_logged_in'] = false;
 }
 $logged_in = (boolean)$_SESSION['torque_logged_in'];
 
@@ -22,14 +22,14 @@ $logged_in = (boolean)$_SESSION['torque_logged_in'];
 // Default is authentication with user/pass
 
 if(!isset($auth_user_with_user_pass)) {
-    $auth_user_with_user_pass = true;
+  $auth_user_with_user_pass = true;
 }
 
 if (!$logged_in && $auth_user_with_user_pass)
 {
-    if ( auth_user() ) {
-        $logged_in = true;
-    }
+  if ( auth_user() ) {
+    $logged_in = true;
+  }
 }
 
 //ATTENTION:
@@ -37,76 +37,68 @@ if (!$logged_in && $auth_user_with_user_pass)
 //So, if no restriction of Torque IDs was defined in "creds.php", access to the file "upload_data.php" is always possible.
 
 if(!isset($auth_user_with_torque_id)) {
-    $auth_user_with_torque_id = false;
+  $auth_user_with_torque_id = false;
 }
 
 if (!$logged_in && $auth_user_with_torque_id)
 {
-    if ( auth_id() )
-    {
-        $session_id = get_id();
-        $logged_in = true;
-    }
+  if ( auth_id() ) {
+    $session_id = get_id();
+    $logged_in = true;
+  }
 }
-
 
 $_SESSION['torque_logged_in'] = $logged_in;
 
 if (!$logged_in) {
-?><!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Open Torque Viewer</title>
-        <meta name="description" content="Open Torque Viewer">
-        <meta name="author" content="Matt Nicklay">
-        <!--<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">-->
-        <link rel="stylesheet" href="static/css/bootstrap.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.0/chosen.min.css">
-        <link rel="stylesheet" href="static/css/torque.css">
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
-        <script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-        <script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
-        <script language="javascript" type="text/javascript" src="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-        <script language="javascript" type="text/javascript" src="static/js/jquery.peity.min.js"></script>
-        <script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.1.0/chosen.jquery.min.js"></script>
-    </head>
-    <body>
-        <div class="navbar navbar-default navbar-fixed-top navbar-inverse" role="navigation">
-            <div class="container">
-                <div class="navbar-header">
-                    <a class="navbar-brand" href="auth_user.php">Open Torque Viewer</a>
-                </div>
-                <div id="map-container" class="col-md-7 col-xs-12">
-                    &nbsp;
-                </div>
-                <div id="right-container" class="col-md-5 col-xs-12">
-                    <div id="right-cell">
-
-                        <h4>Login</h4>
-                        <div class="row center-block" style="padding-bottom:4px;">
-                            <form method="post" class="form-horizontal" role="form" action="session.php" id="formlogin">
-                                <input class="btn btn-info btn-sm" type="text" name="user" value="" placeholder="(Username)" />
-                                <input class="btn btn-info btn-sm" type="password" name="pass" value="" placeholder="(Password)" />
-                                <input class="btn btn-info btn-sm" type="submit" id="formlogin" name="Login" value="Login" />
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Open Torque Viewer</title>
+    <meta name="description" content="Open Torque Viewer">
+    <meta name="author" content="Matt Nicklay">
+    <meta name="author" content="Joe Gullo (surfrock66)">
+    <link rel="stylesheet" href="static/css/bootstrap.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.0/chosen.min.css">
+    <link rel="stylesheet" href="static/css/torque.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+    <script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+    <script language="javascript" type="text/javascript" src="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script language="javascript" type="text/javascript" src="static/js/jquery.peity.min.js"></script>
+    <script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.1.0/chosen.jquery.min.js"></script>
+  </head>
+  <body>
+    <div class="navbar navbar-default navbar-fixed-top navbar-inverse" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="auth_user.php">Open Torque Viewer</a>
         </div>
-    </body>
+        <div id="map-container" class="col-md-7 col-xs-12">&nbsp;</div>
+        <div id="right-container" class="col-md-5 col-xs-12">
+          <div id="right-cell">
+            <h4>Login</h4>
+            <div class="row center-block" style="padding-bottom:4px;">
+              <form method="post" class="form-horizontal" role="form" action="session.php" id="formlogin">
+                <input class="btn btn-info btn-sm" type="text" name="user" value="" placeholder="(Username)" />
+                <input class="btn btn-info btn-sm" type="password" name="pass" value="" placeholder="(Password)" />
+                <input class="btn btn-info btn-sm" type="submit" id="formlogin" name="Login" value="Login" />
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
 </html>
 <?php
-    exit(0);
+  exit(0);
+} else {
+  //Prepare session
+  //Connect to Sql, ...
 }
-else
-{
-    //Prepare session
-    
-    //Connect to Sql, ...
-}
-
 ?>

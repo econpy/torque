@@ -11,9 +11,10 @@ $db_keys_table = 'torque_keys';
 $db_sessions_table = 'sessions';
 $gmapsApiKey = ''; // OPTIONAL: Create a key at https://developers.google.com/maps/documentation/javascript/
 
-// User credentials for Browser login
-$auth_user = '';    //Sample: 'torque'
-$auth_pass = '';    //Sample: 'open'
+// Array of user credentials for Browser login
+$users = array();
+// $users[] = array("user" => "torque", "pass" => "open");      // Sample: 'torque' / 'open'
+// $users[] = array("user" => "second", "pass" => "mypass");    // Add additional strings for more users
 
 //If you want to restrict access to upload_data.php, 
 // either enter your torque ID as shown in the torque app, 
