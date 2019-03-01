@@ -32,5 +32,9 @@ $use_miles = false;
 
 $hide_empty_variables = true;
 $show_session_length = true;
+
+#Sessions less than limit will not be shown
+$min_session_size = 20;
+
 //echo "<!-- End creds.php -->\r\n";
 ?>
