@@ -64,6 +64,7 @@ $seshprofile = array();
 while($row = mysqli_fetch_assoc($sessionqry)) {
     $session_duration_str = gmdate("H:i:s", ($row["timeend"] - $row["timestart"])/1000);
     $session_profileName = $row["profileName"];
+    $session_size = $row["sessionsize"];
 
     // Do not show sessions smaller than $min_session_size
     if ($session_size >= $min_session_size) {
