@@ -16,12 +16,7 @@ if (isset($deletesession) && !empty($deletesession)) {
     $tableMonth = date( "m", $deletesession/1000 );
     $db_table_full = "{$db_table}_{$tableYear}_{$tableMonth}";
     $delresult = mysqli_query($con, "DELETE FROM $db_table_full WHERE session=".quote_value($deletesession)) or die(mysqli_error($con));
-
-    mysqli_free_result($delresult);
-
     $delresult = mysqli_query($con, "DELETE FROM $db_sessions_table WHERE session=".quote_value($deletesession)) or die(mysqli_error($con));
-
-    mysqli_free_result($delresult);
 }
 //echo "<!-- End del_session.php at ".date("H:i:s", microtime(true))." -->\r\n";
 ?>
