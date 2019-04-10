@@ -38,7 +38,7 @@
 #    $suffix = $row['Suffix'];
 #    $year = $row['Year'];
 #    $month = $row['Month'];
-#    $new_table_name = "{$db_table}_test_{$suffix}";
+#    $new_table_name = "{$db_table}_{$suffix}";
 #    $table_create_query = "CREATE TABLE $new_table_name SELECT * FROM $db_table WHERE YEAR(FROM_UNIXTIME(session/1000)) LIKE '$year' and MONTH(FROM_UNIXTIME(session/1000)) LIKE '$month'";
 #    mysqli_query($con, $table_create_query) or die(mysqli_error($con));
 #  }
