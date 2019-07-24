@@ -26,8 +26,8 @@ CREATE TABLE `sessions` (
   `profileWeight` float NOT NULL DEFAULT '0',
   `profileVe` float NOT NULL DEFAULT '0',
   `profileFuelCost` float NOT NULL DEFAULT '0',
-  `timestart` varchar(15) NOT NULL,
-  `timeend` varchar(15) NOT NULL,
+  `timestart` varchar(15) NOT NULL DEFAULT '0',
+  `timeend` varchar(15) NOT NULL DEFAULT '0',
   `sessionsize` varchar(15) NOT NULL DEFAULT '0',
   UNIQUE KEY `session` (`session`,`id`),
   KEY `id` (`id`)
