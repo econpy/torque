@@ -5,6 +5,7 @@
 $db_host = 'localhost';
 $db_user = '';     // Enter your MySQL username
 $db_pass = '';     // Enter your MySQL password
+$db_port  = '3306';    // Enter yout MySql PORT
 $db_name = 'torque';
 $db_table = 'raw_logs';
 $db_keys_table = 'torque_keys';

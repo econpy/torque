@@ -2,8 +2,10 @@
 //echo "<!-- Begin get_sessions.php at ".date("H:i:s", microtime(true))." -->\r\n";
 // this page relies on being included from another page that has already connected to db
 
-session_set_cookie_params(0,dirname($_SERVER['SCRIPT_NAME']));
-if (!isset($_SESSION)) { session_start(); }
+if (!isset($_SESSION)) { 
+	session_set_cookie_params(0,dirname($_SERVER['SCRIPT_NAME']));
+	session_start(); 
+}
 
 // Process the possibilities for the year and month filter: Set in POST, Set in GET, select all possible year/months, or the default: select the current year/month
 if ( isset($_POST["selyearmonth"]) ) {
@@ -62,7 +64,7 @@ $seshdates = array();
 $seshsizes = array();
 $seshprofile = array();
 while($row = mysqli_fetch_assoc($sessionqry)) {
-    $session_duration_str = gmdate("H:i:s", ($row["timeend"] - $row["timestart"])/1000);
+    $session_duration_str = gmdate("H:i:s", ((int)$row["timeend"] - (int)$row["timestart"])/1000);
     $session_profileName = $row["profileName"];
     $session_size = $row["sessionsize"];
 
