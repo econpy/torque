@@ -5,7 +5,7 @@ require_once ('auth_app.php');
 $newest_table_list = mysqli_query($con, "SELECT table_name FROM INFORMATION_SCHEMA.tables WHERE table_schema = '$db_name' and table_name like '$db_table%' ORDER BY table_name DESC LIMIT 1;");
 $newest_table = "";
 while( $row = mysqli_fetch_assoc($newest_table_list) ) {
-  $newest_table = $row["table_name"];
+  $newest_table = $row["TABLE_NAME"];
 }
 // Create an array of all the existing fields in the database
 $result = mysqli_query($con, "SHOW COLUMNS FROM $newest_table") or die(mysqli_error($con));
