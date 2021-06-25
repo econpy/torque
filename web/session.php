@@ -1,4 +1,6 @@
 <?php
+//Use false for google maps, true for leafletjs, stamen, openstreetmap
+$use_OSM = false;
 //echo "<!-- Begin session.php at ".date("H:i:s", microtime(true))." -->\r\n";
 $loadstart = date("g:i:s A", microtime(true));
 $loadmicrostart = explode(' ', microtime());
@@ -78,12 +80,22 @@ if (isset($sids[0])) {
     }
   }
 
+  if ($use_OSM === true) { 
+  // Create array of Latitude/Longitude strings in leafletjs JavaScript format
+   $mapdata = array();
+   foreach($geolocs as $d) {
+    $mapdata[] = "[".$d['lat'].", ".$d['lon']."]";
+  }
+  $imapdata = implode(",\n          ", $mapdata);
+  }
+  if ($use_OSM === false) {
   // Create array of Latitude/Longitude strings in Google Maps JavaScript format
   $mapdata = array();
   foreach($geolocs as $d) {
     $mapdata[] = "new google.maps.LatLng(".$d['lat'].", ".$d['lon'].")";
   }
   $imapdata = implode(",\n          ", $mapdata);
+  }
 
   // Don't need to set zoom manually
   $setZoomManually = 0;
@@ -139,6 +151,12 @@ if (isset($sids[0])) {
     <script language="javascript" type="text/javascript" src="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
     <script language="javascript" type="text/javascript" src="static/js/jquery.peity.min.js"></script>
     <script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.1.0/chosen.jquery.min.js"></script>
+    <?php if ($use_OSM === true) { ?>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+    <script type="text/javascript" src="https://stamen-maps.a.ssl.fastly.net/js/tile.stamen.js?v1.3.0"></script>
+    <?php } ?>
+    <?php if ($use_OSM === false) { ?>
     <!-- Initialize the google maps javascript code -->
     <script language="javascript" type="text/javascript" defer src="https://maps.googleapis.com/maps/api/js<?php if(!empty($gmapsApiKey)) { echo "?key=$gmapsApiKey&callback=initialize"; } ?>"></script>
 <!--    <script language="javascript" type="text/javascript" src="https://maps.googleapis.com/maps/api/js"></script>-->
@@ -226,6 +244,7 @@ if (isset($sids[0])) {
       };
       google.maps.event.addDomListener(window, 'load', initialize);
     </script>
+<?php } //end IF Google Maps ?>
 <?php if ($setZoomManually === 0) { ?>
     <!-- Flot Local Javascript files -->
     <script language="javascript" type="text/javascript" src="static/js/jquery.flot.js"></script>
@@ -319,6 +338,21 @@ if (isset($sids[0])) {
     <div id="map-container" class="col-md-7 col-xs-12">
       <div id="map-canvas"></div>
     </div>
+    <?php if ($use_OSM === true) { ?>
+    <script>
+    // replace "toner" here with "terrain" or "watercolor"
+    var path = [<?php echo $imapdata; ?>];   
+    var layer = new L.StamenTileLayer("terrain");
+    var map = new L.Map("map-canvas", {
+    center: new L.LatLng(37.7, -122.4),
+    zoom: 6
+     });
+     map.addLayer(layer);
+     var polyline = L.polyline(path, {color: 'red'}).addTo(map);
+    // zoom the map to the polyline
+    map.fitBounds(polyline.getBounds(), {maxZoom: 15});
+     </script>
+    <?php } ?>
     <div id="right-container" class="col-md-5 col-xs-12">
       <div id="right-cell">
         <h4>Select Session</h4>
