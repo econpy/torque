@@ -32,12 +32,18 @@ function average($arr)
     if (!count($arr)) return 0;
 
     $sum = 0;
+    $count = 0;
     for ($i = 0; $i < count($arr); $i++)
     {
-        $sum += $arr[$i];
+        if ( is_numeric( $arr[$i] ) ) {
+            $sum += $arr[$i];
+            $count++;
+        } 
     }
-
-    return $sum / count($arr);
+    if ( $count === 0 ) 
+        return 0;
+    else
+        return $sum / $count;
 }
 
 
@@ -57,11 +63,15 @@ function calc_percentile($data, $percentile){
     sort($data);
     if(!is_float($floatval)){
         $result = $data[$intvalindex];
-    }else {
-        if($count > $intvalindex+1)
-            $result = $floatval*($data[$intvalindex+1] - $data[$intvalindex]) + $data[$intvalindex];
-        else
-            $result = $data[$intvalindex];
+    } else {
+        if ( is_numeric( $data[$intvalindex] ) ) {
+            if($count > $intvalindex+1)
+                $result = $floatval*($data[$intvalindex+1] - $data[$intvalindex]) + $data[$intvalindex];
+            else
+                $result = $data[$intvalindex];
+        } else {
+            $result = 0;
+        }
     }
     return $result;
 }

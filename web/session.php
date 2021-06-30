@@ -159,7 +159,6 @@ if (isset($sids[0])) {
     <?php if ($use_OSM === false) { ?>
     <!-- Initialize the google maps javascript code -->
     <script language="javascript" type="text/javascript" defer src="https://maps.googleapis.com/maps/api/js<?php if(!empty($gmapsApiKey)) { echo "?key=$gmapsApiKey&callback=initialize"; } ?>"></script>
-<!--    <script language="javascript" type="text/javascript" src="https://maps.googleapis.com/maps/api/js"></script>-->
     <script language="javascript" type="text/javascript">
       function initialize() {
         var mapDiv = document.getElementById('map-canvas');
@@ -261,7 +260,7 @@ if (isset($sids[0])) {
       $(document).ready(function(){
 <?php   $i=1; ?>
 <?php   while ( isset(${'var' . $i }) && !empty(${'var' . $i }) ) { ?>
-        var <?php echo "s$i"; ?> = [<?php foreach(${"d".$i} as $b) {echo "[".$b[0].", ".$b[1]."],";} ?>];
+        var <?php echo "s$i"; ?> = [<?php foreach(${"d".$i} as $b) {echo "[".$b[0].", ".((is_numeric($b[1]))?$b[1]:0)."],";} ?>];
 <?php     $i = $i + 1; ?>
 <?php   } ?>
 

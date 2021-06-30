@@ -6,7 +6,7 @@ $con = mysqli_connect($db_host, $db_user, $db_pass,$db_name,$db_port) or die(mys
 
 // Get the Full URL to the session.php file
 $thisfile = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
-$parts = strtok("url.php", $thisfile);
+$parts = explode("url.php", $thisfile);
 // Capture the session ID we're going to be working with
 if (isset($_GET["seshid"])) {
 	$seshid = strval(mysqli_escape_string($con, $_GET["seshid"]));
@@ -18,7 +18,7 @@ if (isset($_GET["seshid"])) {
 	$seshid = $_SESSION['recent_session_id'];
 }
 
-$baselink = $parts["0"]."session.php";
+$baselink = $parts[0]."session.php";
 $outurl = $baselink."?id=".$seshid;
 
 // Capture the profile we will be working with
