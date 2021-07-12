@@ -43,6 +43,15 @@ if (isset($_POST["selyearmonth"])) {
 	}
 }
 
+//Capture the start and end time
+if (isset($_POST["svdata"])) {
+$timestartval = explode(',',$_POST["svdata"]);        
+$outurl = $outurl."&tsval=$timestartval[0]&teval=$timestartval[1]";
+} 
+elseif (isset($_GET['tsval']) && isset($_GET['teval'])) {
+ $outurl = $outurl."&tsval=".$_GET['tsval']."&teval=".$_GET['teval'];     
+}
+
 //If we're gonna be making a graph, capture the variable IDs
 if (isset($_GET["makechart"])) {
     if (isset($_POST["plotdata"])) {
