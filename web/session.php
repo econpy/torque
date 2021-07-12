@@ -12,6 +12,23 @@ require_once("./del_session.php");
 //require_once("./merge_sessions.php");
 require_once("./get_sessions.php");
 require_once("./get_columns.php");
+
+// Define and capture variables time filter.
+$timesql = "";
+$mintimev = "";
+$maxtimev = "";
+$timestartval = "-1";
+$timeendval = "-1";
+if (isset($_GET["tsval"])) {
+  $timestartval = $_GET['tsval'];
+}
+if (isset($_GET["teval"])) {
+  $timeendval = $_GET['teval'];
+}
+ if ($timestartval > 0 && $timeendval > 0) {
+$timesql = "and time>=$timestartval and time<=$timeendval";
+}
+
 require_once("./plot.php");
 
 $_SESSION['recent_session_id'] = strval(max($sids));
@@ -71,7 +88,7 @@ if (isset($sids[0])) {
   $db_table_full = "{$db_table}_{$tableYear}_{$tableMonth}";
   // Get GPS data for the currently selectedsession
   $sessionqry = mysqli_query($con, "SELECT kff1006, kff1005 FROM $db_table_full
-              WHERE session=$session_id
+              WHERE session=$session_id $timesql
               ORDER BY time DESC") or die(mysqli_error($con));
   $geolocs = array();
   while($geo = mysqli_fetch_array($sessionqry)) {
@@ -79,6 +96,20 @@ if (isset($sids[0])) {
       $geolocs[] = array("lat" => $geo["0"], "lon" => $geo["1"]);
     }
   }
+
+  // Get array of time for session and start and end variables 
+  $sessionTime = mysqli_query($con, "SELECT time FROM $db_table_full
+              WHERE session=$session_id
+              ORDER BY time DESC") or die(mysqli_error($con));
+  $timearray = array();
+
+  while ($row = mysqli_fetch_row($sessionTime)) {
+     $timearray[$i] = $row[0];
+     $i = $i + 1;
+}
+  $itime = implode(",\n", $timearray);
+  $maxtimev = array_values($timearray)[0];
+  $mintimev = array_values($timearray)[(count($timearray)-1)];
 
   if ($use_OSM === true) { 
   // Create array of Latitude/Longitude strings in leafletjs JavaScript format
@@ -348,7 +379,15 @@ if (isset($sids[0])) {
     zoom: 6
      });
      map.addLayer(layer);
-     var polyline = L.polyline(path, {color: 'red'}).addTo(map);
+
+    // start and end point marker
+    var pathL = path.length;
+    var endCrd = path[0];
+    var startCrd = path[pathL-1];
+    L.circleMarker(startCrd, {color:'green',title:'Start',alt:'Start Point',radius:6,weight:1}).addTo(map);
+    L.circleMarker(endCrd, {color:'black',title:'End',alt:'End Point',radius:6,weight:1}).addTo(map);
+    // travel line
+    var polyline = L.polyline(path, {color: 'red'}).addTo(map);
     // zoom the map to the polyline
     map.fitBounds(polyline.getBounds(), {maxZoom: 15});
      </script>
@@ -432,13 +471,76 @@ if (isset($sids[0])) {
             </table>
           </div>
 <?php } ?>
-        </div><br />
+        </div>
+
+<!-- slider -->
+  <script>
+   const jsTimeMap = [<?php echo $itime; ?>].reverse(); //Session time array, reversed for silder
+   var minTimeStart = [<?php echo $mintimev; ?>];
+   var maxTimeEnd = [<?php echo $maxtimev; ?>];
+   var TimeStartv = [<?php echo $timestartval; ?>]; 
+   var TimeEndv = [<?php echo $timeendval; ?>];
+
+  function timelookup(t) { //retrun array index, used for slider steps/value, RIP IE, no polyfill 
+    var fx = (e) => e == t;
+    var out = jsTimeMap.findIndex(fx);
+    return out;
+  }
+   
+  var TimeStartv = timelookup(TimeStartv); 
+  var TimeEndv = timelookup(TimeEndv);
+
+  if (TimeStartv  == -1 || TimeEndv == -1) {
+    var TimeStartv = timelookup(minTimeStart);
+    var TimeEndv = timelookup(maxTimeEnd);
+  }
+
+  function ctime(t) {//covert the epoch time to local readable 
+   var date = new Date(t);
+   return  date.toLocaleTimeString();
+  }
+
+  var sv = $(function() {//jquery range slider
+    $( "#slider-range11" ).slider({
+      range: true,
+      min: 0 ,
+      max:  jsTimeMap.length -1,
+      values: [ TimeStartv, TimeEndv ],
+      slide: function( event, ui ) {
+    $( "#slider-time" ).val( ctime(jsTimeMap[ui.values[ 0 ]]) + " - " + ctime(jsTimeMap[ui.values[ 1 ]]));
+      }});
+    $( "#slider-time" ).val( ctime(jsTimeMap[$( "#slider-range11" ).slider( "values", 0 )]) +  " - " + ctime(jsTimeMap[$( "#slider-range11" ).slider( "values", 1 )])); 
+    $( "#slider-range11" ).on( "slidechange", function( event, ui ){$('#slider-time').attr("sv0", jsTimeMap[$('#slider-range11').slider("values", 0)])});
+    $( "#slider-range11" ).on( "slidechange", function( event, ui ){$('#slider-time').attr("sv1", jsTimeMap[$('#slider-range11').slider("values", 1)])});
+  } );
+
+  function settimev(){//set post array for slider
+    var sv0 =  document.getElementById("slider-time").getAttribute("sv0");
+    var sv1 =  document.getElementById("slider-time").getAttribute("sv1");
+    var sv3 = [<?php echo $timestartval; ?>];
+
+    if (sv0 <= 0 && sv1 <= 0){
+    var sv0 = [<?php echo $timestartval; ?>];
+    var sv1 = [<?php echo $timeendval; ?>];
+    }
+    if (sv0 == -1 && sv1 == -1){
+    var sv0 = minTimeStart;
+    var sv1 = maxTimeEnd;
+    }
+    var svarr = [sv0,sv1];
+    document.getElementById("formplotdata").svdata.value = svarr;
+  }
+</script>
+<span class="h4">Trim Session</span>
+<input type="text" id="slider-time" readonly style="width:300px; border:0; color:#f6931f; font-weight:bold;" sv0="-1" sv1="-1">
+<div id="slider-range11"></div>
 
 <!-- Variable Select Block -->
 <?php if ($setZoomManually === 0) { ?>
         <h4>Select Variables to Compare</h4>
           <div class="row center-block" style="padding-top:3px;">
-            <form method="post" role="form" action="url.php?makechart=y&seshid=<?php echo $session_id; ?>" id="formplotdata">
+            <form method="post" role="form" action="url.php?makechart=y&seshid=<?php echo $session_id; ?>" id="formplotdata" onsubmit="settimev()">
+             <input type="hidden" name="svdata" id="svdata" value="" /> 
               <select data-placeholder="Choose OBD2 data..." multiple class="chosen-select" size="<?php echo $numcols; ?>" style="width:100%;" id="plot_data" onsubmit="onSubmitIt" name="plotdata[]">
                 <option value=""></option>
 <?php   foreach ($coldata as $xcol) { ?>
