@@ -6,7 +6,7 @@ $con = mysqli_connect($db_host, $db_user, $db_pass,$db_name,$db_port) or die(mys
 
 // Get the Full URL to the session.php file
 $thisfile = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
-$parts = explode("url.php", $thisfile);
+$parts = strtok("url.php", $thisfile);
 // Capture the session ID we're going to be working with
 if (isset($_GET["seshid"])) {
 	$seshid = strval(mysqli_escape_string($con, $_GET["seshid"]));
@@ -41,6 +41,15 @@ if (isset($_POST["selyearmonth"])) {
 	if ($_GET["yearmonth"]) {
 		$outurl = $outurl."&yearmonth=".$_GET["yearmonth"];
 	}
+}
+
+//Capture the start and end time
+if (isset($_POST["svdata"])) {
+$timestartval = explode(',',$_POST["svdata"]);        
+$outurl = $outurl."&tsval=$timestartval[0]&teval=$timestartval[1]";
+} 
+elseif (isset($_GET['tsval']) && isset($_GET['teval'])) {
+ $outurl = $outurl."&tsval=".$_GET['tsval']."&teval=".$_GET['teval'];     
 }
 
 //If we're gonna be making a graph, capture the variable IDs

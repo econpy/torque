@@ -62,7 +62,7 @@ if (isset($_GET["id"]) and in_array($_GET["id"], $sids)) {
 	$tableYear = date( "Y", $session_id/1000 );
 	$tableMonth = date( "m", $session_id/1000 );
 	$db_table_full = "{$db_table}_{$tableYear}_{$tableMonth}";
-	$sessionqry = mysqli_query($con, "SELECT $selectstring FROM $db_table_full WHERE session=".quote_value($session_id)." ORDER BY time DESC;") or die(mysqli_error($con));
+	$sessionqry = mysqli_query($con, "SELECT $selectstring FROM $db_table_full WHERE session=".quote_value($session_id)." $timesql ORDER BY time DESC;") or die(mysqli_error($con));
 	while($row = mysqli_fetch_assoc($sessionqry)) {
 	    $i = 1;
 		while (isset(${'v' . $i})) {
