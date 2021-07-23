@@ -11,6 +11,15 @@ $db_table = 'raw_logs';
 $db_keys_table = 'torque_keys';
 $db_sessions_table = 'sessions';
 $gmapsApiKey = ''; // OPTIONAL: Create a key at https://developers.google.com/maps/documentation/javascript/
+$mapboxApiKey = '';  // OPTIONAL: Create a key at https://account.mapbox.com/auth/signup/
+$tomtomApiKey = '';  // OPTIONAL: Create a key at https://developer.tomtom.com/user/register
+$thunderforestApiKey = ''; // OPTIONAL: Create a key at https://www.thunderforest.com/pricing/
+$hereApiKey = '';  // OPTIONAL: Create a key at https://account.here.com/sign-up
+$maptilerApiKey = ''; // OPTIONAL: Create a key at https://cloud.maptiler.com/auth/widget
+
+//Map options
+$mapProvider = 'esri'; // google,esri,stamen,openstreetmap,mapbox,tomtom,thunderforest,here,maptiler
+$mapStyleSelect = 'Streets'; //provider specific see README e.g. roadmap for google, Streets for esri, not used for openstreetmap
 
 // Array of user credentials for Browser login
 $users = array();

@@ -1,6 +1,4 @@
 <?php
-//Use false for google maps, true for leafletjs, stamen, openstreetmap
-$use_OSM = false;
 //echo "<!-- Begin session.php at ".date("H:i:s", microtime(true))." -->\r\n";
 $loadstart = date("g:i:s A", microtime(true));
 $loadmicrostart = explode(' ', microtime());
@@ -13,7 +11,7 @@ require_once("./del_session.php");
 require_once("./get_sessions.php");
 require_once("./get_columns.php");
 
-// Define and capture variables time filter.
+// Define and capture variables session time trim.
 $timesql = "";
 $mintimev = "";
 $maxtimev = "";
@@ -111,7 +109,7 @@ if (isset($sids[0])) {
   $maxtimev = array_values($timearray)[0];
   $mintimev = array_values($timearray)[(count($timearray)-1)];
 
-  if ($use_OSM === true) { 
+  if ($mapProvider !== 'google') { 
   // Create array of Latitude/Longitude strings in leafletjs JavaScript format
    $mapdata = array();
    foreach($geolocs as $d) {
@@ -119,7 +117,7 @@ if (isset($sids[0])) {
   }
   $imapdata = implode(",\n          ", $mapdata);
   }
-  if ($use_OSM === false) {
+  if ($mapProvider === 'google') {
   // Create array of Latitude/Longitude strings in Google Maps JavaScript format
   $mapdata = array();
   foreach($geolocs as $d) {
@@ -156,7 +154,7 @@ if (isset($sids[0])) {
   //Close the MySQL connection, which is why we can't query years later
   mysqli_free_result($sessionqry);
   mysqli_close($con);
-} else {
+} elseif ($mapProvider === 'google') {
   //Default map in case there's no sessions to query.  Very unlikely this will get used.
   $imapdata = "new google.maps.LatLng(37.235, -115.8111)";
   $setZoomManually = 1;
@@ -182,99 +180,6 @@ if (isset($sids[0])) {
     <script language="javascript" type="text/javascript" src="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
     <script language="javascript" type="text/javascript" src="static/js/jquery.peity.min.js"></script>
     <script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.1.0/chosen.jquery.min.js"></script>
-    <?php if ($use_OSM === true) { ?>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
-    <script type="text/javascript" src="https://stamen-maps.a.ssl.fastly.net/js/tile.stamen.js?v1.3.0"></script>
-    <?php } ?>
-    <?php if ($use_OSM === false) { ?>
-    <!-- Initialize the google maps javascript code -->
-    <script language="javascript" type="text/javascript" defer src="https://maps.googleapis.com/maps/api/js<?php if(!empty($gmapsApiKey)) { echo "?key=$gmapsApiKey&callback=initialize"; } ?>"></script>
-    <script language="javascript" type="text/javascript">
-      function initialize() {
-        var mapDiv = document.getElementById('map-canvas');
-        var map = new google.maps.Map(mapDiv, {
-          mapTypeId: google.maps.MapTypeId.ROADMAP,
-          mapTypeControl: true,
-          mapTypeControlOptions: {
-            style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
-            poistion: google.maps.ControlPosition.TOP_RIGHT,
-            mapTypeIds: [google.maps.MapTypeId.ROADMAP,
-            google.maps.MapTypeId.TERRAIN,
-            google.maps.MapTypeId.HYBRID,
-            google.maps.MapTypeId.SATELLITE]
-          },
-          navigationControl: true,
-          navigationControlOptions: {
-            style: google.maps.NavigationControlStyle.ZOOM_PAN
-          },
-          scaleControl: true,
-          disableDoubleClickZoom: false,
-          draggable: true,
-          streetViewControl: true,
-          draggableCursor: 'move'
-        });
-
-        // The potentially large array of LatLng objects for the roadmap
-        var path = [<?php echo $imapdata; ?>];
-
-        // Create a boundary using the path to automatically configure
-        // the default centering location and zoom.
-        var bounds = new google.maps.LatLngBounds();
-        for (i = 0; i < path.length; i++) {
-          bounds.extend(path[i]);
-        }
-        map.fitBounds(bounds);
-
-        // If required/desired, set zoom manually now that bounds have been set
-<?php if ($setZoomManually === 1) { ?>
-        zoomChange = google.maps.event.addListenerOnce(map, 'bounds_changed',
-          function(event) {
-            if (this.getZoom()){
-            this.setZoom(16);
-            }
-          });
-        setTimeout(function(){
-        google.maps.event.removeListener(zoomChange)
-        }, 1000);
-
-        var contentString = '<div>'+
-          '<div class="alert alert-info">'+
-          '  <p class="lead" align="center">'+
-          "  You're seeing this window because "+
-          '<br />'+
-          "you haven't selected a session. "+
-          '<br /><br />'+
-          " Select one from the dropdown menu."+
-          '  </p>'+
-          '</div>'+
-          '</div>';
-
-        var infowindow = new google.maps.InfoWindow({
-          content: contentString
-        });
-
-        var marker = new google.maps.Marker({
-          position: <?php echo $imapdata; ?>,
-          map: map,
-          title: 'Area 51'
-        });
-
-        setTimeout(function() {
-        infowindow.open(map, marker)
-        }, 2000);
-<?php } ?>
-        var line = new google.maps.Polyline({
-          path: path,
-          strokeColor: '#800000',
-          strokeOpacity: 0.75,
-          strokeWeight: 4
-        });
-        line.setMap(map);
-      };
-      google.maps.event.addDomListener(window, 'load', initialize);
-    </script>
-<?php } //end IF Google Maps ?>
 <?php if ($setZoomManually === 0) { ?>
     <!-- Flot Local Javascript files -->
     <script language="javascript" type="text/javascript" src="static/js/jquery.flot.js"></script>
@@ -368,29 +273,7 @@ if (isset($sids[0])) {
     <div id="map-container" class="col-md-7 col-xs-12">
       <div id="map-canvas"></div>
     </div>
-    <?php if ($use_OSM === true) { ?>
-    <script>
-    // replace "toner" here with "terrain" or "watercolor"
-    var path = [<?php echo $imapdata; ?>];   
-    var layer = new L.StamenTileLayer("terrain");
-    var map = new L.Map("map-canvas", {
-    center: new L.LatLng(37.7, -122.4),
-    zoom: 6
-     });
-     map.addLayer(layer);
-
-    // start and end point marker
-    var pathL = path.length;
-    var endCrd = path[0];
-    var startCrd = path[pathL-1];
-    L.circleMarker(startCrd, {color:'green',title:'Start',alt:'Start Point',radius:6,weight:1}).addTo(map);
-    L.circleMarker(endCrd, {color:'black',title:'End',alt:'End Point',radius:6,weight:1}).addTo(map);
-    // travel line
-    var polyline = L.polyline(path, {color: 'red'}).addTo(map);
-    // zoom the map to the polyline
-    map.fitBounds(polyline.getBounds(), {maxZoom: 15});
-     </script>
-    <?php } ?>
+<?php require_once("./map_providers.php"); ?>
     <div id="right-container" class="col-md-5 col-xs-12">
       <div id="right-cell">
         <h4>Select Session</h4>
