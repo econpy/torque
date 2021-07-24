@@ -280,7 +280,7 @@ if (isset($sids[0])) {
     <div id="map-container" class="col-md-7 col-xs-12">
       <div id="map-canvas"></div>
     </div>
-<?php require_once("./map_providers.php"); ?>
+<?php require("./map_providers.php"); ?>
     <div id="right-container" class="col-md-5 col-xs-12">
       <div id="right-cell">
         <h4>Select Session</h4>
