@@ -11,6 +11,13 @@ require_once("./del_session.php");
 require_once("./get_sessions.php");
 require_once("./get_columns.php");
 
+//Temp catch for missing creds variables for pull#43
+if ($mapProvider == null){
+$mapProvider = 'esri';
+$mapStyleSelect = 'Streets';
+echo '<hr><b>Update variables in creds.php, see readme.md https://github.com/surfrock66/torque#map-providers</b>';
+}
+
 // Define and capture variables session time trim.
 $timesql = "";
 $mintimev = "";

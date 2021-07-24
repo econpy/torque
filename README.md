@@ -105,6 +105,8 @@ $maptilerApiKey = ''; // OPTIONAL: Create a key at https://cloud.maptiler.com/au
 If you created map provider API key above, place that in the variable here.
 
 # Map Providers #
+Upgraded installs will need add new variables from creds-sample.php to your creds.php additional provider API keys if required and the map options below. Will display message at top of sessions.php and default to ESRI Streets.
+
 Support added for most of the Open Street Map poviders and contributors with the abliltiy to select from avilable map styles.
 ```php
 ...
