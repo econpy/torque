@@ -2,7 +2,7 @@
 require_once ('db.php');
 require_once ('auth_app.php');
 
-$newest_table_list = mysqli_query($con, "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.tables WHERE table_schema = '$db_name' and table_name like '$db_table%' ORDER BY table_name DESC LIMIT 1;");
+$newest_table_list = mysqli_query($con, "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.tables WHERE table_schema = '$db_name' and TABLE_NAME like '$db_table%' ORDER BY TABLE_NAME DESC LIMIT 1;");
 $newest_table = "";
 while( $row = mysqli_fetch_assoc($newest_table_list) ) {
   $newest_table = $row["TABLE_NAME"];
@@ -35,7 +35,7 @@ if (sizeof($_GET) > 0) {
   $tableMonth = date( "m", $session_id/1000 );
   $db_table_full = "{$db_table}_{$tableYear}_{$tableMonth}";
   // If the desired table name doesn't exist, create it copying columns from the previous month's table
-  $current_table_list_query = "SELECT table_name FROM INFORMATION_SCHEMA.tables WHERE table_schema = '$db_name' and table_name = '$db_table_full'";
+  $current_table_list_query = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.tables WHERE table_schema = '$db_name' and TABLE_NAME = '$db_table_full'";
 #echo "<br />Debug 01 $current_table_list_query<br />";
   $current_table_list = mysqli_query($con, $current_table_list_query);
 #echo "<br />Debug 02<br />";
@@ -110,9 +110,9 @@ if (sizeof($_GET) > 0) {
     if (!in_array($key, $dbfields) and $submitval == 2) {
 #echo "<br />Debug 15<br />";
       // If the value isn't already in the latest DB table, we better check every DB table
-      $table_list = mysqli_query($con, "SELECT table_name FROM INFORMATION_SCHEMA.tables WHERE table_schema = '$db_name' and table_name like '$db_table%' ORDER BY table_name DESC;");
+      $table_list = mysqli_query($con, "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.tables WHERE table_schema = '$db_name' and TABLE_NAME like '$db_table%' ORDER BY TABLE_NAME DESC;");
       while( $row = mysqli_fetch_assoc($table_list) ) {
-        $db_table_name = $row["table_name"];
+        $db_table_name = $row["TABLE_NAME"];
 #echo "<br />Debug 16 $db_table_name<br />";
         // Create an array of all the existing fields in the database
         $result = mysqli_query($con, "SHOW COLUMNS FROM $db_table_name") or die(mysqli_error($con));

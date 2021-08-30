@@ -4,9 +4,9 @@
 
 #  mysqli_query($con, "ALTER TABLE $db_keys_table ADD COLUMN favorite TINYINT(1) NOT NULL DEFAULT 0") or die(mysqli_error($con));
 #  // Update existing tables to handle new data structures
-#  $table_list = mysqli_query($con, "SELECT table_name FROM INFORMATION_SCHEMA.tables WHERE table_schema = '$db_name' and table_name like '$db_table%' ORDER BY table_name DESC;");
+#  $table_list = mysqli_query($con, "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.tables WHERE table_schema = '$db_name' and TABLE_NAME like '$db_table%' ORDER BY TABLE_NAME DESC;");
 #  while( $row = mysqli_fetch_assoc($table_list) ) {
-#    $db_table_name = $row["table_name"];
+#    $db_table_name = $row["TABLE_NAME"];
 #    // Change the GPS Latitude and Longitude datapoints from Float to Double to improve accuracy
 #    $sqlLatQuery = "ALTER TABLE $db_table_name MODIFY kff1006 DOUBLE NOT NULL DEFAULT '0'";
 #    mysqli_query($con, $sqlLatQuery) or die(mysqli_error($con));
