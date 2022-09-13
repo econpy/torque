@@ -73,11 +73,11 @@
         //function to create stylized circle for start and end
         const fPnt = (p,c)=>new ol.layer.Vector({source:new ol.source.Vector({features:[new ol.Feature(new ol.geom.Circle(p,1/3e3))]}),style:{'stroke-width':3,'stroke-color':c,'fill-color':c.concat([.5])}})
         //setups the layers for osm, the path, start and end circles
-        const layers = [new ol.layer.Tile({source:new ol.source.OSM()}),new ol.layer.Vector({source,style}),fPnt(path,[0,255,0]),fPnt(path,[0,0,0])];
+        const layers = [new ol.layer.Tile({source:new ol.source.OSM()}),new ol.layer.Vector({source,style}),fPnt(path[0],[0,255,0]),fPnt(path[path.length-1],[0,0,0])];
         //creates the map
         ol.proj.useGeographic();
 			  map = new ol.Map({layers,target:'map-container'});
-			  map.addInteraction(new ol.interaction.DragRotateAndZoom())&&map.addControl(new ol.control.FullScreen())&&map.addControl(new ol.control.Rotate());
+			  map.addInteraction(new ol.interaction.DragRotateAndZoom());map.addControl(new ol.control.FullScreen());map.addControl(new ol.control.Rotate());
         //center then map view on our trip plus a little margin on the outside
         map.getView().fit(source.getExtent().map((v,i)=>v+(i>1?1:-1)/1e3),map.getSize());
       };
