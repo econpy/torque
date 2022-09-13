@@ -55,8 +55,36 @@
       };
     </script>
 <?php } //end IF Google Maps ?>
-
-    <?php if ($mapProvider !== 'google') { ?>
+<?php if ($mapProvider === 'openlayers') { //I added a new map provider to use openlayers to be able to color each segment of our path based on speed?>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v7.1.0/ol.css">
+    <script src="https://cdn.jsdelivr.net/npm/ol@v7.1.0/dist/ol.js"></script>
+	  <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL,Object.assign"></script>
+    <script language="javascript" type="text/javascript">
+      const initMap = () => {
+        var path = [<?php echo $imapdata; ?>];
+        var spd = [<?php echo $ispddata; ?>]; //this would be a new variable containing speed data for each segment
+        const source = new ol.source.Vector({features:[new ol.Feature(new ol.geom.LineString(path))]}); //build the path layer vector source
+        const style = (f,r) => { //function that builds the styles array to color every line segment based on speed
+          const [width,geom,max] = [4,f.getGeometry(),Math.max.apply(null,spd.filter(v=>v>0))];
+          let [i,stl] = [0,[]];
+          geom.forEachSegment((s,e)=>stl.push(new ol.style.Style({geometry:new ol.geom.LineString([s, e]),stroke:new ol.style.Stroke({color:"hsl("+(100*(1-spd[i]/max))+",100%,50%)",width})}))&&i++&&null);
+          return stl;
+        }
+        //function to create stylized circle for start and end
+        const fPnt = (p,c)=>new ol.layer.Vector({source:new ol.source.Vector({features:[new ol.Feature(new ol.geom.Circle(p,1/3e3))]}),style:{'stroke-width':3,'stroke-color':c,'fill-color':c.concat([.5])}})
+        //setups the layers for osm, the path, start and end circles
+        const layers = [new ol.layer.Tile({source:new ol.source.OSM()}),new ol.layer.Vector({source,style}),fPnt(path,[0,255,0]),fPnt(path,[0,0,0])];
+        //creates the map
+        ol.proj.useGeographic();
+			  map = new ol.Map({layers,target:'map-container'});
+			  map.addInteraction(new ol.interaction.DragRotateAndZoom())&&map.addControl(new ol.control.FullScreen())&&map.addControl(new ol.control.Rotate());
+        //center then map view on our trip plus a little margin on the outside
+        map.getView().fit(source.getExtent().map((v,i)=>v+(i>1?1:-1)/1e3),map.getSize());
+      };
+      initMap();
+    </script>
+<?php } //end IF Openlayers ?>
+    <?php if ($mapProvider !== 'google' && $mapProvider !== 'openlayers') { ?>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
     <?php } ?>
@@ -66,7 +94,7 @@
     <?php if ($mapProvider === 'esri') { ?>
     <script src="https://unpkg.com/esri-leaflet@3.0.2/dist/esri-leaflet.js" integrity="sha512-myckXhaJsP7Q7MZva03Tfme/MSF5a6HC2xryjAM4FxPLHGqlh5VALCbywHnzs2uPoF/4G/QVXyYDDSkp5nPfig==" crossorigin=""></script>
     <?php } ?>
-    <?php if ($mapProvider !== 'google') { ?>
+    <?php if ($mapProvider !== 'google' && $mapProvider !== 'openlayers') { ?>
     <script>
     <?php } ?>
     <?php if ($mapProvider === 'stamen') { ?>
@@ -118,7 +146,7 @@
     zoomOffset: -1,
     maxZoom: 21});
     <?php } ?>
-    <?php if ($mapProvider !== 'google') { ?>
+    <?php if ($mapProvider !== 'google' && $mapProvider !== 'openlayers') { ?>
     var path = [<?php echo $imapdata; ?>];   
     var map = new L.Map("map-canvas", {
     center: new L.LatLng(37.7, -122.4),

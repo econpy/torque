@@ -92,13 +92,13 @@ if (isset($sids[0])) {
   $tableMonth = date( "m", $session_id/1000 );
   $db_table_full = "{$db_table}_{$tableYear}_{$tableMonth}";
   // Get GPS data for the currently selectedsession
-  $sessionqry = mysqli_query($con, "SELECT kff1006, kff1005 FROM $db_table_full
+  $sessionqry = mysqli_query($con, "SELECT kff1006, kff1005, kd FROM $db_table_full
               WHERE session=$session_id $timesql
               ORDER BY time DESC") or die(mysqli_error($con));
   $geolocs = array();
   while($geo = mysqli_fetch_array($sessionqry)) {
     if (($geo["0"] != 0) && ($geo["1"] != 0)) {
-      $geolocs[] = array("lat" => $geo["0"], "lon" => $geo["1"]);
+      $geolocs[] = array("lat" => $geo["0"], "lon" => $geo["1"], "spd" => $geo["2"]);
     }
   }
 
@@ -116,22 +116,26 @@ if (isset($sids[0])) {
   $maxtimev = array_values($timearray)[0];
   $mintimev = array_values($timearray)[(count($timearray)-1)];
 
-  if ($mapProvider !== 'google') { 
-  // Create array of Latitude/Longitude strings in leafletjs JavaScript format
-   $mapdata = array();
-   foreach($geolocs as $d) {
-    $mapdata[] = "[".$d['lat'].", ".$d['lon']."]";
-  }
-  $imapdata = implode(",\n          ", $mapdata);
-  }
-  if ($mapProvider === 'google') {
-  // Create array of Latitude/Longitude strings in Google Maps JavaScript format
+  // Create array of Latitude/Longitude strings in JavaScript format according to the map provider
   $mapdata = array();
-  foreach($geolocs as $d) {
-    $mapdata[] = "new google.maps.LatLng(".$d['lat'].", ".$d['lon'].")";
+  if ($mapProvider === 'google') {
+    foreach($geolocs as $d) {
+      $mapdata[] = "new google.maps.LatLng(".$d['lat'].", ".$d['lon'].")";
+    }
+  } elseif ($mapProvider === 'openlayers') { 
+    $spddata = array(); //new array to contain speed
+    foreach($geolocs as $d) {
+      $mapdata[] = "[".$d['lon'].", ".$d['lat']."]"; //openlayers uses longitude before latitude for points
+      $spddata[] = $d['spd'];
+    }
+    $ispddata = implode(",\n          ", $spddata);
+  } else { 
+   $mapdata = array();
+    foreach($geolocs as $d) {
+      $mapdata[] = "[".$d['lat'].", ".$d['lon']."]";
+    }
   }
   $imapdata = implode(",\n          ", $mapdata);
-  }
 
   // Don't need to set zoom manually
   $setZoomManually = 0;
