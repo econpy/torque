@@ -1,8 +1,8 @@
 <?php
 session_set_cookie_params(0,dirname($_SERVER['SCRIPT_NAME']));
 if (!isset($_SESSION)) { session_start(); }
-require("./creds.php");
-$con = mysqli_connect($db_host, $db_user, $db_pass,$db_name,$db_port) or die(mysqli_error($con));
+require("./db.php");
+//$con = mysqli_connect($db_host, $db_user, $db_pass,$db_name,$db_port) or die(mysqli_error($con));
 
 // Get the Full URL to the session.php file
 $thisfile = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";

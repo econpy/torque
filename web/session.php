@@ -472,7 +472,7 @@ if (isset($sids[0])) {
 
 <!-- Chart Block -->
         <h4>Chart</h4>
-        <div class="row center-block" style="padding-bottom:5px;">
+        <div id="Chart-Container" class="row center-block" style="padding-bottom:5px;">
 <?php if ($setZoomManually === 0) { ?>
           <!-- 2015.07.22 - edit by surfrock66 - Don't display anything if no variables are set (default) -->
 <?php   if ( $var1 == "" ) { ?>
