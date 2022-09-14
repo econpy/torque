@@ -101,7 +101,7 @@
         //function to create stylized circle for start and end
         const fPnt = (p,c)=>new ol.layer.Vector({source:new ol.source.Vector({features:[new ol.Feature(new ol.geom.Circle(p,1/3e3))]}),style:{'stroke-width':3,'stroke-color':c,'fill-color':c.concat([.5])}})
         //setups the layers for osm, the path, start and end circles
-        const layers = [baseLayer,new ol.layer.Vector({source,style}),fPnt(path[0],[0,255,0]),fPnt(path[path.length-1],[0,0,0])];
+        const layers = [baseLayer,fPnt(path[0],[0,255,0]),fPnt(path[path.length-1],[0,0,0]),new ol.layer.Vector({source,style})];
         //creates the map
         ol.proj.useGeographic();
 			  map = new ol.Map({layers,target:'map-container'});
