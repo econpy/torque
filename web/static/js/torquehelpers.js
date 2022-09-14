@@ -38,8 +38,10 @@ $(document).ready(function(){
         }
         var formattedTime = curr_hour + ":" + curr_min + ":" + curr_sec + " " + a_p;
         $(".x").text(formattedTime);
-        $("#y1").text(pos.y1.toFixed(2));
-        $("#y2").text(pos.y2.toFixed(2));
+        $("#y1").text(pos.y.toFixed(2));
+        $("#y2").text(pos.y1.toFixed(2));
+        
+        if (typeof window.markerUpd==='function') markerUpd(item);
 
         if ($("#enableTooltip:checked").length > 0) {
             if (item) {

@@ -61,7 +61,7 @@
 	  <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL,Object.assign"></script>
     <script language="javascript" type="text/javascript">
       const initMap = () => {
-        const selLyrUrl = {
+        const selLyrUrl = { //list of providers for the base layer
           'OSM':'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
           'ESRI':'https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
           'ESRI.DARK':'https://services.arcgisonline.com/ArcGIS/rest/services/canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
@@ -73,24 +73,25 @@
           'STAMEN.TERRAIN':'https://stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.png',
           'STAMEN.WATERCOLOR':'https://stamen-tiles.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.jpg'
         };
-        const updBase = () => {
+        const updBase = () => { //updates the base layer based on selection
           const selLayer = $('#BaseLayerOpt').find(":selected").val()!==undefined?$('#BaseLayerOpt').find(":selected").val():'OSM';
           tileLayer.setUrl(selLyrUrl[selLayer]||selLyrUrl['OSM']);
         }
-        const baseLst = [['Open Street Map','OSM'],
+        const baseLst = [['Open Street Map','OSM'], //base layer option list
           ['Esri Streets','ESRI'],['Esri Dark Base','ESRI.DARK'],['Esri Gray Base','ESRI.GRAY'],['Esri Satellite','ESRI.SATE'],['Esri Topo','ESRI.TOPO'],['Esri NatGeo','ESRI.NATGEO'],
           ['Stamen','STAMEN'],['Stamen Terain','STAMEN.TERRAIN'],['Stamen Watercolor','STAMEN.WATERCOLOR']];
-        $('#map-container')
+        $('#map-container')//creates a new select element witht the options for the base layers
           .prepend($('<select>',{id:'BaseLayerOpt'}).css({position:'relative','z-index':300,left:'80px'}))
           .prepend($('<div>').css('position','absolute').append($('<div>',{id:'ttip'}).css({position:'relative','z-index':100,'background-color':'white','border-radius':'10px',opacity:0.9,width:'100px'})));
         $.each(baseLst,(i,el)=>$('#BaseLayerOpt').append($('<option>',{value:el[1],text:el[0]})));
         $('#map-container>select').val('ESRI.SATE');
         $('#map-container>select').off('change');
         $('#map-container>select').on('change',updBase);
+        //defines the default base layer
         tileLayer = new ol.source.XYZ({url:selLyrUrl['ESRI.SATE']});
         baseLayer = new ol.layer.Tile({source:tileLayer});
-        var path = [<?php echo $imapdata; ?>];
-        var spd = [<?php echo $ispddata; ?>]; //this would be a new variable containing speed data for each segment
+        path = [<?php echo $imapdata; ?>];
+        const spd = [<?php echo $ispddata; ?>]; //this would be a new variable containing speed data for each segment
         const source = new ol.source.Vector({features:[new ol.Feature({geometry:new ol.geom.LineString(path),name:'trk'})]}); //build the path layer vector source
         const style = (f,r) => { //function that builds the styles array to color every line segment based on speed
           const [width,geom,max] = [4,f.getGeometry(),Math.max.apply(null,spd.filter(v=>v>0))];
@@ -99,9 +100,16 @@
           return stl;
         }
         //function to create stylized circle for start and end
-        const fPnt = (p,c)=>new ol.layer.Vector({source:new ol.source.Vector({features:[new ol.Feature(new ol.geom.Circle(p,1/3e3))]}),style:{'stroke-width':3,'stroke-color':c,'fill-color':c.concat([.5])}})
+        const fPnt = (p,c)=>new ol.layer.Vector({source:new ol.source.Vector({features:[new ol.Feature(new ol.geom.Circle(p,1/3e3))]}),style:{'stroke-width':3,'stroke-color':c,'fill-color':c.concat([.5])}});
+        ///this is the marker features source while hovering the chart
+        const markerSource = new ol.source.Vector({features:[]});
+        markerUpd = itm => {//this functions updates the marker while hovering the chart and clears it when not hovering
+          markerSource.clear();itm&&itm.dataIndex>0&&markerSource.addFeature(new ol.Feature(new ol.geom.Circle(path[itm.dataIndex],1/1e3)));markerSource.changed();
+        }
+        //creates the marker layer
+        const marker = new ol.layer.Vector({source:markerSource,style:{'stroke-width':3,'stroke-color':[190,0,190],'fill-color':[190,0,190,.7]}});
         //setups the layers for osm, the path, start and end circles
-        const layers = [baseLayer,fPnt(path[0],[0,255,0]),fPnt(path[path.length-1],[0,0,0]),new ol.layer.Vector({source,style})];
+        const layers = [baseLayer,fPnt(path[0],[0,255,0]),fPnt(path[path.length-1],[0,0,0]),new ol.layer.Vector({source,style}),marker];
         //creates the map
         ol.proj.useGeographic();
 			  map = new ol.Map({layers,target:'map-container'});
