@@ -90,10 +90,13 @@
         //defines the default base layer
         const tileLayer = new ol.source.XYZ({url:selLyrUrl['ESRI.SATE']});
         const baseLayer = new ol.layer.Tile({source:tileLayer});
-        const path = [<?php echo $imapdata; ?>];
-        const spd = [<?php echo $ispddata; ?>]; //this would be a new variable containing speed data for each segment
+        const pathAll = [<?php echo $imapdata; ?>];
+        const spdAll = [<?php echo $ispddata; ?>]; //this would be a new variable containing speed data for each segment
+        let path = pathAll; //by default full range
+        let spd = spdAll;
         const spdUnit = '<?php echo !$use_miles?'km/h':'mph' ?>'; //just set the Unit for the tooltip
-        const source = new ol.source.Vector({features:[new ol.Feature({geometry:new ol.geom.LineString(path),name:'trk'})]}); //build the path layer vector source
+        const sFeat = f=>new ol.source.Vector({features:[f]});
+        let source = sFeat(new ol.Feature({geometry:new ol.geom.LineString(path),name:'trk'})); //build the path layer vector source
         const style = (f,r) => { //function that builds the styles array to color every line segment based on speed
           const [width,geom,max] = [4,f.getGeometry(),Math.max.apply(null,spd.filter(v=>v>0))];
           let [i,stl] = [0,[]];
@@ -102,7 +105,7 @@
         }
         //functions to create stylized circle for start and end, also marker when hovering chart
         const fCircleF = (c,r)=>new ol.Feature(new ol.geom.Circle(c,r));
-        const fPnt = (p,c)=>new ol.layer.Vector({source:new ol.source.Vector({features:[fCircleF(p,1/3e3)]}),style:{'stroke-width':3,'stroke-color':c,'fill-color':c.concat([.5])}});
+        const lPnt = (s,c)=>new ol.layer.Vector({source:s,style:{'stroke-width':3,'stroke-color':c,'fill-color':c.concat([.5])}});
         ///this is the marker features source while hovering the chart
         const markerSource = new ol.source.Vector({features:[]});
         markerUpd = itm => {//this functions updates the marker while hovering the chart and clears it when not hovering
@@ -114,10 +117,21 @@
         //creates the marker layer
         const marker = new ol.layer.Vector({source:markerSource,style:{'stroke-width':2,'stroke-color':[190,0,190],'fill-color':[190,0,190,.1]}});
         //setups the layers for osm, the path, start and end circles
-        const layers = [baseLayer,fPnt(path[0],[0,255,0]),fPnt(path[path.length-1],[0,0,0]),new ol.layer.Vector({source,style}),marker];
+        let pnt = [sFeat(fCircleF(path[0],1/3e3)),sFeat(fCircleF(path[path.length-1],1/3e3))];
+        const layers = [baseLayer,lPnt(pnt[0],[0,255,0]),lPnt(pnt[1],[0,0,0]),new ol.layer.Vector({source,style}),marker];
+        mapUpdRange = (a,b) => {//new function to update the map sources according to the trim slider
+          path = pathAll.slice(a,b);
+          spd = spdAll.slice(a,b);
+          source.clear();pnt[0].clear();pnt[1].clear();
+          source.addFeature(new ol.Feature({geometry:new ol.geom.LineString(path),name:'trk'}));
+          pnt[0].addFeature(fCircleF(path[0],1/3e3));
+          pnt[1].addFeature(fCircleF(path[path.length-1],1/3e3));
+          source.changed();pnt[0].changed();pnt[1].changed();
+          map.getView().fit(source.getExtent().map((v,i)=>v+(i>1?1:-1)/1e3),map.getSize());
+        };
         //creates the map
         ol.proj.useGeographic();
-			  map = new ol.Map({layers,target:'map-container'});
+        let map = new ol.Map({layers,target:'map-container'});
 			  map.addInteraction(new ol.interaction.DragRotateAndZoom());map.addControl(new ol.control.FullScreen());map.addControl(new ol.control.Rotate());
         //center then map view on our trip plus a little margin on the outside
         map.getView().fit(source.getExtent().map((v,i)=>v+(i>1?1:-1)/1e3),map.getSize());
@@ -127,7 +141,7 @@
         const ttip = $("#ttip");
         const sData=evt=>{
           const pxl = map.getEventPixel(evt.originalEvent);
-          const feature = map.forEachFeatureAtPixel(pxl,e=>e.getKeys().length>1&&e);
+          const feature = map.forEachFeatureAtPixel(pxl,e=>e.getProperties().name=='trk'&&e);
           let msg = feature&&spd[segIdx(feature.getGeometry().getCoordinates(),feature.getGeometry().getClosestPoint(map.getCoordinateFromPixel(pxl)))];
           if (feature&&msg>0) {
             msg = 'Speed: '+msg+' '+spdUnit;

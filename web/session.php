@@ -219,7 +219,14 @@ if (isset($sids[0])) {
 <?php   } ?>
         ];
         function doPlot(position) {
-          $.plot("#placeholder", flotData, {
+          //asigned the plot to a new variable and new function to update the plot in realtime when using the slider
+          chartUpdRange = (a,b) => {
+            let dataSet = [];
+            flotData.every(i=>dataSet.push({label:i.label,data:i.data.slice(a,b)}));
+            plot.setData(dataSet);
+            plot.draw();
+          }
+          const plot = $.plot("#placeholder", flotData, {
             xaxes: [ {
               mode: "time",
               timezone: "browser",
@@ -400,11 +407,19 @@ if (isset($sids[0])) {
       max:  jsTimeMap.length -1,
       values: [ TimeStartv, TimeEndv ],
       slide: function( event, ui ) {
-    $( "#slider-time" ).val( ctime(jsTimeMap[ui.values[ 0 ]]) + " - " + ctime(jsTimeMap[ui.values[ 1 ]]));
+        $( "#slider-time" ).val( ctime(jsTimeMap[ui.values[ 0 ]]) + " - " + ctime(jsTimeMap[ui.values[ 1 ]]));
       }});
     $( "#slider-time" ).val( ctime(jsTimeMap[$( "#slider-range11" ).slider( "values", 0 )]) +  " - " + ctime(jsTimeMap[$( "#slider-range11" ).slider( "values", 1 )])); 
-    $( "#slider-range11" ).on( "slidechange", function( event, ui ){$('#slider-time').attr("sv0", jsTimeMap[$('#slider-range11').slider("values", 0)])});
-    $( "#slider-range11" ).on( "slidechange", function( event, ui ){$('#slider-time').attr("sv1", jsTimeMap[$('#slider-range11').slider("values", 1)])});
+    //$( "#slider-range11" ).on( "slidechange", function( event, ui ){$('#slider-time').attr("sv0", jsTimeMap[$('#slider-range11').slider("values", 0)])});
+    //$( "#slider-range11" ).on( "slidechange", function( event, ui ){$('#slider-time').attr("sv1", jsTimeMap[$('#slider-range11').slider("values", 1)])});
+    //merged the 2 listeners in 1 and added functions to visually trim map data and plot in realtime when using the trim session slider
+      $( "#slider-range11" ).on( "slidechange", (event,ui)=>{
+        $('#slider-time').attr("sv0", jsTimeMap[$('#slider-range11').slider("values", 0)])
+        $('#slider-time').attr("sv1", jsTimeMap[$('#slider-range11').slider("values", 1)])
+        const [a,b] = [jsTimeMap.length-$('#slider-range11').slider("values",1),jsTimeMap.length-$('#slider-range11').slider("values",0)];
+        if (typeof mapUpdRange=='function') mapUpdRange(a,b);
+        if (typeof chartUpdRange=='function') chartUpdRange(a,b);
+      });
   } );
 
   function settimev(){//set post array for slider
