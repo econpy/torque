@@ -92,7 +92,7 @@
         const baseLayer = new ol.layer.Tile({source:tileLayer});
         const path = [<?php echo $imapdata; ?>];
         const spd = [<?php echo $ispddata; ?>]; //this would be a new variable containing speed data for each segment
-        const spdUnit = <?php echo !$use_miles?'km/h':'mph' ?>; //just set the Unit for the tooltip
+        const spdUnit = '<?php echo !$use_miles?'km/h':'mph' ?>'; //just set the Unit for the tooltip
         const source = new ol.source.Vector({features:[new ol.Feature({geometry:new ol.geom.LineString(path),name:'trk'})]}); //build the path layer vector source
         const style = (f,r) => { //function that builds the styles array to color every line segment based on speed
           const [width,geom,max] = [4,f.getGeometry(),Math.max.apply(null,spd.filter(v=>v>0))];
