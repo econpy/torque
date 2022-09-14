@@ -61,7 +61,7 @@
 	  <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL,Object.assign"></script>
     <script language="javascript" type="text/javascript">
       const initMap = () => {
-        const selLyrUrl= {
+        const selLyrUrl = {
           'OSM':'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
           'ESRI':'https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
           'ESRI.DARK':'https://services.arcgisonline.com/ArcGIS/rest/services/canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
@@ -80,7 +80,9 @@
         const baseLst = [['Open Street Map','OSM'],
           ['Esri Streets','ESRI'],['Esri Dark Base','ESRI.DARK'],['Esri Gray Base','ESRI.GRAY'],['Esri Satellite','ESRI.SATE'],['Esri Topo','ESRI.TOPO'],['Esri NatGeo','ESRI.NATGEO'],
           ['Stamen','STAMEN'],['Stamen Terain','STAMEN.TERRAIN'],['Stamen Watercolor','STAMEN.WATERCOLOR']];
-        $('#map-container').prepend($('<select>',{id:'BaseLayerOpt'}).css({position:'relative','z-index':300,left:'80px'}));
+        $('#map-container')
+          .prepend($('<select>',{id:'BaseLayerOpt'}).css({position:'relative','z-index':300,left:'80px'}))
+          .prepend($('<div>').css('position','absolute').append($('<div>',{id:'ttip'}).css({position:'relative','z-index':100,'background-color':'white','border-radius':'10px',opacity:0.9,width:'100px'})));
         $.each(baseLst,(i,el)=>$('#BaseLayerOpt').append($('<option>',{value:el[1],text:el[0]})));
         $('#map-container>select').val('ESRI.SATE');
         $('#map-container>select').off('change');
@@ -89,7 +91,7 @@
         baseLayer = new ol.layer.Tile({source:tileLayer});
         var path = [<?php echo $imapdata; ?>];
         var spd = [<?php echo $ispddata; ?>]; //this would be a new variable containing speed data for each segment
-        const source = new ol.source.Vector({features:[new ol.Feature(new ol.geom.LineString(path))]}); //build the path layer vector source
+        const source = new ol.source.Vector({features:[new ol.Feature({geometry:new ol.geom.LineString(path),name:'trk'})]}); //build the path layer vector source
         const style = (f,r) => { //function that builds the styles array to color every line segment based on speed
           const [width,geom,max] = [4,f.getGeometry(),Math.max.apply(null,spd.filter(v=>v>0))];
           let [i,stl] = [0,[]];
@@ -106,6 +108,20 @@
 			  map.addInteraction(new ol.interaction.DragRotateAndZoom());map.addControl(new ol.control.FullScreen());map.addControl(new ol.control.Rotate());
         //center then map view on our trip plus a little margin on the outside
         map.getView().fit(source.getExtent().map((v,i)=>v+(i>1?1:-1)/1e3),map.getSize());
+        const segIdx = (g,c)=>{for(let i=1;i<g.length;i++) if (new ol.geom.LineString([g[i-1],g[i]]).intersectsCoordinate(c)) return i;}
+        const ttip = $("#ttip");
+        const sData=evt=>{
+          const pxl = map.getEventPixel(evt.originalEvent);
+          const feature = map.forEachFeatureAtPixel(pxl,e=>e.getKeys().length>1&&e);
+          let msg = feature&&spd[segIdx(feature.getGeometry().getCoordinates(),feature.getGeometry().getClosestPoint(map.getCoordinateFromPixel(pxl)))];
+          if (feature&&msg>0) {
+            msg = 'Speed: '+msg+'<?php echo !$use_miles?'km/h':'mph' ?>';
+            ttip.css({top:pxl[1]+'px',left:pxl[0]+'px'}).html(msg)
+          } else{
+            ttip.html('');
+          }
+        }
+        map.on('pointermove',evt=>evt.dragging?ttip.html(''):sData(evt));
       };
       initMap();
     </script>

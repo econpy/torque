@@ -6,11 +6,11 @@
 // 2015.08.21 - edit by surfrock66 - Rather than pull from the column comments,
 //   oull from a new database created which manages variables. Include
 //   a column flagging whether a variable is populated or not.
-$colqry = mysqli_query($con, "SELECT id,description,type,favorite FROM $db_keys_table WHERE populated = 1 ORDER BY description") or die(mysqli_error($con));
+$colqry = mysqli_query($con, "SELECT id,description,type,favorite FROM $db_keys_table WHERE populated = 1 AND id LIKE 'k%' AND type = 'float' ORDER BY description") or die(mysqli_error($con));
 while ($x = mysqli_fetch_array($colqry)) {
-  if ((substr($x[0], 0, 1) == "k") && ($x[2] == "float")) {
+  //if ((substr($x[0], 0, 1) == "k") && ($x[2] == "float")) { //why filter it in php when we can filter it with sql?
     $coldata[] = array("colname"=>$x[0], "colcomment"=>$x[1], "colfavorite"=>$x[3]);
-  }
+  //}
 }
 
 $numcols = strval(count($coldata)+1);
