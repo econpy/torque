@@ -104,7 +104,7 @@ if (isset($_GET["id"]) and in_array($_GET["id"], $sids)) {
 if (isset($json)) {
 	$i = 1;	
 	while (isset(${'v' . $i})) {
-	    $json[] = [${'v' . $i . '_label'},${'sparkdata' . $i},${'max' . $i},${'min' . $i},${'avg' . $i},${'pcnt25data' . $i},${'pcnt75data' . $i}];
+	    $json[] = [${'v' . $i},$keyarr[${'v' . $i}][0].${'v' . $i . '_measurand'},${'d' . $i},${'sparkdata' . $i},${'max' . $i},${'min' . $i},${'avg' . $i},${'pcnt25data' . $i},${'pcnt75data' . $i}];
 		$i = $i + 1;
 	}
 	print_r(json_encode($json/*,JSON_PRETTY_PRINT/**/));

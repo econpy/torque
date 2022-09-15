@@ -261,14 +261,30 @@ if (isset($sids[0])) {
                 console.log(flotItem, $tooltipEl);
               }
             }
-          }
-        )}
+          });
+          chartTooltip();
+        }
 <?php   if ( $var1 <> "" ) { ?>
         doPlot("right");
 <?php   } ?>
         $("button").click(function () {
           doPlot($(this).text());
         });
+        
+        const updCharts = ()=>{
+          let varPrm = 'plot.php?id=<?php echo $session_id; ?>';
+          if ($('#plot_data').chosen().val().length===0) return 0;
+          $('#plot_data').chosen().val().every((v,i)=>varPrm+='&s'+(i+1)+'='+v);
+          $.get(varPrm,d=>{
+            flotData = [];
+            getData = JSON.parse(d);
+            getData.every(v=>flotData.push({label:v[1],data:v[2].map(a=>a=[parseInt(a[0]),a[1]])}));
+            $('#Chart-Container').empty();
+            $('#Chart-Container').append($('<div>').attr('class','demo-container').append($('<div>').attr({id:'placeholder',class:'demo-placeholder',style:'height:300px'})));
+            doPlot("right");
+          });
+        }
+        if ((typeof s1=='undefined')&&(typeof updCharts=='function')) {updCharts();$('#plot_data').chosen().change(updCharts);}
       });
     </script>
     <script language="javascript" type="text/javascript" src="static/js/torquehelpers.js"></script>
@@ -452,7 +468,8 @@ if (isset($sids[0])) {
               <select data-placeholder="Choose OBD2 data..." multiple class="chosen-select" size="<?php echo $numcols; ?>" style="width:100%;" id="plot_data" onsubmit="onSubmitIt" name="plotdata[]">
                 <option value=""></option>
 <?php   foreach ($coldata as $xcol) { ?>
-                <option value="<?php echo $xcol['colname']; ?>" <?php $i = 1; while ( isset(${'var' . $i}) ) { if ( (${'var' . $i} == $xcol['colname'] ) OR ( $xcol['colfavorite'] == 1 ) ) { echo " selected"; } $i = $i + 1; } ?>><?php echo $xcol['colcomment']; ?></option>
+                <option value="<?php echo $xcol['colname']; ?>" <?php 
+                  $i = 1; while ( isset(${'var' . $i}) ) { if ( (${'var' . $i} == $xcol['colname'] ) OR ( $xcol['colfavorite'] == 1 ) ) { echo " selected"; } $i = $i + 1; } ?>><?php echo $xcol['colcomment']; ?></option>
 <?php   } ?>
             </select>
 <?php   if ( $filteryearmonth <> "" ) { ?>

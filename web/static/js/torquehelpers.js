@@ -10,7 +10,8 @@ function onSubmitIt() {
     }
 }
 
-$(document).ready(function(){
+//$(document).ready(()=>chartTooltip);
+chartTooltip = () => {
     var previousPoint = null;
     $("#placeholder").bind("plothover", function (event, pos, item) {
         var a_p = "";
@@ -62,7 +63,7 @@ $(document).ready(function(){
             }
         }
     });
-});
+};
 
 $(document).ready(function(){
   // Activate Chosen on the selection drop down
