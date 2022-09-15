@@ -117,25 +117,14 @@ if (isset($sids[0])) {
   $mintimev = array_values($timearray)[(count($timearray)-1)];
 
   // Create array of Latitude/Longitude strings in JavaScript format according to the map provider
-  $mapdata = array();
-  if ($mapProvider === 'google') {
-    foreach($geolocs as $d) {
-      $mapdata[] = "new google.maps.LatLng(".$d['lat'].", ".$d['lon'].")";
-    }
-  } elseif ($mapProvider === 'openlayers') { 
-    $spddata = array(); //new array to contain speed
-    foreach($geolocs as $d) {
-      $mapdata[] = "[".$d['lon'].", ".$d['lat']."]"; //openlayers uses longitude before latitude for points
-      $spddata[] = $d['spd'];
-    }
-    $ispddata = implode(",\n          ", $spddata);
-  } else { 
-   $mapdata = array();
-    foreach($geolocs as $d) {
-      $mapdata[] = "[".$d['lat'].", ".$d['lon']."]";
-    }
+  $mapdata = array(); //just use every map provider function to build it's own objects with the variables so they all receive the same data in the same format
+  $spddata = array(); //new array to contain speed
+  foreach($geolocs as $d) {
+    $mapdata[] = "[".$d['lat'].", ".$d['lon']."]";
+    $spddata[] = $d['spd'];
   }
   $imapdata = implode(",\n          ", $mapdata);
+  $ispddata = implode(",\n          ", $spddata);
 
   // Don't need to set zoom manually
   $setZoomManually = 0;
@@ -211,56 +200,21 @@ if (isset($sids[0])) {
 <?php     $i = $i + 1; ?>
 <?php   } ?>
 
-        var flotData = [
+        flotData = [
 <?php   $i=1; ?>
 <?php   while ( isset(${'var' . $i }) && !empty(${'var' . $i }) ) { ?>
             { data: <?php echo "s$i"; ?>, label: <?php echo "${'v'.$i.'_label'}"; ?> }<?php if ( isset(${'var'.($i+1)}) ) echo ","; ?>
 <?php     $i = $i + 1; ?>
 <?php   } ?>
         ];
-        function doPlot(position) {
-          $.plot("#placeholder", flotData, {
-            xaxes: [ {
-              mode: "time",
-              timezone: "browser",
-              axisLabel: "Time",
-              timeformat: "%I:%M%p",
-              twelveHourClock: true
-            } ],
-            yaxes: [ { axisLabel: "" }, {
-              alignTicksWithAxis: position == "right" ? 1 : null,
-              position: position,
-              axisLabel: ""
-            } ],
-            legend: {
-              position: "nw",
-              hideable: true,
-              backgroundOpacity: 0.1,
-              margin: 0
-            },
-            selection: { mode: "x" },
-            grid: {
-              hoverable: true,
-              clickable: false
-            },
-            multihighlightdelta: { mode: 'x' },
-            tooltip: false,
-            tooltipOpts: {
-              //content: "%s at %x: %y",
-              content: "%x",
-              xDateFormat: "%m/%d/%Y %I:%M:%S%p",
-              twelveHourClock: true,
-              onHover: function(flotItem, $tooltipEl) {
-                console.log(flotItem, $tooltipEl);
-              }
-            }
-          }
-        )}
-<?php   if ( $var1 <> "" ) { ?>
-        doPlot("right");
-<?php   } ?>
+        $('#plot_data').chosen().change(updCharts);
+<?php if ( $var1 <> "" ) { ?>
+          doPlot("right");
+<?php } else { ?>
+          updCharts();
+<?php } ?>
         $("button").click(function () {
-          doPlot($(this).text());
+            doPlot($(this).text());
         });
       });
     </script>
@@ -400,11 +354,19 @@ if (isset($sids[0])) {
       max:  jsTimeMap.length -1,
       values: [ TimeStartv, TimeEndv ],
       slide: function( event, ui ) {
-    $( "#slider-time" ).val( ctime(jsTimeMap[ui.values[ 0 ]]) + " - " + ctime(jsTimeMap[ui.values[ 1 ]]));
+        $( "#slider-time" ).val( ctime(jsTimeMap[ui.values[ 0 ]]) + " - " + ctime(jsTimeMap[ui.values[ 1 ]]));
       }});
     $( "#slider-time" ).val( ctime(jsTimeMap[$( "#slider-range11" ).slider( "values", 0 )]) +  " - " + ctime(jsTimeMap[$( "#slider-range11" ).slider( "values", 1 )])); 
-    $( "#slider-range11" ).on( "slidechange", function( event, ui ){$('#slider-time').attr("sv0", jsTimeMap[$('#slider-range11').slider("values", 0)])});
-    $( "#slider-range11" ).on( "slidechange", function( event, ui ){$('#slider-time').attr("sv1", jsTimeMap[$('#slider-range11').slider("values", 1)])});
+    //$( "#slider-range11" ).on( "slidechange", function( event, ui ){$('#slider-time').attr("sv0", jsTimeMap[$('#slider-range11').slider("values", 0)])});
+    //$( "#slider-range11" ).on( "slidechange", function( event, ui ){$('#slider-time').attr("sv1", jsTimeMap[$('#slider-range11').slider("values", 1)])});
+    //merged the 2 listeners in 1 and added functions to visually trim map data and plot in realtime when using the trim session slider
+      $( "#slider-range11" ).on( "slidechange", (event,ui)=>{
+        $('#slider-time').attr("sv0", jsTimeMap[$('#slider-range11').slider("values", 0)])
+        $('#slider-time').attr("sv1", jsTimeMap[$('#slider-range11').slider("values", 1)])
+        const [a,b] = [jsTimeMap.length-$('#slider-range11').slider("values",1)-1,jsTimeMap.length-$('#slider-range11').slider("values",0)-1];
+        if (typeof mapUpdRange=='function') mapUpdRange(a,b);
+        if (typeof chartUpdRange=='function') chartUpdRange(a,b);
+      });
   } );
 
   function settimev(){//set post array for slider
@@ -437,7 +399,14 @@ if (isset($sids[0])) {
               <select data-placeholder="Choose OBD2 data..." multiple class="chosen-select" size="<?php echo $numcols; ?>" style="width:100%;" id="plot_data" onsubmit="onSubmitIt" name="plotdata[]">
                 <option value=""></option>
 <?php   foreach ($coldata as $xcol) { ?>
-                <option value="<?php echo $xcol['colname']; ?>" <?php $i = 1; while ( isset(${'var' . $i}) ) { if ( (${'var' . $i} == $xcol['colname'] ) OR ( $xcol['colfavorite'] == 1 ) ) { echo " selected"; } $i = $i + 1; } ?>><?php echo $xcol['colcomment']; ?></option>
+                <option value="<?php echo $xcol['colname']; ?>" <?php 
+                  $i = 1; 
+                  while ( isset(${'var' . $i}) ) {
+                    if ( (${'var' . $i} == $xcol['colname'] ) OR ( /*favorite not needed if we already have a selection*/ $var1 == "" AND $xcol['colfavorite'] == 1 ) ) {
+                      echo " selected";
+                    }
+                    $i = $i + 1; 
+                  } ?>><?php echo $xcol['colcomment']; ?></option>
 <?php   } ?>
             </select>
 <?php   if ( $filteryearmonth <> "" ) { ?>
@@ -457,7 +426,7 @@ if (isset($sids[0])) {
 
 <!-- Chart Block -->
         <h4>Chart</h4>
-        <div class="row center-block" style="padding-bottom:5px;">
+        <div id="Chart-Container" class="row center-block" style="padding-bottom:5px;">
 <?php if ($setZoomManually === 0) { ?>
           <!-- 2015.07.22 - edit by surfrock66 - Don't display anything if no variables are set (default) -->
 <?php   if ( $var1 == "" ) { ?>
@@ -478,7 +447,7 @@ if (isset($sids[0])) {
 
 <!-- Data Summary Block -->
         <h4>Data Summary</h4>
-        <div class="row center-block">
+        <div id="Summary-Container" class="row center-block">
 <?php if ($setZoomManually === 0) { ?>
           <!-- 2015.07.22 - edit by surfrock66 - Don't display anything if no variables are set (default) -->
 <?php   if ( $var1 <> "" ) { ?>

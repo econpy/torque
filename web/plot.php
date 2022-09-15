@@ -2,6 +2,11 @@
 //echo "<!-- Begin plot.php at ".date("H:i:s", microtime(true))." -->\r\n";
 require_once("./db.php");
 require_once("./parse_functions.php");
+if (!isset($sids)) { //this is to default to get the session list and default to json output if called directly
+	require_once("./get_sessions.php");
+	$timesql = $timesql??'';
+	$json = [];
+}
 
 // Convert data units
 // TODO: Use the userDefault fields to do these conversions dynamically
@@ -95,6 +100,14 @@ if (isset($_GET["id"]) and in_array($_GET["id"], $sids)) {
 	    ${'pcnt75data' . $i} = round(calc_percentile(${'spark' . $i}, 75), 1);
 		$i = $i + 1;
 	}
+}
+if (isset($json)) {
+	$i = 1;	
+	while (isset(${'v' . $i})) {
+	    $json[] = [${'v' . $i},$keyarr[${'v' . $i}][0].${'v' . $i . '_measurand'},${'d' . $i},${'sparkdata' . $i},${'max' . $i},${'min' . $i},${'avg' . $i},${'pcnt25data' . $i},${'pcnt75data' . $i}];
+		$i = $i + 1;
+	}
+	print_r(json_encode($json/*,JSON_PRETTY_PRINT/**/));
 }
 //echo "<!-- End plot.php at ".date("H:i:s", microtime(true))." -->\r\n";
 ?>

@@ -1,137 +1,21 @@
-    <?php if ($mapProvider === 'google') { ?>
+<?php if ($mapProvider === 'google') { ?>
     <!-- Initialize the google maps javascript code -->
-    <script language="javascript" type="text/javascript" src="https://maps.googleapis.com/maps/api/js<?php echo "?key=$gmapsApiKey&callback=initMap";  ?>"  async></script>
     <script language="javascript" type="text/javascript">
-     var map;
-
-      function initMap() {
-        var map = new google.maps.Map(document.getElementById("map-canvas"), {
-        zoom: 3,
-        center: { lat: 0, lng: -180 },
-        mapTypeId: '<?php echo $mapStyleSelect; ?>',
-        });
-
-        // The potentially large array of LatLng objects for the roadmap
-        var path = [<?php echo $imapdata; ?>];
-        var pathL = path.length;
-        var endCrd = path[0];
-        var startCrd = path[pathL-1];
-
-        // Create a boundary using the path to automatically configure
-        // the default centering location and zoom.
-        var bounds = new google.maps.LatLngBounds();
-        for (i = 0; i < path.length; i++) {
-          bounds.extend(path[i]);
-        }
-        map.fitBounds(bounds);
-        
-        //Draw green and black circles for start and end points
-        var startcir = new google.maps.Marker({position: startCrd,icon: {path: google.maps.SymbolPath.CIRCLE,fillOpacity: 0.25,fillColor: '#009900',strokeOpacity: 0.8,strokeColor: '#009900',strokeWeight: 2,scale: 6}});
-        var endcir = new google.maps.Marker({position: endCrd,icon: {path: google.maps.SymbolPath.CIRCLE,fillOpacity: 0.25,fillColor: '#000000',strokeOpacity: 0.8,strokeColor: '#000000',strokeWeight: 2,scale: 6}});
-        startcir.setMap(map);
-        endcir.setMap(map);
-        google.maps.event.addDomListener(window, 'load', initMap);
-
-        // If required/desired, set zoom manually now that bounds have been set
-<?php if ($setZoomManually === 1) { ?>
-        zoomChange = google.maps.event.addListenerOnce(map, 'bounds_changed',
-          function(event) {
-            if (this.getZoom()){
-            this.setZoom(16);
-            }
-          });
-        setTimeout(function(){
-        google.maps.event.removeListener(zoomChange)
-        }, 1000);
-
-<?php } ?>
-        var line = new google.maps.Polyline({
-          path: path,
-          strokeColor: '#800000',
-          strokeOpacity: 0.75,
-          strokeWeight: 4
-        });
-        line.setMap(map);
-      };
+      const path = [<?php echo $imapdata; ?>];
+      window.gMapData = [path,'<?php echo $mapStyleSelect; ?>',<?php echo $setZoomManually;?>];
+      initMap = ()=>((typeof initMapGoogle=='function')&&window.gMapData!==undefined)?initMapGoogle():setTimeout(()=>initMap,10);
     </script>
+    <script language="javascript" type="text/javascript" src="https://maps.googleapis.com/maps/api/js<?php echo "?key=$gmapsApiKey&callback=initMap";  ?>"  async></script>
 <?php } //end IF Google Maps ?>
 <?php if ($mapProvider === 'openlayers') { //I added a new map provider to use openlayers to be able to color each segment of our path based on speed?>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v7.1.0/ol.css">
     <script src="https://cdn.jsdelivr.net/npm/ol@v7.1.0/dist/ol.js"></script>
 	  <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL,Object.assign"></script>
     <script language="javascript" type="text/javascript">
-      const initMap = () => {
-        const selLyrUrl = { //list of providers for the base layer
-          'OSM':'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
-          'ESRI':'https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
-          'ESRI.DARK':'https://services.arcgisonline.com/ArcGIS/rest/services/canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
-          'ESRI.GRAY':'https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
-          'ESRI.SATE':'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-          'ESRI.TOPO':'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
-          'ESRI.NATGEO':'https://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}',
-          'STAMEN':'https://stamen-tiles.a.ssl.fastly.net/toner/{z}/{x}/{y}.png',
-          'STAMEN.TERRAIN':'https://stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.png',
-          'STAMEN.WATERCOLOR':'https://stamen-tiles.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.jpg'
-        };
-        const updBase = () => { //updates the base layer based on selection
-          const selLayer = $('#BaseLayerOpt').find(":selected").val()!==undefined?$('#BaseLayerOpt').find(":selected").val():'OSM';
-          tileLayer.setUrl(selLyrUrl[selLayer]||selLyrUrl['OSM']);
-        }
-        const baseLst = [['Open Street Map','OSM'], //base layer option list
-          ['Esri Streets','ESRI'],['Esri Dark Base','ESRI.DARK'],['Esri Gray Base','ESRI.GRAY'],['Esri Satellite','ESRI.SATE'],['Esri Topo','ESRI.TOPO'],['Esri NatGeo','ESRI.NATGEO'],
-          ['Stamen','STAMEN'],['Stamen Terain','STAMEN.TERRAIN'],['Stamen Watercolor','STAMEN.WATERCOLOR']];
-        $('#map-container')//creates a new select element witht the options for the base layers
-          .prepend($('<select>',{id:'BaseLayerOpt'}).css({position:'relative','z-index':300,left:'80px'}))
-          .prepend($('<div>').css('position','absolute').append($('<div>',{id:'ttip'}).css({position:'relative','z-index':100,'background-color':'white','border-radius':'10px',opacity:0.9,width:'100px'})));
-        $.each(baseLst,(i,el)=>$('#BaseLayerOpt').append($('<option>',{value:el[1],text:el[0]})));
-        $('#map-container>select').val('ESRI.SATE');
-        $('#map-container>select').off('change');
-        $('#map-container>select').on('change',updBase);
-        //defines the default base layer
-        tileLayer = new ol.source.XYZ({url:selLyrUrl['ESRI.SATE']});
-        baseLayer = new ol.layer.Tile({source:tileLayer});
-        path = [<?php echo $imapdata; ?>];
-        const spd = [<?php echo $ispddata; ?>]; //this would be a new variable containing speed data for each segment
-        const source = new ol.source.Vector({features:[new ol.Feature({geometry:new ol.geom.LineString(path),name:'trk'})]}); //build the path layer vector source
-        const style = (f,r) => { //function that builds the styles array to color every line segment based on speed
-          const [width,geom,max] = [4,f.getGeometry(),Math.max.apply(null,spd.filter(v=>v>0))];
-          let [i,stl] = [0,[]];
-          geom.forEachSegment((s,e)=>stl.push(new ol.style.Style({geometry:new ol.geom.LineString([s, e]),stroke:new ol.style.Stroke({color:"hsl("+(100*(1-spd[i]/max))+",100%,50%)",width})}))&&i++&&null);
-          return stl;
-        }
-        //function to create stylized circle for start and end
-        const fPnt = (p,c)=>new ol.layer.Vector({source:new ol.source.Vector({features:[new ol.Feature(new ol.geom.Circle(p,1/3e3))]}),style:{'stroke-width':3,'stroke-color':c,'fill-color':c.concat([.5])}});
-        ///this is the marker features source while hovering the chart
-        const markerSource = new ol.source.Vector({features:[]});
-        markerUpd = itm => {//this functions updates the marker while hovering the chart and clears it when not hovering
-          markerSource.clear();itm&&itm.dataIndex>0&&markerSource.addFeature(new ol.Feature(new ol.geom.Circle(path[itm.dataIndex],1/1e3)));markerSource.changed();
-        }
-        //creates the marker layer
-        const marker = new ol.layer.Vector({source:markerSource,style:{'stroke-width':3,'stroke-color':[190,0,190],'fill-color':[190,0,190,.7]}});
-        //setups the layers for osm, the path, start and end circles
-        const layers = [baseLayer,fPnt(path[0],[0,255,0]),fPnt(path[path.length-1],[0,0,0]),new ol.layer.Vector({source,style}),marker];
-        //creates the map
-        ol.proj.useGeographic();
-			  map = new ol.Map({layers,target:'map-container'});
-			  map.addInteraction(new ol.interaction.DragRotateAndZoom());map.addControl(new ol.control.FullScreen());map.addControl(new ol.control.Rotate());
-        //center then map view on our trip plus a little margin on the outside
-        map.getView().fit(source.getExtent().map((v,i)=>v+(i>1?1:-1)/1e3),map.getSize());
-        const segIdx = (g,c)=>{for(let i=1;i<g.length;i++) if (new ol.geom.LineString([g[i-1],g[i]]).intersectsCoordinate(c)) return i;}
-        const ttip = $("#ttip");
-        const sData=evt=>{
-          const pxl = map.getEventPixel(evt.originalEvent);
-          const feature = map.forEachFeatureAtPixel(pxl,e=>e.getKeys().length>1&&e);
-          let msg = feature&&spd[segIdx(feature.getGeometry().getCoordinates(),feature.getGeometry().getClosestPoint(map.getCoordinateFromPixel(pxl)))];
-          if (feature&&msg>0) {
-            msg = 'Speed: '+msg+'<?php echo !$use_miles?'km/h':'mph' ?>';
-            ttip.css({top:pxl[1]+'px',left:pxl[0]+'px'}).html(msg)
-          } else{
-            ttip.html('');
-          }
-        }
-        map.on('pointermove',evt=>evt.dragging?ttip.html(''):sData(evt));
-      };
-      initMap();
+      const pathAll = [<?php echo $imapdata; ?>];
+      const spdAll = [<?php echo $ispddata; ?>]; //this would be a new variable containing speed data for each segment
+      const spdUnit = '<?php echo !$use_miles?'km/h':'mph' ?>'; //just set the Unit for the tooltip
+      $(document).ready(()=>initMapOpenlayers(pathAll,spdAll,spdUnit));
     </script>
 <?php } //end IF Openlayers ?>
     <?php if ($mapProvider !== 'google' && $mapProvider !== 'openlayers') { ?>
