@@ -117,25 +117,14 @@ if (isset($sids[0])) {
   $mintimev = array_values($timearray)[(count($timearray)-1)];
 
   // Create array of Latitude/Longitude strings in JavaScript format according to the map provider
-  $mapdata = array();
-  if ($mapProvider === 'google') {
-    foreach($geolocs as $d) {
-      $mapdata[] = "new google.maps.LatLng(".$d['lat'].", ".$d['lon'].")";
-    }
-  } elseif ($mapProvider === 'openlayers') { 
-    $spddata = array(); //new array to contain speed
-    foreach($geolocs as $d) {
-      $mapdata[] = "[".$d['lon'].", ".$d['lat']."]"; //openlayers uses longitude before latitude for points
-      $spddata[] = $d['spd'];
-    }
-    $ispddata = implode(",\n          ", $spddata);
-  } else { 
-   $mapdata = array();
-    foreach($geolocs as $d) {
-      $mapdata[] = "[".$d['lat'].", ".$d['lon']."]";
-    }
+  $mapdata = array(); //just use every map provider function to build it's own objects with the variables so they all receive the same data in the same format
+  $spddata = array(); //new array to contain speed
+  foreach($geolocs as $d) {
+    $mapdata[] = "[".$d['lat'].", ".$d['lon']."]";
+    $spddata[] = $d['spd'];
   }
   $imapdata = implode(",\n          ", $mapdata);
+  $ispddata = implode(",\n          ", $spddata);
 
   // Don't need to set zoom manually
   $setZoomManually = 0;

@@ -185,7 +185,7 @@ updCharts = ()=>{
             $('#Summary-Container').append($('<div>',{class:'table-responsive'}).append($('<table>',{class:'table'}).append($('<thead>').append($('<tr>'))).append('<tbody>')));
             ['Name','Min/Max','25th Pcnt','75th Pcnt','Mean','Sparkline'].every(v=>$('#Summary-Container>div>table>thead>tr').append($('<th>').html(v)));
             const trData = v=>{
-                tr=$('<tr>');
+                const tr=$('<tr>');
                 //and at this point I realized maybe I should have made the json output an object instead of an array but whatever //TODO: make it an object
                 [v[1],v[5]+'/'+v[4],v[7],v[8],v[6],v[3]].every((v,i)=>tr.append($('<td>').html(i<5?v:'').append(i<5?'':$('<span>',{class:'line'}).html(v))));
                 return tr;
@@ -199,14 +199,15 @@ updCharts = ()=>{
 
 //Start Openlayers Map Provider js code
 initMapOpenlayers = (pathAll,spdAll,spdUnit) => {
-    let path = pathAll; //by default full range
+    let path = pathAll.map(v=>[v[1],v[0]]); //by default full range
     let spd = spdAll;
     const baseLst = [['Open Street Map','OSM'], //base layer option list
         ['Esri Streets','ESRI'],['Esri Dark Base','ESRI.DARK'],['Esri Gray Base','ESRI.GRAY'],['Esri Satellite','ESRI.SATE'],['Esri Topo','ESRI.TOPO'],['Esri NatGeo','ESRI.NATGEO'],
         ['Stamen','STAMEN'],['Stamen Terain','STAMEN.TERRAIN'],['Stamen Watercolor','STAMEN.WATERCOLOR']];
     $('#map-container')
         .prepend($('<select>',{id:'BaseLayerOpt'}).css({position:'relative','z-index':300,left:'80px'}))//creates a new select element with the options for the base layers
-        .prepend($('<div>').css('position','absolute').append($('<div>',{id:'ttip'}).css({position:'relative','z-index':100,'background-color':'white','border-radius':'10px',opacity:0.9,width:'100px'})));//creates the tooltip element
+        .prepend($('<div>').css('position','absolute')
+            .append($('<div>',{id:'ttip'}).css({position:'relative','z-index':100,'background-color':'white','border-radius':'10px',opacity:0.9,width:'100px'})));//creates the tooltip element
     $.each(baseLst,(i,el)=>$('#BaseLayerOpt').append($('<option>',{value:el[1],text:el[0]})));
     $('#map-container>select').val('ESRI.SATE');
     $('#map-container>select').off('change');
@@ -235,7 +236,8 @@ initMapOpenlayers = (pathAll,spdAll,spdUnit) => {
     const style = (f,r) => { //function that builds the styles array to color every line segment based on speed
         const [width,geom,max] = [4,f.getGeometry(),Math.max.apply(null,spd.filter(v=>v>0))];
         let [i,stl] = [0,[]];
-        geom.forEachSegment((s,e)=>stl.push(new ol.style.Style({geometry:new ol.geom.LineString([s, e]),stroke:new ol.style.Stroke({color:"hsl("+(100*(1-spd[i]/max))+",100%,50%)",width})}))&&i++&&null);
+        geom.forEachSegment(
+            (s,e)=>stl.push(new ol.style.Style({geometry:new ol.geom.LineString([s, e]),stroke:new ol.style.Stroke({color:"hsl("+(100*(1-spd[i]/max))+",100%,50%)",width})}))&&i++&&null);
         return stl;
     }
     //functions to create stylized circle for start and end, also marker when hovering chart
@@ -246,7 +248,7 @@ initMapOpenlayers = (pathAll,spdAll,spdUnit) => {
     markerUpd = itm => {//this functions updates the marker while hovering the chart and clears it when not hovering
         markerSource.clear();
         itm&&itm.dataIndex>0&&markerSource.addFeature(fCircleF(path[itm.dataIndex],1/1e3)); //big circle
-        itm&&itm.dataIndex>0&&markerSource.addFeature(fCircleF(path[itm.dataIndex],1/2e5)); //small circle
+        itm&&itm.dataIndex>0&&markerSource.addFeature(fCircleF(path[itm.dataIndex],1/2e4)); //small circle
         markerSource.changed();
     }
     //creates the marker layer
@@ -255,7 +257,7 @@ initMapOpenlayers = (pathAll,spdAll,spdUnit) => {
     let pnt = [sFeat(fCircleF(path[0],1/3e3)),sFeat(fCircleF(path[path.length-1],1/3e3))];
     const layers = [baseLayer,lPnt(pnt[0],[0,255,0]),lPnt(pnt[1],[0,0,0]),new ol.layer.Vector({source,style}),marker];
     mapUpdRange = (a,b) => {//new function to update the map sources according to the trim slider
-        path = pathAll.slice(a,b);
+        path = pathAll.slice(a,b).map(v=>[v[1],v[0]]);
         spd = spdAll.slice(a,b);
         source.clear();pnt[0].clear();pnt[1].clear();
         source.addFeature(new ol.Feature({geometry:new ol.geom.LineString(path),name:'trk'}));
@@ -267,7 +269,7 @@ initMapOpenlayers = (pathAll,spdAll,spdUnit) => {
     //creates the map
     ol.proj.useGeographic();
     let map = new ol.Map({layers,target:'map-container'});
-            map.addInteraction(new ol.interaction.DragRotateAndZoom());map.addControl(new ol.control.FullScreen());map.addControl(new ol.control.Rotate());
+    map.addInteraction(new ol.interaction.DragRotateAndZoom());map.addControl(new ol.control.FullScreen());map.addControl(new ol.control.Rotate());
     //center then map view on our trip plus a little margin on the outside
     map.getView().fit(source.getExtent().map((v,i)=>v+(i>1?1:-1)/1e3),map.getSize());
     //function to get the index of first line segment that intersects with the point the mouse is over
@@ -279,13 +281,98 @@ initMapOpenlayers = (pathAll,spdAll,spdUnit) => {
         const feature = map.forEachFeatureAtPixel(pxl,e=>e.getProperties().name=='trk'&&e);
         let msg = feature&&spd[segIdx(feature.getGeometry().getCoordinates(),feature.getGeometry().getClosestPoint(map.getCoordinateFromPixel(pxl)))];
         if (feature&&msg>0) {
-        msg = 'Speed: '+msg+' '+spdUnit;
-        ttip.css({top:pxl[1]+'px',left:pxl[0]+'px'}).html(msg);
+            msg = 'Speed: '+msg+' '+spdUnit;
+            ttip.css({top:pxl[1]+'px',left:pxl[0]+'px'}).html(msg);
         } else{
-        ttip.html('');
+            ttip.html('');
         }
     }
     //this is the actual listener on the map to create our tooltip
     map.on('pointermove',evt=>evt.dragging?ttip.html(''):sData(evt));
 }
 //End of Openlayers Map Provider js code
+
+//Start of Google Map Provider js code
+function initMapGoogle() {
+    [pathAll,styleSelected,manualZoom] = window.gMapData;
+    var map = new google.maps.Map(document.getElementById("map-canvas"), {
+        zoom: 3,
+        center: { lat: 0, lng: -180 },
+        mapTypeId: styleSelected,
+    });
+
+    // The potentially large array of LatLng objects for the roadmap
+    var path = pathAll.map(v=>new google.maps.LatLng(v[0],v[1]));
+    var pathL = path.length;
+    var endCrd = path[0];
+    var startCrd = path[pathL-1];
+
+    // Create a boundary using the path to automatically configure
+    // the default centering location and zoom.
+    var bounds = new google.maps.LatLngBounds();
+    for (i = 0; i < path.length; i++) {
+        bounds.extend(path[i]);
+    }
+    map.fitBounds(bounds);
+    
+    //Draw green and black circles for start and end points
+    var startcir = new google.maps.Marker({
+        position: startCrd,
+        icon: {path: google.maps.SymbolPath.CIRCLE,fillOpacity: 0.25,fillColor: '#009900',strokeOpacity: 0.8,strokeColor: '#009900',strokeWeight: 2,scale: 6}
+    });
+    var endcir = new google.maps.Marker({
+        position: endCrd,
+        icon: {path: google.maps.SymbolPath.CIRCLE,fillOpacity: 0.25,fillColor: '#000000',strokeOpacity: 0.8,strokeColor: '#000000',strokeWeight: 2,scale: 6}
+    });
+    startcir.setMap(map);
+    endcir.setMap(map);
+    //google.maps.event.addDomListener(window, 'load', initMapGoogle);
+
+    // If required/desired, set zoom manually now that bounds have been set
+    if (manualZoom === 1) {
+        zoomChange = google.maps.event.addListenerOnce(map, 'bounds_changed',
+            function(event) {
+                if (this.getZoom()){
+                    this.setZoom(16);
+                }
+            }
+        );
+        setTimeout(function(){
+            google.maps.event.removeListener(zoomChange)
+        }, 1000);
+    }
+
+    var line = new google.maps.Polyline({
+      path: path,
+      strokeColor: '#800000',
+      strokeOpacity: 0.75,
+      strokeWeight: 4
+    });
+    line.setMap(map);
+
+    mapUpdRange = (a,b) => {//new function to update the map sources according to the trim slider
+        path = pathAll.map(v=>new google.maps.LatLng(v[0],v[1])).slice(a,b);
+        line.setPath(path);
+        startcir.setPosition(path[path.length-1]);
+        endcir.setPosition(path[0]);
+        bounds = new google.maps.LatLngBounds();
+        path.every(v=>bounds.extend(v));
+        map.fitBounds(bounds);
+    };
+
+    const markerCir = new google.maps.Marker({
+        position:path[0],
+        icon: {path: google.maps.SymbolPath.CIRCLE,fillOpacity: 0.1,fillColor: '#bb00bb',strokeOpacity: 0.8,strokeColor: '#bb00bb',strokeWeight: 2,scale: 6}
+    });
+    const markerPnt = new google.maps.Marker({
+        position:path[0],
+        icon: {path: google.maps.SymbolPath.CIRCLE,fillOpacity: 0.1,fillColor: '#bb00bb',strokeOpacity: 0.8,strokeColor: '#bb00bb',strokeWeight: 2,scale: 1}
+    });
+    markerUpd = itm => {//this functions updates the marker while hovering the chart and clears it when not hovering
+        itm&&itm.dataIndex>0&&markerCir.setPosition(path[itm.dataIndex]);
+        itm&&itm.dataIndex>0&&markerPnt.setPosition(path[itm.dataIndex]);
+        markerCir.setMap((itm&&itm.dataIndex>0)?map:null);
+        markerPnt.setMap((itm&&itm.dataIndex>0)?map:null);
+    }
+};
+//End of Google Map Provider js code

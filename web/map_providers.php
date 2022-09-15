@@ -2,57 +2,9 @@
     <!-- Initialize the google maps javascript code -->
     <script language="javascript" type="text/javascript" src="https://maps.googleapis.com/maps/api/js<?php echo "?key=$gmapsApiKey&callback=initMap";  ?>"  async></script>
     <script language="javascript" type="text/javascript">
-     var map;
-
-      function initMap() {
-        var map = new google.maps.Map(document.getElementById("map-canvas"), {
-        zoom: 3,
-        center: { lat: 0, lng: -180 },
-        mapTypeId: '<?php echo $mapStyleSelect; ?>',
-        });
-
-        // The potentially large array of LatLng objects for the roadmap
-        var path = [<?php echo $imapdata; ?>];
-        var pathL = path.length;
-        var endCrd = path[0];
-        var startCrd = path[pathL-1];
-
-        // Create a boundary using the path to automatically configure
-        // the default centering location and zoom.
-        var bounds = new google.maps.LatLngBounds();
-        for (i = 0; i < path.length; i++) {
-          bounds.extend(path[i]);
-        }
-        map.fitBounds(bounds);
-        
-        //Draw green and black circles for start and end points
-        var startcir = new google.maps.Marker({position: startCrd,icon: {path: google.maps.SymbolPath.CIRCLE,fillOpacity: 0.25,fillColor: '#009900',strokeOpacity: 0.8,strokeColor: '#009900',strokeWeight: 2,scale: 6}});
-        var endcir = new google.maps.Marker({position: endCrd,icon: {path: google.maps.SymbolPath.CIRCLE,fillOpacity: 0.25,fillColor: '#000000',strokeOpacity: 0.8,strokeColor: '#000000',strokeWeight: 2,scale: 6}});
-        startcir.setMap(map);
-        endcir.setMap(map);
-        google.maps.event.addDomListener(window, 'load', initMap);
-
-        // If required/desired, set zoom manually now that bounds have been set
-<?php if ($setZoomManually === 1) { ?>
-        zoomChange = google.maps.event.addListenerOnce(map, 'bounds_changed',
-          function(event) {
-            if (this.getZoom()){
-            this.setZoom(16);
-            }
-          });
-        setTimeout(function(){
-        google.maps.event.removeListener(zoomChange)
-        }, 1000);
-
-<?php } ?>
-        var line = new google.maps.Polyline({
-          path: path,
-          strokeColor: '#800000',
-          strokeOpacity: 0.75,
-          strokeWeight: 4
-        });
-        line.setMap(map);
-      };
+      const path = [<?php echo $imapdata; ?>];
+      window.gMapData = [path,'<?php echo $mapStyleSelect; ?>',<?php echo $setZoomManually;?>];
+      $(window).ready(()=>initMap=initMapGoogle);
     </script>
 <?php } //end IF Google Maps ?>
 <?php if ($mapProvider === 'openlayers') { //I added a new map provider to use openlayers to be able to color each segment of our path based on speed?>
