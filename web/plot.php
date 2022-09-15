@@ -70,7 +70,7 @@ if (isset($_GET["id"]) and in_array($_GET["id"], $sids)) {
 	            $x = intval($row[${'v' . $i}]) * $speed_factor;
 	            ${'v' . $i . '_measurand'} = $speed_measurand;
 	        } elseif (substri_count($keyarr[${'v' . $i}][0], "Distance") > 0) {
-	            $x = intval($row[${'v' . $i}]) * $speed_factor;
+	            $x = round(floatval($row[${'v' . $i}]) * $speed_factor,2); //2 decimals is probably better for the distance charts
 	            ${'v' . $i . '_measurand'} = $distance_measurand;
 	        } elseif (substri_count($keyarr[${'v' . $i}][0], "Temp") > 0) {
 	            $x = $temp_func ( floatval($row[${'v' . $i}]) );
