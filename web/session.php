@@ -211,80 +211,21 @@ if (isset($sids[0])) {
 <?php     $i = $i + 1; ?>
 <?php   } ?>
 
-        var flotData = [
+        flotData = [
 <?php   $i=1; ?>
 <?php   while ( isset(${'var' . $i }) && !empty(${'var' . $i }) ) { ?>
             { data: <?php echo "s$i"; ?>, label: <?php echo "${'v'.$i.'_label'}"; ?> }<?php if ( isset(${'var'.($i+1)}) ) echo ","; ?>
 <?php     $i = $i + 1; ?>
 <?php   } ?>
         ];
-        function doPlot(position) {
-          //asigned the plot to a new variable and new function to update the plot in realtime when using the slider
-          chartUpdRange = (a,b) => {
-            let dataSet = [];
-            flotData.every(i=>dataSet.push({label:i.label,data:i.data.slice(a,b)}));
-            plot.setData(dataSet);
-            plot.draw();
-          }
-          const plot = $.plot("#placeholder", flotData, {
-            xaxes: [ {
-              mode: "time",
-              timezone: "browser",
-              axisLabel: "Time",
-              timeformat: "%I:%M%p",
-              twelveHourClock: true
-            } ],
-            yaxes: [ { axisLabel: "" }, {
-              alignTicksWithAxis: position == "right" ? 1 : null,
-              position: position,
-              axisLabel: ""
-            } ],
-            legend: {
-              position: "nw",
-              hideable: true,
-              backgroundOpacity: 0.1,
-              margin: 0
-            },
-            selection: { mode: "x" },
-            grid: {
-              hoverable: true,
-              clickable: false
-            },
-            multihighlightdelta: { mode: 'x' },
-            tooltip: false,
-            tooltipOpts: {
-              //content: "%s at %x: %y",
-              content: "%x",
-              xDateFormat: "%m/%d/%Y %I:%M:%S%p",
-              twelveHourClock: true,
-              onHover: function(flotItem, $tooltipEl) {
-                console.log(flotItem, $tooltipEl);
-              }
-            }
-          });
-          chartTooltip();
-        }
-<?php   if ( $var1 <> "" ) { ?>
-        doPlot("right");
-<?php   } ?>
+<?php if ( $var1 <> "" ) { ?>
+          doPlot("right");
+<?php } else { ?>
+          if ((typeof s1=='undefined')&&(typeof updCharts=='function')) {updCharts();$('#plot_data').chosen().change(updCharts)};
+<?php } ?>
         $("button").click(function () {
-          doPlot($(this).text());
+            doPlot($(this).text());
         });
-        
-        const updCharts = ()=>{
-          let varPrm = 'plot.php?id=<?php echo $session_id; ?>';
-          if ($('#plot_data').chosen().val().length===0) return 0;
-          $('#plot_data').chosen().val().every((v,i)=>varPrm+='&s'+(i+1)+'='+v);
-          $.get(varPrm,d=>{
-            flotData = [];
-            getData = JSON.parse(d);
-            getData.every(v=>flotData.push({label:v[1],data:v[2].map(a=>a=[parseInt(a[0]),a[1]])}));
-            $('#Chart-Container').empty();
-            $('#Chart-Container').append($('<div>').attr('class','demo-container').append($('<div>').attr({id:'placeholder',class:'demo-placeholder',style:'height:300px'})));
-            doPlot("right");
-          });
-        }
-        if ((typeof s1=='undefined')&&(typeof updCharts=='function')) {updCharts();$('#plot_data').chosen().change(updCharts);}
       });
     </script>
     <script language="javascript" type="text/javascript" src="static/js/torquehelpers.js"></script>
@@ -432,7 +373,7 @@ if (isset($sids[0])) {
       $( "#slider-range11" ).on( "slidechange", (event,ui)=>{
         $('#slider-time').attr("sv0", jsTimeMap[$('#slider-range11').slider("values", 0)])
         $('#slider-time').attr("sv1", jsTimeMap[$('#slider-range11').slider("values", 1)])
-        const [a,b] = [jsTimeMap.length-$('#slider-range11').slider("values",1),jsTimeMap.length-$('#slider-range11').slider("values",0)];
+        const [a,b] = [jsTimeMap.length-$('#slider-range11').slider("values",1)-1,jsTimeMap.length-$('#slider-range11').slider("values",0)-1];
         if (typeof mapUpdRange=='function') mapUpdRange(a,b);
         if (typeof chartUpdRange=='function') chartUpdRange(a,b);
       });
