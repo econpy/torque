@@ -218,10 +218,11 @@ if (isset($sids[0])) {
 <?php     $i = $i + 1; ?>
 <?php   } ?>
         ];
+        $('#plot_data').chosen().change(updCharts);
 <?php if ( $var1 <> "" ) { ?>
           doPlot("right");
 <?php } else { ?>
-          if ((typeof s1=='undefined')&&(typeof updCharts=='function')) {updCharts();$('#plot_data').chosen().change(updCharts)};
+          updCharts();
 <?php } ?>
         $("button").click(function () {
             doPlot($(this).text());
@@ -410,7 +411,13 @@ if (isset($sids[0])) {
                 <option value=""></option>
 <?php   foreach ($coldata as $xcol) { ?>
                 <option value="<?php echo $xcol['colname']; ?>" <?php 
-                  $i = 1; while ( isset(${'var' . $i}) ) { if ( (${'var' . $i} == $xcol['colname'] ) OR ( $xcol['colfavorite'] == 1 ) ) { echo " selected"; } $i = $i + 1; } ?>><?php echo $xcol['colcomment']; ?></option>
+                  $i = 1; 
+                  while ( isset(${'var' . $i}) ) {
+                    if ( (${'var' . $i} == $xcol['colname'] ) OR ( /*favorite not needed if we already have a selection*/ $var1 == "" AND $xcol['colfavorite'] == 1 ) ) {
+                      echo " selected";
+                    }
+                    $i = $i + 1; 
+                  } ?>><?php echo $xcol['colcomment']; ?></option>
 <?php   } ?>
             </select>
 <?php   if ( $filteryearmonth <> "" ) { ?>
@@ -451,7 +458,7 @@ if (isset($sids[0])) {
 
 <!-- Data Summary Block -->
         <h4>Data Summary</h4>
-        <div class="row center-block">
+        <div id="Summary-Container" class="row center-block">
 <?php if ($setZoomManually === 0) { ?>
           <!-- 2015.07.22 - edit by surfrock66 - Don't display anything if no variables are set (default) -->
 <?php   if ( $var1 <> "" ) { ?>

@@ -159,15 +159,19 @@ updCharts = ()=>{
         if ($('#placeholder')[0]!=undefined) {//clean our plot if it exists
             flotData = [];
             plot.shutdown();
+            const noChart = $('<div>',{align:'center',style:'padding-top:10px'}).append($('<h5>').append($('<span>',{class:'label label-warning'}).html('No Variables Selected to Plot!')));
             $('#Chart-Container').empty();
-            $('#Chart-Container').append($('<div>',{align:'center',style:'padding-top:10px'}).append($('<h5>').append($('<span>',{class:'label label-warning'}).html('No Variables Selected to Plot!'))));
+            $('#Chart-Container').append(noChart);
+            $('#Summary-Container').empty();
+            $('#Summary-Container').append(noChart);
         }
     } else {
         let varPrm = 'plot.php?id='+$('#seshidtag').chosen().val();
         $('#plot_data').chosen().val().every((v,i)=>varPrm+='&s'+(i+1)+'='+v);
         $.get(varPrm,d=>{
             flotData = [];
-            JSON.parse(d).every(v=>flotData.push({label:v[1],data:v[2].map(a=>a=[parseInt(a[0]),a[1]])}));
+            const gData = JSON.parse(d);
+            gData.every(v=>flotData.push({label:v[1],data:v[2].map(a=>a=[parseInt(a[0]),a[1]])}));
             if ($('#placeholder')[0]==undefined) { //this would only be true the first time we load the chart
                 $('#Chart-Container').empty();
                 $('#Chart-Container').append($('<div>',{class:'demo-container'}).append($('<div>',{id:'placeholder',class:'demo-placeholder',style:'height:300px'})));
@@ -176,6 +180,18 @@ updCharts = ()=>{
             //always update the chart trimmed range when plotting new data
             const [a,b] = [jsTimeMap.length-$('#slider-range11').slider("values",1)-1,jsTimeMap.length-$('#slider-range11').slider("values",0)-1];
             chartUpdRange(a,b);
+            //this updates the whole summary table
+            $('#Summary-Container').empty();
+            $('#Summary-Container').append($('<div>',{class:'table-responsive'}).append($('<table>',{class:'table'}).append($('<thead>').append($('<tr>'))).append('<tbody>')));
+            ['Name','Min/Max','25th Pcnt','75th Pcnt','Mean','Sparkline'].every(v=>$('#Summary-Container>div>table>thead>tr').append($('<th>').html(v)));
+            const trData = v=>{
+                tr=$('<tr>');
+                //and at this point I realized maybe I should have made the json output an object instead of an array but whatever //TODO: make it an object
+                [v[1],v[5]+'/'+v[4],v[7],v[8],v[6],v[3]].every((v,i)=>tr.append($('<td>').html(i<5?v:'').append(i<5?'':$('<span>',{class:'line'}).html(v))));
+                return tr;
+            }
+            gData.every(v=>$('#Summary-Container>div>table>tbody').append(trData(v)));
+            $(".line").peity("line")
         });
     }
 }
