@@ -1,11 +1,11 @@
 <?php if ($mapProvider === 'google') { ?>
     <!-- Initialize the google maps javascript code -->
-    <script language="javascript" type="text/javascript" src="https://maps.googleapis.com/maps/api/js<?php echo "?key=$gmapsApiKey&callback=initMap";  ?>"  async></script>
     <script language="javascript" type="text/javascript">
       const path = [<?php echo $imapdata; ?>];
       window.gMapData = [path,'<?php echo $mapStyleSelect; ?>',<?php echo $setZoomManually;?>];
-      $(window).ready(()=>initMap=initMapGoogle);
+      initMap = ()=>((typeof initMapGoogle=='function')&&window.gMapData!==undefined)?initMapGoogle():setTimeout(()=>initMap,10);
     </script>
+    <script language="javascript" type="text/javascript" src="https://maps.googleapis.com/maps/api/js<?php echo "?key=$gmapsApiKey&callback=initMap";  ?>"  async></script>
 <?php } //end IF Google Maps ?>
 <?php if ($mapProvider === 'openlayers') { //I added a new map provider to use openlayers to be able to color each segment of our path based on speed?>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v7.1.0/ol.css">
