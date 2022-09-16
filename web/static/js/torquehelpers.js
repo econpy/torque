@@ -464,3 +464,70 @@ initMapLeaflet = () => {
     }
 }
 //End of Leaflet Map Providers js code
+
+//slider js code
+initSlider = (jsTimeMap,minTimeStart,maxTimeEnd,timestartval,timeendval)=>{
+    var minTimeStart = minTimeStart;
+    var maxTimeEnd = maxTimeEnd;
+    var TimeStartv = timestartval;
+    var TimeEndv = timeendval;
+
+    function timelookup(t) { //retrun array index, used for slider steps/value, RIP IE, no polyfill 
+        var fx = (e) => e == t;
+        var out = jsTimeMap.findIndex(fx);
+        return out;
+    }
+   
+    var TimeStartv = timelookup(TimeStartv); 
+    var TimeEndv = timelookup(TimeEndv);
+
+    if (TimeStartv  == -1 || TimeEndv == -1) {
+        var TimeStartv = timelookup(minTimeStart);
+        var TimeEndv = timelookup(maxTimeEnd);
+    }
+
+    function ctime(t) {//covert the epoch time to local readable 
+        var date = new Date(t);
+        return  date.toLocaleTimeString();
+    }
+
+    var sv = $(function() {//jquery range slider
+        $( "#slider-range11" ).slider({
+            range: true,
+            min: 0 ,
+            max:  jsTimeMap.length -1,
+            values: [ TimeStartv, TimeEndv ],
+            slide: function( event, ui ) {
+                $( "#slider-time" ).val( ctime(jsTimeMap[ui.values[ 0 ]]) + " - " + ctime(jsTimeMap[ui.values[ 1 ]]));
+        }});
+        $( "#slider-time" ).val( ctime(jsTimeMap[$( "#slider-range11" ).slider( "values", 0 )]) +  " - " + ctime(jsTimeMap[$( "#slider-range11" ).slider( "values", 1 )])); 
+        //$( "#slider-range11" ).on( "slidechange", function( event, ui ){$('#slider-time').attr("sv0", jsTimeMap[$('#slider-range11').slider("values", 0)])});
+        //$( "#slider-range11" ).on( "slidechange", function( event, ui ){$('#slider-time').attr("sv1", jsTimeMap[$('#slider-range11').slider("values", 1)])});
+        //merged the 2 listeners in 1 and added functions to visually trim map data and plot in realtime when using the trim session slider
+        $( "#slider-range11" ).on( "slidechange", (event,ui)=>{
+            $('#slider-time').attr("sv0", jsTimeMap[$('#slider-range11').slider("values", 0)])
+            $('#slider-time').attr("sv1", jsTimeMap[$('#slider-range11').slider("values", 1)])
+            const [a,b] = [jsTimeMap.length-$('#slider-range11').slider("values",1)-1,jsTimeMap.length-$('#slider-range11').slider("values",0)-1];
+            if (typeof mapUpdRange=='function') mapUpdRange(a,b);
+            if (typeof chartUpdRange=='function') chartUpdRange(a,b);
+        });
+    } );
+
+    function settimev(){//set post array for slider
+        var sv0 =  document.getElementById("slider-time").getAttribute("sv0");
+        var sv1 =  document.getElementById("slider-time").getAttribute("sv1");
+        var sv3 = timestartval;
+
+        if (sv0 <= 0 && sv1 <= 0){
+            var sv0 = timestartval;
+            var sv1 = timeendval;
+        }
+        if (sv0 == -1 && sv1 == -1){
+            var sv0 = minTimeStart;
+            var sv1 = maxTimeEnd;
+        }
+        var svarr = [sv0,sv1];
+        document.getElementById("formplotdata").svdata.value = svarr;
+    }
+}
+//End slider js code
