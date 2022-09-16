@@ -200,7 +200,7 @@ updCharts = ()=>{
 //Start Openlayers Map Provider js code
 initMapOpenlayers = () => {
     const pathAll = window.MapData.path;
-    const spdAll = window.MapData.spdAll;
+    const spdAll = window.MapData.spd;
     const spdUnit = window.MapData.spdUnit;
     let path = pathAll.map(v=>[v[1],v[0]]); //by default full range
     let spd = spdAll;
