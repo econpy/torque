@@ -198,7 +198,10 @@ updCharts = ()=>{
 //End of chart plotting js code
 
 //Start Openlayers Map Provider js code
-initMapOpenlayers = (pathAll,spdAll,spdUnit) => {
+initMapOpenlayers = () => {
+    const pathAll = window.MapData.path;
+    const spdAll = window.MapData.spdAll;
+    const spdUnit = window.MapData.spdUnit;
     let path = pathAll.map(v=>[v[1],v[0]]); //by default full range
     let spd = spdAll;
     const baseLst = [['Open Street Map','OSM'], //base layer option list
@@ -232,8 +235,8 @@ initMapOpenlayers = (pathAll,spdAll,spdUnit) => {
     const tileLayer = new ol.source.XYZ({url:selLyrUrl['ESRI.SATE']});
     const baseLayer = new ol.layer.Tile({source:tileLayer});
     const sFeat = f=>new ol.source.Vector({features:[f]});
-    let source = sFeat(new ol.Feature({geometry:new ol.geom.LineString(path),name:'trk'})); //build the path layer vector source
-    const style = (f,r) => { //function that builds the styles array to color every line segment based on speed
+    let pathSrc = sFeat(new ol.Feature({geometry:new ol.geom.LineString(path),name:'trk'})); //build the path layer vector source
+    const fStl = (f,r) => { //function that builds the styles array to color every line segment based on speed
         const [width,geom,max] = [4,f.getGeometry(),Math.max.apply(null,spd.filter(v=>v>0))];
         let [i,stl] = [0,[]];
         geom.forEachSegment(
@@ -247,31 +250,28 @@ initMapOpenlayers = (pathAll,spdAll,spdUnit) => {
     const markerSource = new ol.source.Vector({features:[]});
     markerUpd = itm => {//this functions updates the marker while hovering the chart and clears it when not hovering
         markerSource.clear();
-        itm&&itm.dataIndex>0&&markerSource.addFeature(fCircleF(path[itm.dataIndex],1/1e3)); //big circle
-        itm&&itm.dataIndex>0&&markerSource.addFeature(fCircleF(path[itm.dataIndex],1/2e4)); //small circle
-        markerSource.changed();
+        itm&&itm.dataIndex>0&&markerSource.addFeatures([fCircleF(path[itm.dataIndex],1/1e3),fCircleF(path[itm.dataIndex],1/2e4)]); //circle Markers
     }
     //creates the marker layer
     const marker = new ol.layer.Vector({source:markerSource,style:{'stroke-width':2,'stroke-color':[190,0,190],'fill-color':[190,0,190,.1]}});
     //setups the layers for osm, the path, start and end circles
     let pnt = [sFeat(fCircleF(path[0],1/3e3)),sFeat(fCircleF(path[path.length-1],1/3e3))];
-    const layers = [baseLayer,lPnt(pnt[0],[0,255,0]),lPnt(pnt[1],[0,0,0]),new ol.layer.Vector({source,style}),marker];
+    const layers = [baseLayer,lPnt(pnt[0],[0,255,0]),lPnt(pnt[1],[0,0,0]),new ol.layer.Vector({source:pathSrc,style:fStl}),marker];
     mapUpdRange = (a,b) => {//new function to update the map sources according to the trim slider
         path = pathAll.slice(a,b).map(v=>[v[1],v[0]]);
         spd = spdAll.slice(a,b);
-        source.clear();pnt[0].clear();pnt[1].clear();
-        source.addFeature(new ol.Feature({geometry:new ol.geom.LineString(path),name:'trk'}));
+        pathSrc.clear();pnt[0].clear();pnt[1].clear();
+        pathSrc.addFeature(new ol.Feature({geometry:new ol.geom.LineString(path),name:'trk'}));
         pnt[0].addFeature(fCircleF(path[0],1/3e3));
         pnt[1].addFeature(fCircleF(path[path.length-1],1/3e3));
-        source.changed();pnt[0].changed();pnt[1].changed();
-        map.getView().fit(source.getExtent().map((v,i)=>v+(i>1?1:-1)/1e3),map.getSize());
+        map.getView().fit(pathSrc.getExtent().map((v,i)=>v+(i>1?1:-1)/1e3),map.getSize());
     };
     //creates the map
     ol.proj.useGeographic();
     let map = new ol.Map({layers,target:'map-container'});
     map.addInteraction(new ol.interaction.DragRotateAndZoom());map.addControl(new ol.control.FullScreen());map.addControl(new ol.control.Rotate());
     //center then map view on our trip plus a little margin on the outside
-    map.getView().fit(source.getExtent().map((v,i)=>v+(i>1?1:-1)/1e3),map.getSize());
+    map.getView().fit(pathSrc.getExtent().map((v,i)=>v+(i>1?1:-1)/1e3),map.getSize());
     //function to get the index of first line segment that intersects with the point the mouse is over
     const segIdx = (g,c)=>{for(let i=1;i<g.length;i++) if (new ol.geom.LineString([g[i-1],g[i]]).intersectsCoordinate(c)) return i;}
     //this whole section just constructs the speed tooltip, could be enhanced with all the variables in the plot? but probably bigger impact on performance depending on how many are selected
@@ -294,11 +294,13 @@ initMapOpenlayers = (pathAll,spdAll,spdUnit) => {
 
 //Start of Google Map Provider js code
 function initMapGoogle() {
-    [pathAll,styleSelected,manualZoom] = window.gMapData;
+    const pathAll = window.MapData.path;
+    const style = window.MapData.style;
+    const manualZoom = window.MapData.manualZoom;
     var map = new google.maps.Map(document.getElementById("map-canvas"), {
         zoom: 3,
         center: { lat: 0, lng: -180 },
-        mapTypeId: styleSelected,
+        mapTypeId: style,
     });
 
     // The potentially large array of LatLng objects for the roadmap
@@ -376,3 +378,89 @@ function initMapGoogle() {
     }
 };
 //End of Google Map Provider js code
+
+//Start of Leaflet Map Providers js code
+initMapLeaflet = () => {
+    const pathAll = window.MapData.path;
+    const provider = window.MapData.provider;
+    const style = window.MapData.style;
+    const keys = window.MapData.keys;
+    var path = pathAll;
+    var map = new L.Map("map-canvas", {
+        center: new L.LatLng(37.7, -122.4),
+        zoom: 6});
+    let layer = null;
+    if (provider === 'stamen') {
+        const stamenLayer = ()=>{layer=new L.StamenTileLayer(style);map.addLayer(layer)};
+        (L.StamenTileLayer==undefined)?$.getScript('https://stamen-maps.a.ssl.fastly.net/js/tile.stamen.js?v1.3.0',stamenLayer):stamenLayer();
+    } else if (provider === 'esri') {
+        const esriLayer = ()=>{layer=new L.esri.basemapLayer(style);map.addLayer(layer)};
+        (L.esri==undefined)?$.getScript('https://unpkg.com/esri-leaflet@3.0.2/dist/esri-leaflet.js',esriLayer):esriLayer();
+    } else if (provider === 'openstreetmap') {
+        layer = new L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'});
+    } else if (provider === 'mapbox') {
+        layer = new L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>',
+            maxZoom: 18,
+            id: style,
+            tileSize: 512,
+            zoomOffset: -1,
+            accessToken: keys.mapbox});
+    } else if (provider === 'tomtom') {
+        layer = new L.tileLayer('https://api.tomtom.com/map/1/tile/basic/{style}/{z}/{x}/{y}.png?key={apikey}', {
+            attribution:'<a href="https://tomtom.com" target="_blank">&copy;  1992 - ' + new Date().getFullYear() + ' TomTom.</a> ',
+            style: style,
+            apikey: keys.tomtom});
+    } else if (provider === 'thunderforest') {
+        layer = new L.tileLayer('https://tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey={apikey}', {
+            attribution:'&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap contributors</a>',
+            apikey: keyst.thunderforest});
+    } else if (provider === 'here') {
+        layer = new L.tileLayer('https://{s}.base.maps.ls.hereapi.com/maptile/2.1/maptile/newest/{type}/{z}/{x}/{y}/{size}/png8?apiKey={apikey}&lg=eng',{
+            attribution: 'Map &copy; 1987-' + new Date().getFullYear() + ' <a href="http://developer.here.com">HERE</a>',
+            subdomains: '1234',
+            type: style,
+            apikey: keys.here,
+            maxZoom: 20,
+            size: '256'});
+    } else if (provider === 'maptiler') {
+        layer = new L.tileLayer('https://api.maptiler.com/maps/{style}/{z}/{x}/{y}{r}.png?key={apikey}',{
+            attribution:'&copy; <a href="https://www.maptiler.com/copyright/" target="_blank">MapTiler</a>, &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap contributors</a>',
+            style: style,
+            apikey: keys.maptiler,
+            tileSize: 512,
+            zoomOffset: -1,
+            maxZoom: 21});
+    }
+    (layer!==null)&&map.addLayer(layer);
+
+    // start and end point marker
+    var pathL = path.length;
+    var endCrd = path[0];
+    var startCrd = path[pathL-1];
+    const startcir = L.circleMarker(startCrd, {color:'green',title:'Start',alt:'Start Point',radius:6,weight:1}).addTo(map);
+    const endcir = L.circleMarker(endCrd, {color:'black',title:'End',alt:'End Point',radius:6,weight:1}).addTo(map);
+    // travel line
+    var polyline = L.polyline(path, {color: 'red'}).addTo(map);
+    // zoom the map to the polyline
+    map.fitBounds(polyline.getBounds(), {maxZoom: 15});
+
+    mapUpdRange = (a,b) => {//new function to update the map sources according to the trim slider
+        path = pathAll.slice(a,b);
+        polyline.setLatLngs(path);
+        startcir.setLatLng(path[path.length-1]);
+        endcir.setLatLng(path[0]);
+        map.fitBounds(polyline.getBounds(), {maxZoom: 15});
+    };
+    const markerCir = L.circleMarker(startCrd, {color:'purple',alt:'Start Point',radius:10,weight:1});
+    const markerPnt = L.circleMarker(startCrd, {color:'purple',alt:'End Point',radius:2,weight:1});
+    markerUpd = itm => {//this functions updates the marker while hovering the chart and clears it when not hovering
+        itm&&itm.dataIndex>0&&markerCir.setLatLng(path[itm.dataIndex]);
+        itm&&itm.dataIndex>0&&markerPnt.setLatLng(path[itm.dataIndex]);
+        (itm&&itm.dataIndex>0)?markerCir.addTo(map):map.removeLayer(markerCir);
+        (itm&&itm.dataIndex>0)?markerPnt.addTo(map):map.removeLayer(markerPnt);
+    }
+}
+//End of Leaflet Map Providers js code
