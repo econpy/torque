@@ -235,6 +235,15 @@ if (isset($sids[0])) {
 <?php } ?>
     <script language="javascript" type="text/javascript" src="static/js/torquehelpers.js"></script>
 <?php require("./map_providers.php"); ?>
+    <!-- slider -->
+    <script>
+      const jsTimeMap = [<?php echo $itime; ?>].reverse(); //Session time array, reversed for silder
+      var minTimeStart = [<?php echo $mintimev; ?>];
+      var maxTimeEnd = [<?php echo $maxtimev; ?>];
+      var TimeStartv = [<?php echo $timestartval; ?>]; 
+      var TimeEndv = [<?php echo $timeendval; ?>];
+      initSlider(jsTimeMap,minTimeStart,maxTimeEnd,TimeStartv,TimeEndv);
+    </script>
   </head>
   <body>
     <div class="navbar navbar-default navbar-fixed-top navbar-inverse" role="navigation">
@@ -333,14 +342,6 @@ if (isset($sids[0])) {
         </div>
 
 <!-- slider -->
-  <script>
-   const jsTimeMap = [<?php echo $itime; ?>].reverse(); //Session time array, reversed for silder
-   var minTimeStart = [<?php echo $mintimev; ?>];
-   var maxTimeEnd = [<?php echo $maxtimev; ?>];
-   var TimeStartv = [<?php echo $timestartval; ?>]; 
-   var TimeEndv = [<?php echo $timeendval; ?>];
-   initSlider(jsTimeMap,minTimeStart,maxTimeEnd,TimeStartv,TimeEndv);
-</script>
 <span class="h4">Trim Session</span>
 <input type="text" id="slider-time" readonly style="width:300px; border:0; color:#f6931f; font-weight:bold;" sv0="-1" sv1="-1">
 <div id="slider-range11"></div>
