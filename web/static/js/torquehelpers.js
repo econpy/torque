@@ -513,7 +513,7 @@ initSlider = (jsTimeMap,minTimeStart,maxTimeEnd,timestartval,timeendval)=>{
         });
     } );
 
-    function settimev(){//set post array for slider
+    window.settimev = () => {//set post array for slider
         var sv0 =  document.getElementById("slider-time").getAttribute("sv0");
         var sv1 =  document.getElementById("slider-time").getAttribute("sv1");
         var sv3 = timestartval;
