@@ -202,37 +202,65 @@ initMapOpenlayers = () => {
     const pathAll = window.MapData.path;
     const spdAll = window.MapData.spd;
     const spdUnit = window.MapData.spdUnit;
-    let path = pathAll.map(v=>[v[1],v[0]]); //by default full range
+    const keys = window.MapData.keys;
+    let path = pathAll.map(v=>[v[1],v[0]]); //by default full range, this also changes [Lat,Lon] coordinates format to [Lon,Lat]
     let spd = spdAll;
-    const baseLst = [['Open Street Map','OSM'], //base layer option list
-        ['Esri Streets','ESRI'],['Esri Dark Base','ESRI.DARK'],['Esri Gray Base','ESRI.GRAY'],['Esri Satellite','ESRI.SATE'],['Esri Topo','ESRI.TOPO'],['Esri NatGeo','ESRI.NATGEO'],
-        ['Stamen','STAMEN'],['Stamen Terain','STAMEN.TERRAIN'],['Stamen Watercolor','STAMEN.WATERCOLOR']];
-    $('#map-container')
-        .prepend($('<select>',{id:'BaseLayerOpt'}).css({position:'relative','z-index':300,left:'80px'}))//creates a new select element with the options for the base layers
+    let oMapLst = { //base map list and options that don't need an api key
+        'Openstreetmap':{labels:[''],styles:[''],styles:[''],url:'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png'},
+        'Esri':{
+            labels:['World Street Map','Dark Gray','Light Gray','World Topo Map','World Imagery','NatGeo World Map'/*,'USATopo'*/],
+            styles:['World_Street_Map','canvas/World_Dark_Gray_Base','Canvas/World_Light_Gray_Base','World_Topo_Map','World_Imagery','NatGeo_World_Map'],
+            url:'https://services.arcgisonline.com/ArcGIS/rest/services/{style}/MapServer/tile/{z}/{y}/{x}'},
+        'Stamen':{
+            labels:['Terrain','Toner','Watercolor'],
+            styles:['terrain','toner','watercolor'],
+            url:'https://stamen-tiles.a.ssl.fastly.net/{style}/{z}/{x}/{y}.png'},
+    };
+    //adds the map options if theres an Api Key confugired
+    if (keys.mapbox.length>1) oMapLst.Mapbox = {
+        labels:['Streets','Outdoors','Light','Dark','Satellite','Satellite Streets','Navigation','Navigation Night'],
+        styles:['streets-v11','outdoors-v11','light-v10','dark-v10','satellite-v9','satellite-streets-v11','navigation-day-v1','navigation-night-v1'],
+        url:'https://api.mapbox.com/styles/v1/mapbox/{style}/tiles/{z}/{x}/{y}?access_token='+keys.mapbox};
+    if (keys.tomtom.length>1) oMapLst.TomTom = {
+        labels:['Main','Night'],
+        styles:['main','night'],
+        url:'https://api.tomtom.com/map/1/tile/basic/{style}/{z}/{x}/{y}.png?key='+keys.tomtom};
+    if (keys.thunderforest.length>1) oMapLst.Thunderforest = {
+        labels:['Transport','Transport Dark','Spinal','Landscape','Outdoors','Pioneer','Mobile Atlas','Neighbourhood'],
+        styles:['transport','transport-dark','spinal-map','landscape','outdoors','pioneer','mobile-atlas','neighbourhood'],
+        url:'https://tile.thunderforest.com/{style}/{z}/{x}/{y}.png?apikey='+keys.thunderforest,};
+    if (keys.here.length>1) oMapLst.Here = {
+        labels:['Normal Day','Normal Day Grey','Reduced Day','Normal Night','Reduced Night'],
+        styles:['normal.day','normal.day.grey','reduced.day','normal.night','reduced.night'],
+        url:'https://1.base.maps.ls.hereapi.com/maptile/2.1/maptile/newest/{style}/{z}/{x}/{y}/256/png8?apiKey='+keys.here+'&lg=eng'};
+    if (keys.here.length>1) oMapLst.HereAerial = {
+        labels:['Satellite Day','Hybrid Day'],
+        styles:['satellite.day','hybrid.day'],
+        url:'https://1.aerial.maps.ls.hereapi.com/maptile/2.1/maptile/newest/{style}/{z}/{x}/{y}/256/png8?apiKey='+keys.here+'&lg=eng'};
+    if (keys.maptiler.length>1) oMapLst.Maptiler = {
+        labels:['Streets','Basic','Bright','Pastel','Positron','Toner','Topo','Voyager'],
+        styles:['streets','basic','bright','pastel','positron','toner','topo','voyager'],
+        url:'https://api.maptiler.com/maps/{style}/{z}/{x}/{y}.png?key='+keys.maptiler};
+    
+    window.selLyrUrl = {}; //list of providers for the base layer
+    Object.entries(oMapLst).map(([p,v])=>v.styles.every(e=>selLyrUrl[p+'.'+e]=v.url.replace(/\{style\}/,e)));
+    window.baseLst = [];//base layer option list
+    Object.entries(oMapLst).map(([p,v])=>v.labels.every((e,i)=>baseLst.push([p+(e.length>0?'-'+e:''),p+'.'+v.styles[i]])));
+
+    $('#map-canvas')
         .prepend($('<div>').css('position','absolute')
+            .prepend($('<select>',{id:'BaseLayerOpt'}).css({position:'relative','z-index':300,left:'80px'}))//creates a new select element with the options for the base layers
             .append($('<div>',{id:'ttip'}).css({position:'relative','z-index':100,'background-color':'white','border-radius':'10px',opacity:0.9,width:'100px'})));//creates the tooltip element
     $.each(baseLst,(i,el)=>$('#BaseLayerOpt').append($('<option>',{value:el[1],text:el[0]})));
-    $('#map-container>select').val('ESRI.SATE');
-    $('#map-container>select').off('change');
+    $('#BaseLayerOpt').val('Esri.World_Imagery');
+    $('#BaseLayerOpt').off('change');
     const updBase = () => { //updates the base layer based on selection
-        const selLayer = $('#BaseLayerOpt').find(":selected").val()!==undefined?$('#BaseLayerOpt').find(":selected").val():'OSM';
-        tileLayer.setUrl(selLyrUrl[selLayer]||selLyrUrl['OSM']);
+        const selLayer = $('#BaseLayerOpt').find(":selected").val()!==undefined?$('#BaseLayerOpt').find(":selected").val():'Esri.World_Imagery';
+        tileLayer.setUrl(selLyrUrl[selLayer]||selLyrUrl['Esri.World_Imagery']);
     }
-    $('#map-container>select').on('change',updBase);
-    const selLyrUrl = { //list of providers for the base layer
-        'OSM':'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
-        'ESRI':'https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
-        'ESRI.DARK':'https://services.arcgisonline.com/ArcGIS/rest/services/canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
-        'ESRI.GRAY':'https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
-        'ESRI.SATE':'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-        'ESRI.TOPO':'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
-        'ESRI.NATGEO':'https://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}',
-        'STAMEN':'https://stamen-tiles.a.ssl.fastly.net/toner/{z}/{x}/{y}.png',
-        'STAMEN.TERRAIN':'https://stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.png',
-        'STAMEN.WATERCOLOR':'https://stamen-tiles.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.jpg'
-    };
+    $('#BaseLayerOpt').on('change',updBase);
     //defines the default base layer
-    const tileLayer = new ol.source.XYZ({url:selLyrUrl['ESRI.SATE']});
+    const tileLayer = new ol.source.XYZ({url:selLyrUrl['Esri.World_Imagery']});
     const baseLayer = new ol.layer.Tile({source:tileLayer});
     const sFeat = f=>new ol.source.Vector({features:[f]});
     let pathSrc = sFeat(new ol.Feature({geometry:new ol.geom.LineString(path),name:'trk'})); //build the path layer vector source
@@ -268,13 +296,13 @@ initMapOpenlayers = () => {
     };
     //creates the map
     ol.proj.useGeographic();
-    let map = new ol.Map({layers,target:'map-container'});
+    let map = new ol.Map({layers,target:'map-canvas'});
     map.addInteraction(new ol.interaction.DragRotateAndZoom());map.addControl(new ol.control.FullScreen());map.addControl(new ol.control.Rotate());
     //center then map view on our trip plus a little margin on the outside
     map.getView().fit(pathSrc.getExtent().map((v,i)=>v+(i>1?1:-1)/1e3),map.getSize());
     //function to get the index of first line segment that intersects with the point the mouse is over
     const segIdx = (g,c)=>{for(let i=1;i<g.length;i++) if (new ol.geom.LineString([g[i-1],g[i]]).intersectsCoordinate(c)) return i;}
-    //this whole section just constructs the speed tooltip, could be enhanced with all the variables in the plot? but probably bigger impact on performance depending on how many are selected
+    //this whole section just constructs the speed tooltip, could be enhanced with all the variables in the plot? but probably bigger impact on perfomance depending on how many are selected
     const ttip = $("#ttip");
     const sData=evt=>{
         const pxl = map.getEventPixel(evt.originalEvent);
@@ -289,6 +317,16 @@ initMapOpenlayers = () => {
     }
     //this is the actual listener on the map to create our tooltip
     map.on('pointermove',evt=>evt.dragging?ttip.html(''):sData(evt));
+
+    tempMap = a=>{//new function to update map with temp values read from torque CSV
+        path = a.map(v=>[v[1],v[0]]); //reorder coords
+        spd = a.map(v=>v[2]);
+        pathSrc.clear();pnt[0].clear();pnt[1].clear();
+        pathSrc.addFeature(new ol.Feature({geometry:new ol.geom.LineString(path),name:'trk'}));
+        pnt[0].addFeature(fCircleF(path[0],1/3e3));
+        pnt[1].addFeature(fCircleF(path[path.length-1],1/3e3));
+        map.getView().fit(pathSrc.getExtent().map((v,i)=>v+(i>1?1:-1)/1e3),map.getSize());
+    };
 }
 //End of Openlayers Map Provider js code
 
@@ -304,7 +342,7 @@ function initMapGoogle() {
     });
 
     // The potentially large array of LatLng objects for the roadmap
-    var path = pathAll.map(v=>new google.maps.LatLng(v[0],v[1]));
+    var path = pathAll.map(v=>new google.maps.LatLng(v[0],v[1])); //takes every coordinate array and makes it a coordinate object needed for gmaps
     var pathL = path.length;
     var endCrd = path[0];
     var startCrd = path[pathL-1];
@@ -376,6 +414,15 @@ function initMapGoogle() {
         markerCir.setMap((itm&&itm.dataIndex>0)?map:null);
         markerPnt.setMap((itm&&itm.dataIndex>0)?map:null);
     }
+    tempMap = a=>{//new function to update map with temp values read from torque CSV
+        path = a.map(v=>new google.maps.LatLng(v[0],v[1])); //create google coord
+        line.setPath(path);
+        startcir.setPosition(path[path.length-1]);
+        endcir.setPosition(path[0]);
+        bounds = new google.maps.LatLngBounds();
+        path.every(v=>bounds.extend(v));
+        map.fitBounds(bounds);
+    };
 };
 //End of Google Map Provider js code
 
@@ -462,6 +509,14 @@ initMapLeaflet = () => {
         (itm&&itm.dataIndex>0)?markerCir.addTo(map):map.removeLayer(markerCir);
         (itm&&itm.dataIndex>0)?markerPnt.addTo(map):map.removeLayer(markerPnt);
     }
+
+    tempMap = a=>{//new function to update map with temp values read from torque CSV
+        path = a.map(v=>[v[0],v[1]]); //discard speed for now
+        polyline.setLatLngs(path);
+        startcir.setLatLng(path[path.length-1]);
+        endcir.setLatLng(path[0]);
+        map.fitBounds(polyline.getBounds(), {maxZoom: 15});
+    };
 }
 //End of Leaflet Map Providers js code
 
@@ -531,3 +586,37 @@ initSlider = (jsTimeMap,minTimeStart,maxTimeEnd,timestartval,timeendval)=>{
     }
 }
 //End slider js code
+
+//CSV Import
+initImportCSV = ()=>{
+    const tempCSV = a=>{
+        //This part is kinda hard to read but easier to write, we find the indexes we care about(lat,long,speed), then we build a new array with only those(obd>gps speed), turn the strings to float and then filter lines with lat or long <> 0
+        const idx = ['Latitude','Longitude',/Speed \(OBD\)/,/Speed \(GPS\)/].map(v=>a[0].findIndex(e=>e.trim()==v||e.match(v)));
+        const data = a.map(l=>[l[idx[0]],l[idx[1]],(idx[2]>0?l[idx[2]]:(idx[3]>0?l[idx[3]]:0))].map(s=>parseFloat(s))).filter(([a,b,c])=>(a>0||a<0||b>0||b<0));
+        (typeof tempMap=='function')?tempMap(data):alert('Map is not updated with the csv data');
+        (typeof tempChart=='function')?tempChart(a):alert('Charts are not updated with the csv data'); //Still have to write this one, have to rewrite variable selector and maybe hide session selector?
+        (typeof tempSlider=='function')?tempSlider(a):alert('Slider is not updated with the csv data'); //Still have to write this one, need to finish Chart first
+        alert('CSV file finished loading');
+    }
+    const readCSV = t=>{
+        const csv = t.split('\n').map(v=>v.split(','));
+        if (csv.length<5) return alert('This file is probably not a csv or has less than the 5 lines minimun.');
+        if (csv[0].length<5) return alert('This file is probably not a csv or has less than the 5 fields minimun.');
+        if (csv[0][0]!=='GPS Time') return alert('This file is aparently a csv but it is not from torque.');
+        tempCSV(csv);
+    }
+    const upload = e=>{
+        e.stopPropagation();
+        e.preventDefault();
+        if (e.dataTransfer.files.length > 0) {
+            const rdr = new FileReader();
+            rdr.onload = e=>readCSV(e.target.result);
+            rdr.readAsText(e.dataTransfer.files[0]);
+        };
+    }
+    window.addEventListener("dragenter", e=>e.preventDefault(), false);
+    window.addEventListener("dragover", e=>e.preventDefault(), false);
+    window.addEventListener("drop", upload, false);
+}
+$(document).ready(initImportCSV)
+//End CSV Import
