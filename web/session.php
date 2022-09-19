@@ -150,6 +150,20 @@ if (isset($sids[0])) {
     $profilearray[$i] = $row['profileName'];
     $i = $i + 1;
   }
+  
+  //*session key Query, probably better to do it with an SQL function, or maybe a dynamic query but for my uses the performance impact isn't too big, probably needs more testing
+  $sesskeyselect = 'select t.session, ';
+  foreach ($coldata as $xcol) {
+    $sesskeyselect .= "concat(max(t.".$xcol['colname']."),'-',min(t.".$xcol['colname'].")) ".$xcol['colname'].",";
+  }
+  $sesskeyselect .= " count(*) count from $db_table_full t where t.session = '$session_id' group by t.session";
+  $sesskeyqry = mysqli_query($con, $sesskeyselect) or die(mysqli_error($con));
+  $sessdatapop = [];
+  while ($row = mysqli_fetch_assoc($sesskeyqry)) {
+    for ($i=0;count($coldata)>$i;$i++) {
+      $coldata[$i]['pop'] = $row[$coldata[$i]['colname']]??'0-0';
+    }
+  }/**/
 
   //Close the MySQL connection, which is why we can't query years later
   mysqli_free_result($sessionqry);
@@ -218,10 +232,18 @@ if (isset($sids[0])) {
         });
       });
     </script>
-    <script language="javascript" type="text/javascript" src="static/js/torquehelpers.js"></script>
-<?php } else { ?>
-    <script language="javascript" type="text/javascript" src="static/js/torquehelpers.js"></script>
 <?php } ?>
+    <script language="javascript" type="text/javascript" src="static/js/torquehelpers.js"></script>
+<?php require("./map_providers.php"); ?>
+    <!-- slider -->
+    <script>
+      const jsTimeMap = [<?php echo $itime; ?>].reverse(); //Session time array, reversed for silder
+      var minTimeStart = [<?php echo $mintimev; ?>];
+      var maxTimeEnd = [<?php echo $maxtimev; ?>];
+      var TimeStartv = [<?php echo $timestartval; ?>]; 
+      var TimeEndv = [<?php echo $timeendval; ?>];
+      initSlider(jsTimeMap,minTimeStart,maxTimeEnd,TimeStartv,TimeEndv);
+    </script>
   </head>
   <body>
     <div class="navbar navbar-default navbar-fixed-top navbar-inverse" role="navigation">
@@ -238,7 +260,6 @@ if (isset($sids[0])) {
     <div id="map-container" class="col-md-7 col-xs-12">
       <div id="map-canvas"></div>
     </div>
-<?php require("./map_providers.php"); ?>
     <div id="right-container" class="col-md-5 col-xs-12">
       <div id="right-cell">
         <h4>Select Session</h4>
@@ -321,71 +342,6 @@ if (isset($sids[0])) {
         </div>
 
 <!-- slider -->
-  <script>
-   const jsTimeMap = [<?php echo $itime; ?>].reverse(); //Session time array, reversed for silder
-   var minTimeStart = [<?php echo $mintimev; ?>];
-   var maxTimeEnd = [<?php echo $maxtimev; ?>];
-   var TimeStartv = [<?php echo $timestartval; ?>]; 
-   var TimeEndv = [<?php echo $timeendval; ?>];
-
-  function timelookup(t) { //retrun array index, used for slider steps/value, RIP IE, no polyfill 
-    var fx = (e) => e == t;
-    var out = jsTimeMap.findIndex(fx);
-    return out;
-  }
-   
-  var TimeStartv = timelookup(TimeStartv); 
-  var TimeEndv = timelookup(TimeEndv);
-
-  if (TimeStartv  == -1 || TimeEndv == -1) {
-    var TimeStartv = timelookup(minTimeStart);
-    var TimeEndv = timelookup(maxTimeEnd);
-  }
-
-  function ctime(t) {//covert the epoch time to local readable 
-   var date = new Date(t);
-   return  date.toLocaleTimeString();
-  }
-
-  var sv = $(function() {//jquery range slider
-    $( "#slider-range11" ).slider({
-      range: true,
-      min: 0 ,
-      max:  jsTimeMap.length -1,
-      values: [ TimeStartv, TimeEndv ],
-      slide: function( event, ui ) {
-        $( "#slider-time" ).val( ctime(jsTimeMap[ui.values[ 0 ]]) + " - " + ctime(jsTimeMap[ui.values[ 1 ]]));
-      }});
-    $( "#slider-time" ).val( ctime(jsTimeMap[$( "#slider-range11" ).slider( "values", 0 )]) +  " - " + ctime(jsTimeMap[$( "#slider-range11" ).slider( "values", 1 )])); 
-    //$( "#slider-range11" ).on( "slidechange", function( event, ui ){$('#slider-time').attr("sv0", jsTimeMap[$('#slider-range11').slider("values", 0)])});
-    //$( "#slider-range11" ).on( "slidechange", function( event, ui ){$('#slider-time').attr("sv1", jsTimeMap[$('#slider-range11').slider("values", 1)])});
-    //merged the 2 listeners in 1 and added functions to visually trim map data and plot in realtime when using the trim session slider
-      $( "#slider-range11" ).on( "slidechange", (event,ui)=>{
-        $('#slider-time').attr("sv0", jsTimeMap[$('#slider-range11').slider("values", 0)])
-        $('#slider-time').attr("sv1", jsTimeMap[$('#slider-range11').slider("values", 1)])
-        const [a,b] = [jsTimeMap.length-$('#slider-range11').slider("values",1)-1,jsTimeMap.length-$('#slider-range11').slider("values",0)-1];
-        if (typeof mapUpdRange=='function') mapUpdRange(a,b);
-        if (typeof chartUpdRange=='function') chartUpdRange(a,b);
-      });
-  } );
-
-  function settimev(){//set post array for slider
-    var sv0 =  document.getElementById("slider-time").getAttribute("sv0");
-    var sv1 =  document.getElementById("slider-time").getAttribute("sv1");
-    var sv3 = [<?php echo $timestartval; ?>];
-
-    if (sv0 <= 0 && sv1 <= 0){
-    var sv0 = [<?php echo $timestartval; ?>];
-    var sv1 = [<?php echo $timeendval; ?>];
-    }
-    if (sv0 == -1 && sv1 == -1){
-    var sv0 = minTimeStart;
-    var sv1 = maxTimeEnd;
-    }
-    var svarr = [sv0,sv1];
-    document.getElementById("formplotdata").svdata.value = svarr;
-  }
-</script>
 <span class="h4">Trim Session</span>
 <input type="text" id="slider-time" readonly style="width:300px; border:0; color:#f6931f; font-weight:bold;" sv0="-1" sv1="-1">
 <div id="slider-range11"></div>
@@ -398,16 +354,17 @@ if (isset($sids[0])) {
              <input type="hidden" name="svdata" id="svdata" value="" /> 
               <select data-placeholder="Choose OBD2 data..." multiple class="chosen-select" size="<?php echo $numcols; ?>" style="width:100%;" id="plot_data" onsubmit="onSubmitIt" name="plotdata[]">
                 <option value=""></option>
-<?php   foreach ($coldata as $xcol) { ?>
+<?php   foreach ($coldata as $xcol) { 
+          if (($xcol['pop']??'x') != '0-0') { //only with max or min <> 0 ?>
                 <option value="<?php echo $xcol['colname']; ?>" <?php 
                   $i = 1; 
-                  while ( isset(${'var' . $i}) ) {
+                  while ( isset(${'var' . $i})) {
                     if ( (${'var' . $i} == $xcol['colname'] ) OR ( /*favorite not needed if we already have a selection*/ $var1 == "" AND $xcol['colfavorite'] == 1 ) ) {
                       echo " selected";
                     }
                     $i = $i + 1; 
                   } ?>><?php echo $xcol['colcomment']; ?></option>
-<?php   } ?>
+<?php   }} ?>
             </select>
 <?php   if ( $filteryearmonth <> "" ) { ?>
             <input type="hidden" name="selyearmonth" id="selyearmonth" value="<?php echo $filteryearmonth; ?>" />
