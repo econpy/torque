@@ -110,46 +110,46 @@ let plot = null; //definition of plot variable in script but outside doPlot func
 function doPlot(position) {
     //asigned the plot to a new variable and new function to update the plot in realtime when using the slider
     chartUpdRange = (a,b) => {
-    let dataSet = [];
-    flotData.every(i=>dataSet.push({label:i.label,data:i.data.slice(a,b)}));
-    plot.setData(dataSet);
-    plot.draw();
+        let dataSet = [];
+        flotData.forEach(i=>dataSet.push({label:i.label,data:i.data.slice(a,b)}));
+        plot.setData(dataSet);
+        plot.draw();
     }
     plot = $.plot("#placeholder", flotData, {
-    xaxes: [ {
-        mode: "time",
-        timezone: "browser",
-        axisLabel: "Time",
-        timeformat: "%I:%M%p",
-        twelveHourClock: true
-    } ],
-    yaxes: [ { axisLabel: "" }, {
-        alignTicksWithAxis: position == "right" ? 1 : null,
-        position: position,
-        axisLabel: ""
-    } ],
-    legend: {
-        position: "nw",
-        hideable: true,
-        backgroundOpacity: 0.1,
-        margin: 0
-    },
-    selection: { mode: "x" },
-    grid: {
-        hoverable: true,
-        clickable: false
-    },
-    multihighlightdelta: { mode: 'x' },
-    tooltip: false,
-    tooltipOpts: {
-        //content: "%s at %x: %y",
-        content: "%x",
-        xDateFormat: "%m/%d/%Y %I:%M:%S%p",
-        twelveHourClock: true,
-        onHover: function(flotItem, $tooltipEl) {
-        console.log(flotItem, $tooltipEl);
+        xaxes: [ {
+            mode: "time",
+            timezone: "browser",
+            axisLabel: "Time",
+            timeformat: "%I:%M%p",
+            twelveHourClock: true
+        } ],
+        yaxes: [ { axisLabel: "" }, {
+            alignTicksWithAxis: position == "right" ? 1 : null,
+            position: position,
+            axisLabel: ""
+        } ],
+        legend: {
+            position: "nw",
+            hideable: true,
+            backgroundOpacity: 0.1,
+            margin: 0
+        },
+        selection: { mode: "x" },
+        grid: {
+            hoverable: true,
+            clickable: false
+        },
+        multihighlightdelta: { mode: 'x' },
+        tooltip: false,
+        tooltipOpts: {
+            //content: "%s at %x: %y",
+            content: "%x",
+            xDateFormat: "%m/%d/%Y %I:%M:%S%p",
+            twelveHourClock: true,
+            onHover: function(flotItem, $tooltipEl) {
+            console.log(flotItem, $tooltipEl);
+            }
         }
-    }
     });
     chartTooltip();
 }
@@ -167,11 +167,11 @@ updCharts = ()=>{
         }
     } else {
         let varPrm = 'plot.php?id='+$('#seshidtag').chosen().val();
-        $('#plot_data').chosen().val().every((v,i)=>varPrm+='&s'+(i+1)+'='+v);
+        $('#plot_data').chosen().val().forEach((v,i)=>varPrm+='&s'+(i+1)+'='+v);
         $.get(varPrm,d=>{
             flotData = [];
             const gData = JSON.parse(d);
-            gData.every(v=>flotData.push({label:v[1],data:v[2].map(a=>a=[parseInt(a[0]),a[1]])}));
+            gData.forEach(v=>flotData.push({label:v[1],data:v[2].map(a=>[parseInt(a[0]),a[1]])}));
             if ($('#placeholder')[0]==undefined) { //this would only be true the first time we load the chart
                 $('#Chart-Container').empty();
                 $('#Chart-Container').append($('<div>',{class:'demo-container'}).append($('<div>',{id:'placeholder',class:'demo-placeholder',style:'height:300px'})));
@@ -183,14 +183,14 @@ updCharts = ()=>{
             //this updates the whole summary table
             $('#Summary-Container').empty();
             $('#Summary-Container').append($('<div>',{class:'table-responsive'}).append($('<table>',{class:'table'}).append($('<thead>').append($('<tr>'))).append('<tbody>')));
-            ['Name','Min/Max','25th Pcnt','75th Pcnt','Mean','Sparkline'].every(v=>$('#Summary-Container>div>table>thead>tr').append($('<th>').html(v)));
+            ['Name','Min/Max','25th Pcnt','75th Pcnt','Mean','Sparkline'].forEach(v=>$('#Summary-Container>div>table>thead>tr').append($('<th>').html(v)));
             const trData = v=>{
                 const tr=$('<tr>');
                 //and at this point I realized maybe I should have made the json output an object instead of an array but whatever //TODO: make it an object
-                [v[1],v[5]+'/'+v[4],v[7],v[8],v[6],v[3]].every((v,i)=>tr.append($('<td>').html(i<5?v:'').append(i<5?'':$('<span>',{class:'line'}).html(v))));
+                [v[1],v[5]+'/'+v[4],v[7],v[8],v[6],v[3]].forEach((v,i)=>tr.append($('<td>').html(i<5?v:'').append(i<5?'':$('<span>',{class:'line'}).html(v))));
                 return tr;
             }
-            gData.every(v=>$('#Summary-Container>div>table>tbody').append(trData(v)));
+            gData.forEach(v=>$('#Summary-Container>div>table>tbody').append(trData(v)));
             $(".line").peity("line")
         });
     }
@@ -243,9 +243,9 @@ initMapOpenlayers = () => {
         url:'https://api.maptiler.com/maps/{style}/{z}/{x}/{y}.png?key='+keys.maptiler};
     
     window.selLyrUrl = {}; //list of providers for the base layer
-    Object.entries(oMapLst).map(([p,v])=>v.styles.every(e=>selLyrUrl[p+'.'+e]=v.url.replace(/\{style\}/,e)));
+    Object.entries(oMapLst).map(([p,v])=>v.styles.forEach(e=>selLyrUrl[p+'.'+e]=v.url.replace(/\{style\}/,e)));
     window.baseLst = [];//base layer option list
-    Object.entries(oMapLst).map(([p,v])=>v.labels.every((e,i)=>baseLst.push([p+(e.length>0?'-'+e:''),p+'.'+v.styles[i]])));
+    Object.entries(oMapLst).map(([p,v])=>v.labels.forEach((e,i)=>baseLst.push([p+(e.length>0?'-'+e:''),p+'.'+v.styles[i]])));
 
     $('#map-canvas')
         .prepend($('<div>').css('position','absolute')
@@ -396,7 +396,7 @@ function initMapGoogle() {
         startcir.setPosition(path[path.length-1]);
         endcir.setPosition(path[0]);
         bounds = new google.maps.LatLngBounds();
-        path.every(v=>bounds.extend(v));
+        path.forEach(v=>bounds.extend(v));
         map.fitBounds(bounds);
     };
 
@@ -420,10 +420,10 @@ function initMapGoogle() {
         startcir.setPosition(path[path.length-1]);
         endcir.setPosition(path[0]);
         bounds = new google.maps.LatLngBounds();
-        path.every(v=>bounds.extend(v));
+        path.forEach(v=>bounds.extend(v));
         map.fitBounds(bounds);
     };
-};
+}
 //End of Google Map Provider js code
 
 //Start of Leaflet Map Providers js code
@@ -588,30 +588,92 @@ initSlider = (jsTimeMap,minTimeStart,maxTimeEnd,timestartval,timeendval)=>{
 //End slider js code
 
 //CSV Import
-initImportCSV = ()=>{
+initImportCSV = () => {
+    const tempChart = ()=>{
+        const killPlot = ()=> {
+            if ($('#placeholder')[0]!=undefined) {//clean our plot if it exists
+                flotData = [];
+                plot.shutdown();
+                const noChart = $('<div>',{align:'center',style:'padding-top:10px'}).append($('<h5>').append($('<span>',{class:'label label-warning'}).html('No Variables Selected to Plot!')));
+                $('#Chart-Container').empty();
+                $('#Chart-Container').append(noChart);
+                $('#Summary-Container').empty();
+                $('#Summary-Container').append(noChart);
+            }
+        }
+        tempUpdCharts = ()=>{
+            if ($('#plot_data').chosen().val()==null) {
+                killPlot();
+            } else {
+                flotData = [];
+                $('#plot_data').chosen().val().forEach(v=>flotData.push({label:v,data:tempData[v].map((e,i)=>[tempData['Device Time'][i],e])}));
+                if ($('#placeholder')[0]==undefined) {
+                    $('#Chart-Container').empty();
+                    $('#Chart-Container').append($('<div>',{class:'demo-container'}).append($('<div>',{id:'placeholder',class:'demo-placeholder',style:'height:300px'})));
+                    doPlot("right");
+                } else {
+                    plot.setData(flotData);
+                    plot.draw();
+                }
+                $('#Summary-Container').empty();
+                $('#Summary-Container').append($('<div>',{class:'table-responsive'}).append($('<table>',{class:'table'}).append($('<thead>').append($('<tr>'))).append('<tbody>')));
+                ['Name','Min/Max','25th Pcnt','75th Pcnt','Mean','Sparkline'].forEach(v=>$('#Summary-Container>div>table>thead>tr').append($('<th>').html(v)));
+                const quantile = (a,q)=>{
+                    const base = Math.floor((a.length-1)*q/100);
+                    if (a[base+1]!==undefined) return a[base]+(((a.length-1)*q/100)-base)*(a[base+1]-a[base]);
+                    else return a[base];
+                };
+                const trData = k=>{
+                    const aSorted = [];
+                    tempData[k].forEach(v=>aSorted.push(v)); //copy array data before sorting to keep data
+                    aSorted.sort((a,b)=>a-b);
+                    const tr=$('<tr>');
+                    [k,aSorted[0]+'/'+aSorted[aSorted.length-1],quantile(aSorted,25),quantile(aSorted,75),aSorted.reduce((a,b)=>a+b,0)/aSorted.length,tempData[k].join(",")]
+                        .forEach((v,i)=>{tr.append($('<td>').html(i<5?v:'').append(i<5?'':$('<span>',{class:'line'}).html(v)));});
+                    return tr;
+                }
+                $('#plot_data').chosen().val().forEach(k=>$('#Summary-Container>div>table>tbody').append(trData([k])));
+                $(".line").peity("line");
+            }
+        }
+        killPlot();
+        //rebuild options based on csv columns with actual data
+        $('#plot_data').empty();
+        Object.entries(tempData).filter(([k,v])=>(!k.match(/(GPS|Device)\sTime/))&&v.some(e=>(e>0||e<0))).forEach(([k,v])=>$('#plot_data').append($('<option>',{value:k,text:k})));
+        $('#plot_data').trigger("chosen:updated");
+        $('#plot_data').chosen().off('change');
+        $('#plot_data').chosen().change(tempUpdCharts);
+    }
     const tempCSV = a=>{
-        //This part is kinda hard to read but easier to write, we find the indexes we care about(lat,long,speed), then we build a new array with only those(obd>gps speed), turn the strings to float and then filter lines with lat or long <> 0
-        const idx = ['Latitude','Longitude',/Speed \(OBD\)/,/Speed \(GPS\)/].map(v=>a[0].findIndex(e=>e.trim()==v||e.match(v)));
+        //build an object with the csv columns and saving data, avoinding duplicates
+        window.tempData = {};
+        a[0].forEach((v,i)=>(v==v.trim()&&tempData[v]==undefined)&&(tempData[v]=a.slice(1,a.length-1).map(e=>v.match(/(GPS|Device)\sTime/)?Date.parse(e[i]):((parseFloat(e[i])>0||parseFloat(e[i])<0)?parseFloat(e[i]):0))));
+        tempChart(tempData);
+        //This part is kinda hard to read but easier to write, we find the indexes we care about(lat,long,speed)
+        //then we build a new array with only those(obd>gps speed), turn the strings to float and then filter lines with lat or long <> 0
+        const idx = ['Latitude','Longitude',/Speed\s\(OBD\)/,/Speed\s\(GPS\)/].map(v=>a[0].findIndex(e=>e.trim()==v||e.match(v)));
         const data = a.map(l=>[l[idx[0]],l[idx[1]],(idx[2]>0?l[idx[2]]:(idx[3]>0?l[idx[3]]:0))].map(s=>parseFloat(s))).filter(([a,b,c])=>(a>0||a<0||b>0||b<0));
-        (typeof tempMap=='function')?tempMap(data):alert('Map is not updated with the csv data');
-        (typeof tempChart=='function')?tempChart(a):alert('Charts are not updated with the csv data'); //Still have to write this one, have to rewrite variable selector and maybe hide session selector?
-        (typeof tempSlider=='function')?tempSlider(a):alert('Slider is not updated with the csv data'); //Still have to write this one, need to finish Chart first
+        (data.length>0)?tempMap(data):alert('Map is not updated with the csv data');
+        //maybe hide the silder?
+        //tempSlider(a);
         alert('CSV file finished loading');
     }
     const readCSV = t=>{
-        const csv = t.split('\n').map(v=>v.split(','));
+        //just split text in lines and every line in fields
+        const csv = t.split('\n').map(v=>v.split(',').map(e=>e.trim()));
         if (csv.length<5) return alert('This file is probably not a csv or has less than the 5 lines minimun.');
         if (csv[0].length<5) return alert('This file is probably not a csv or has less than the 5 fields minimun.');
-        if (csv[0][0]!=='GPS Time') return alert('This file is aparently a csv but it is not from torque.');
+        if (csv[0][0]!=='GPS Time') return alert('This file is aparently a csv but it is not from torque.');//first field always has to be GPS Time
         tempCSV(csv);
     }
     const upload = e=>{
         e.stopPropagation();
         e.preventDefault();
-        if (e.dataTransfer.files.length > 0) {
+        const f = e.dataTransfer.files;
+        if (f.length > 0) {
             const rdr = new FileReader();
             rdr.onload = e=>readCSV(e.target.result);
-            rdr.readAsText(e.dataTransfer.files[0]);
+            rdr.readAsText(f[0]);
         };
     }
     window.addEventListener("dragenter", e=>e.preventDefault(), false);
