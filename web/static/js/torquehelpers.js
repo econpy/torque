@@ -587,7 +587,7 @@ initSlider = (jsTimeMap,minTimeStart,maxTimeEnd,timestartval,timeendval)=>{
 initImportCSV = () => {
     const tempSlider = a=>{
         $( "#slider-range11").off( "slidechange"); //this is to avoid 2 listeners
-        initSlider(a.reverse(),[a[0]],[a[a.length-1]],[-1],[-1]);
+        initSlider(a,[a[0]],[a[a.length-1]],[-1],[-1]);
         mapUpdRange = (a,b)=>console.log([a,b]);
     }
     const tempChart = a=>{
@@ -646,12 +646,12 @@ initImportCSV = () => {
     const tempCSV = a=>{
         //build an object with the csv columns and saving data, avoinding duplicates
         const tempData = {};
-        a[0].forEach((v,i)=>(v==v.trim()&&tempData[v]==undefined)&&(tempData[v]=a.slice(1,a.length-1).map(e=>v.match(/(GPS|Device)\sTime/)?Date.parse(e[i]):((parseFloat(e[i])>0||parseFloat(e[i])<0)?parseFloat(e[i]):0))));
+        a[0].forEach((v,i)=>(v==v.trim()&&tempData[v]==undefined)&&(tempData[v]=a.slice(1,a.length-1).reverse().map(e=>v.match(/(GPS|Device)\sTime/)?Date.parse(e[i]):((parseFloat(e[i])>0||parseFloat(e[i])<0)?parseFloat(e[i]):0))));
         tempChart(tempData);
         //This part is kinda hard to read but easier to write, we find the indexes we care about(lat,long,speed)
         //then we build a new array with only those(obd>gps speed), turn the strings to float and then filter lines with lat or long <> 0
         const idx = ['Latitude','Longitude',/Speed\s\(OBD\)/,/Speed\s\(GPS\)/].map(v=>a[0].findIndex(e=>e.trim()==v||e.match(v)));
-        const data = a.map(l=>[l[idx[0]],l[idx[1]],(idx[2]>0?l[idx[2]]:(idx[3]>0?l[idx[3]]:0))].map(s=>parseFloat(s))).filter(([a,b,c])=>(a>0||a<0||b>0||b<0));
+        const data = a.map(l=>[l[idx[0]],l[idx[1]],(idx[2]>0?l[idx[2]]:(idx[3]>0?l[idx[3]]:0))].map(s=>parseFloat(s))).filter(([a,b,c])=>(a>0||a<0||b>0||b<0)).reverse();
         window.MapData.path = data.map(v=>[v[0],v[1]]);
         window.MapData.spd = data.map(v=>v[2]);
         (data.length>0)?tempMap(data):alert('Map is not updated with the csv data');
