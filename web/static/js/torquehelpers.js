@@ -284,8 +284,10 @@ initMapOpenlayers = () => {
     let pnt = [sFeat(fCircleF(path[0],1/3e3)),sFeat(fCircleF(path[path.length-1],1/3e3))];
     const layers = [baseLayer,lPnt(pnt[0],[0,255,0]),lPnt(pnt[1],[0,0,0]),new ol.layer.Vector({source:pathSrc,style:fStl}),marker];
     mapUpdRange = (a,b) => {//new function to update the map sources according to the trim slider
-        path = window.MapData.path.slice(a,b).map(v=>[v[1],v[0]]);
-        spd = window.MapData.spd.slice(a,b);
+        const tempCrd = window.MapData.path.map((v,i)=>[v[0],v[1],window.MapData.spd[i]]).slice(a,b).filter(([a,b,c])=>(a>0||a<0||b>0||b<0));
+        path = tempCrd.map(v=>[v[1],v[0]]);
+        spd = tempCrd.map(v=>v[2]);
+        if (path.length==0) return alert('Time range has no gps data');
         pathSrc.clear();pnt[0].clear();pnt[1].clear();
         pathSrc.addFeature(new ol.Feature({geometry:new ol.geom.LineString(path),name:'trk'}));
         pnt[0].addFeature(fCircleF(path[0],1/3e3));
@@ -388,7 +390,8 @@ function initMapGoogle() {
     line.setMap(map);
 
     mapUpdRange = (a,b) => {//new function to update the map sources according to the trim slider
-        path = window.MapData.path.map(v=>new google.maps.LatLng(v[0],v[1])).slice(a,b);
+        path = window.MapData.path.slice(a,b).filter(([a,b])=>(a>0||a<0||b>0||b<0)).map(v=>new google.maps.LatLng(v[0],v[1]));
+        if (path.length==0) return alert('Time range has no gps data');
         line.setPath(path);
         startcir.setPosition(path[path.length-1]);
         endcir.setPosition(path[0]);
@@ -491,7 +494,8 @@ initMapLeaflet = () => {
     map.fitBounds(polyline.getBounds(), {maxZoom: 15});
 
     mapUpdRange = (a,b) => {//new function to update the map sources according to the trim slider
-        path = window.MapData.path.slice(a,b);
+        path = window.MapData.path.slice(a,b).filter(([a,b])=>(a>0||a<0||b>0||b<0));
+        if (path.length==0) return alert('Time range has no gps data');
         polyline.setLatLngs(path);
         startcir.setLatLng(path[path.length-1]);
         endcir.setLatLng(path[0]);
@@ -588,7 +592,6 @@ initImportCSV = () => {
     const tempSlider = a=>{
         $( "#slider-range11").off( "slidechange"); //this is to avoid 2 listeners
         initSlider(a,[a[0]],[a[a.length-1]],[-1],[-1]);
-        mapUpdRange = (a,b)=>console.log([a,b]);
     }
     const tempChart = a=>{
         const killPlot = ()=> {
@@ -603,6 +606,7 @@ initImportCSV = () => {
             }
         }
         tempUpdCharts = ()=>{
+            const jsTimeMap = [...a['Device Time']];
             if ($('#plot_data').chosen().val()==null) {
                 killPlot();
             } else {
@@ -612,10 +616,10 @@ initImportCSV = () => {
                     $('#Chart-Container').empty();
                     $('#Chart-Container').append($('<div>',{class:'demo-container'}).append($('<div>',{id:'placeholder',class:'demo-placeholder',style:'height:300px'})));
                     doPlot("right");
-                } else {
-                    plot.setData(flotData);
-                    plot.draw();
                 }
+                //always update the chart trimmed range when plotting new data
+                const [b,c] = [jsTimeMap.length-$('#slider-range11').slider("values",1)-1,jsTimeMap.length-$('#slider-range11').slider("values",0)-1];
+                chartUpdRange(b,c);
                 $('#Summary-Container').empty();
                 $('#Summary-Container').append($('<div>',{class:'table-responsive'}).append($('<table>',{class:'table'}).append($('<thead>').append($('<tr>'))).append('<tbody>')));
                 ['Name','Min/Max','25th Pcnt','75th Pcnt','Mean','Sparkline'].forEach(v=>$('#Summary-Container>div>table>thead>tr').append($('<th>').html(v)));
@@ -640,24 +644,30 @@ initImportCSV = () => {
         $('#plot_data').empty();
         Object.entries(a).filter(([k,v])=>(!k.match(/(GPS|Device)\sTime/))&&v.some(e=>(e>0||e<0))).forEach(([k,v])=>$('#plot_data').append($('<option>',{value:k,text:k})));
         $('#plot_data').trigger("chosen:updated");
-        $('#plot_data').chosen().off('change');
+        $('#plot_data').chosen().off('change'); //disable original listener
         $('#plot_data').chosen().change(tempUpdCharts);
     }
     const tempCSV = a=>{
-        //build an object with the csv columns and saving data, avoinding duplicates
+        //build an object with the csv columns and saving data
+        const chkZero = v=>(v>0||v<0)?v:0; //this functions just avoids NaN data
         const tempData = {};
-        a[0].forEach((v,i)=>(v==v.trim()&&tempData[v]==undefined)&&(tempData[v]=a.slice(1,a.length-1).reverse().map(e=>v.match(/(GPS|Device)\sTime/)?Date.parse(e[i]):((parseFloat(e[i])>0||parseFloat(e[i])<0)?parseFloat(e[i]):0))));
+        a[0].forEach(//we use the first line of the csv to create our keys
+            (v,i)=>(tempData[v]==undefined)&& //check duplicates
+                (tempData[v]=a.slice(1,a.length-(a[a.length-1].length<5?1:0)).reverse() //create object with column data, remove first line, and remove last line if it has less than 5 columns
+                    .map(e=>v.match(/(GPS|Device)\sTime/)?Date.parse(e[i]):chkZero(parseFloat(e[i]))))); //parse string to time if it match torque time fields or float otherwise
+        tempSlider([...tempData['Device Time']].reverse());
         tempChart(tempData);
-        //This part is kinda hard to read but easier to write, we find the indexes we care about(lat,long,speed)
-        //then we build a new array with only those(obd>gps speed), turn the strings to float and then filter lines with lat or long <> 0
-        const idx = ['Latitude','Longitude',/Speed\s\(OBD\)/,/Speed\s\(GPS\)/].map(v=>a[0].findIndex(e=>e.trim()==v||e.match(v)));
-        const data = a.map(l=>[l[idx[0]],l[idx[1]],(idx[2]>0?l[idx[2]]:(idx[3]>0?l[idx[3]]:0))].map(s=>parseFloat(s))).filter(([a,b,c])=>(a>0||a<0||b>0||b<0)).reverse();
+        //we build a new array with only the coordinates and speed (obd>gps), turn the strings to float and then filter lines with lat or long <> 0
+        const spdIdx = Object.entries(tempData).reverse().filter(([a,b])=>a.match(/Speed \(GPS|OBD\)/)&&b.some(e=>e>0));
+        let data = tempData['Latitude'].map((v,i)=>[v,tempData['Longitude'][i],spdIdx==[]?0:tempData[spdIdx[0][0]][i]]);
         window.MapData.path = data.map(v=>[v[0],v[1]]);
         window.MapData.spd = data.map(v=>v[2]);
-        (data.length>0)?tempMap(data):alert('Map is not updated with the csv data');
-        //maybe hide the silder?
-        tempSlider(tempData['Device Time']);
+        //the map generation from csv expects data already filtered, the trim functions need the original data to work correctly in case there are data points with no gps data so we just filter it before generating the map
+        data = data.filter(([a,b,c])=>(a>0||a<0||b>0||b<0));
+        (data.length>0)?tempMap(data):alert('Map has not updated with the csv data, cause there is no valid gps data');
+        $('input#formplotdata').hide(); //hide this button when you load a csv file, cause it actually stops working, trim wouldn't match the session, and plot variables use csv description so they don't match codes either
         alert('CSV file finished loading');
+        //still need a php script to import to database but I have to resolve variable description to torque keys before that, maybe show spreadsheet like interface for the user to match?
     }
     const readCSV = t=>{
         //just split text in lines and every line in fields
