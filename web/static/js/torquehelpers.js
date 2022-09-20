@@ -631,7 +631,7 @@ initImportCSV = () => {
                 const trData = (k,a)=>{
                     const aSorted = [...a].sort((a,b)=>a-b);
                     const tr=$('<tr>');
-                    [k,aSorted[0]+'/'+aSorted[a.length-1],quantile(aSorted,25),quantile(aSorted,75),aSorted.reduce((a,b)=>a+b,0)/a.length,a.join(",")]
+                    [k,aSorted[0]+'/'+aSorted[a.length-1],quantile(aSorted,25),quantile(aSorted,75),aSorted.reduce((a,b)=>a+b,0)/a.length,[...a].reverse().join(",")]
                         .forEach((v,i)=>{tr.append($('<td>').html(i<5?v:'').append(i<5?'':$('<span>',{class:'line'}).html(v)));});
                     return tr;
                 }
