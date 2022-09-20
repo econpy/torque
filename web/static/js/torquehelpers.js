@@ -659,7 +659,7 @@ initImportCSV = () => {
         tempChart(tempData);
         //we build a new array with only the coordinates and speed (obd>gps), turn the strings to float and then filter lines with lat or long <> 0
         const spdIdx = Object.entries(tempData).reverse().filter(([a,b])=>a.match(/Speed \(GPS|OBD\)/)&&b.some(e=>e>0));
-        let data = tempData['Latitude'].map((v,i)=>[v,tempData['Longitude'][i],spdIdx==[]?0:tempData[spdIdx[0][0]][i]]);
+        let data = tempData['Latitude'].map((v,i)=>[v,tempData['Longitude'][i],spdIdx.length==0?0:tempData[spdIdx[0][0]][i]]);
         window.MapData.path = data.map(v=>[v[0],v[1]]);
         window.MapData.spd = data.map(v=>v[2]);
         //the map generation from csv expects data already filtered, the trim functions need the original data to work correctly in case there are data points with no gps data so we just filter it before generating the map
