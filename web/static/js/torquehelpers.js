@@ -199,12 +199,10 @@ updCharts = ()=>{
 
 //Start Openlayers Map Provider js code
 initMapOpenlayers = () => {
-    const pathAll = window.MapData.path;
-    const spdAll = window.MapData.spd;
     const spdUnit = window.MapData.spdUnit;
     const keys = window.MapData.keys;
-    let path = pathAll.map(v=>[v[1],v[0]]); //by default full range, this also changes [Lat,Lon] coordinates format to [Lon,Lat]
-    let spd = spdAll;
+    let path = window.MapData.path.map(v=>[v[1],v[0]]); //by default full range, this also changes [Lat,Lon] coordinates format to [Lon,Lat]
+    let spd = window.MapData.spd;
     let oMapLst = { //base map list and options that don't need an api key
         'Openstreetmap':{labels:[''],styles:[''],styles:[''],url:'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png'},
         'Esri':{
@@ -286,8 +284,8 @@ initMapOpenlayers = () => {
     let pnt = [sFeat(fCircleF(path[0],1/3e3)),sFeat(fCircleF(path[path.length-1],1/3e3))];
     const layers = [baseLayer,lPnt(pnt[0],[0,255,0]),lPnt(pnt[1],[0,0,0]),new ol.layer.Vector({source:pathSrc,style:fStl}),marker];
     mapUpdRange = (a,b) => {//new function to update the map sources according to the trim slider
-        path = pathAll.slice(a,b).map(v=>[v[1],v[0]]);
-        spd = spdAll.slice(a,b);
+        path = window.MapData.path.slice(a,b).map(v=>[v[1],v[0]]);
+        spd = window.MapData.spd.slice(a,b);
         pathSrc.clear();pnt[0].clear();pnt[1].clear();
         pathSrc.addFeature(new ol.Feature({geometry:new ol.geom.LineString(path),name:'trk'}));
         pnt[0].addFeature(fCircleF(path[0],1/3e3));
@@ -332,7 +330,6 @@ initMapOpenlayers = () => {
 
 //Start of Google Map Provider js code
 function initMapGoogle() {
-    const pathAll = window.MapData.path;
     const style = window.MapData.style;
     const manualZoom = window.MapData.manualZoom;
     var map = new google.maps.Map(document.getElementById("map-canvas"), {
@@ -342,7 +339,7 @@ function initMapGoogle() {
     });
 
     // The potentially large array of LatLng objects for the roadmap
-    var path = pathAll.map(v=>new google.maps.LatLng(v[0],v[1])); //takes every coordinate array and makes it a coordinate object needed for gmaps
+    var path = window.MapData.path.map(v=>new google.maps.LatLng(v[0],v[1])); //takes every coordinate array and makes it a coordinate object needed for gmaps
     var pathL = path.length;
     var endCrd = path[0];
     var startCrd = path[pathL-1];
@@ -391,7 +388,7 @@ function initMapGoogle() {
     line.setMap(map);
 
     mapUpdRange = (a,b) => {//new function to update the map sources according to the trim slider
-        path = pathAll.map(v=>new google.maps.LatLng(v[0],v[1])).slice(a,b);
+        path = window.MapData.path.map(v=>new google.maps.LatLng(v[0],v[1])).slice(a,b);
         line.setPath(path);
         startcir.setPosition(path[path.length-1]);
         endcir.setPosition(path[0]);
@@ -428,11 +425,10 @@ function initMapGoogle() {
 
 //Start of Leaflet Map Providers js code
 initMapLeaflet = () => {
-    const pathAll = window.MapData.path;
     const provider = window.MapData.provider;
     const style = window.MapData.style;
     const keys = window.MapData.keys;
-    var path = pathAll;
+    var path = window.MapData.path;
     var map = new L.Map("map-canvas", {
         center: new L.LatLng(37.7, -122.4),
         zoom: 6});
@@ -495,7 +491,7 @@ initMapLeaflet = () => {
     map.fitBounds(polyline.getBounds(), {maxZoom: 15});
 
     mapUpdRange = (a,b) => {//new function to update the map sources according to the trim slider
-        path = pathAll.slice(a,b);
+        path = window.MapData.path.slice(a,b);
         polyline.setLatLngs(path);
         startcir.setLatLng(path[path.length-1]);
         endcir.setLatLng(path[0]);
@@ -589,7 +585,12 @@ initSlider = (jsTimeMap,minTimeStart,maxTimeEnd,timestartval,timeendval)=>{
 
 //CSV Import
 initImportCSV = () => {
-    const tempChart = ()=>{
+    const tempSlider = a=>{
+        $( "#slider-range11").off( "slidechange"); //this is to avoid 2 listeners
+        initSlider(a.reverse(),[a[0]],[a[a.length-1]],[-1],[-1]);
+        mapUpdRange = (a,b)=>console.log([a,b]);
+    }
+    const tempChart = a=>{
         const killPlot = ()=> {
             if ($('#placeholder')[0]!=undefined) {//clean our plot if it exists
                 flotData = [];
@@ -606,7 +607,7 @@ initImportCSV = () => {
                 killPlot();
             } else {
                 flotData = [];
-                $('#plot_data').chosen().val().forEach(v=>flotData.push({label:v,data:tempData[v].map((e,i)=>[tempData['Device Time'][i],e])}));
+                $('#plot_data').chosen().val().forEach(v=>flotData.push({label:v,data:a[v].map((e,i)=>[a['Device Time'][i],e])}));
                 if ($('#placeholder')[0]==undefined) {
                     $('#Chart-Container').empty();
                     $('#Chart-Container').append($('<div>',{class:'demo-container'}).append($('<div>',{id:'placeholder',class:'demo-placeholder',style:'height:300px'})));
@@ -623,39 +624,39 @@ initImportCSV = () => {
                     if (a[base+1]!==undefined) return a[base]+(((a.length-1)*q/100)-base)*(a[base+1]-a[base]);
                     else return a[base];
                 };
-                const trData = k=>{
-                    const aSorted = [];
-                    tempData[k].forEach(v=>aSorted.push(v)); //copy array data before sorting to keep data
-                    aSorted.sort((a,b)=>a-b);
+                const trData = (k,a)=>{
+                    const aSorted = [...a].sort((a,b)=>a-b);
                     const tr=$('<tr>');
-                    [k,aSorted[0]+'/'+aSorted[aSorted.length-1],quantile(aSorted,25),quantile(aSorted,75),aSorted.reduce((a,b)=>a+b,0)/aSorted.length,tempData[k].join(",")]
+                    [k,aSorted[0]+'/'+aSorted[a.length-1],quantile(aSorted,25),quantile(aSorted,75),aSorted.reduce((a,b)=>a+b,0)/a.length,a.join(",")]
                         .forEach((v,i)=>{tr.append($('<td>').html(i<5?v:'').append(i<5?'':$('<span>',{class:'line'}).html(v)));});
                     return tr;
                 }
-                $('#plot_data').chosen().val().forEach(k=>$('#Summary-Container>div>table>tbody').append(trData([k])));
+                $('#plot_data').chosen().val().forEach(k=>$('#Summary-Container>div>table>tbody').append(trData(k,a[k])));
                 $(".line").peity("line");
             }
         }
         killPlot();
         //rebuild options based on csv columns with actual data
         $('#plot_data').empty();
-        Object.entries(tempData).filter(([k,v])=>(!k.match(/(GPS|Device)\sTime/))&&v.some(e=>(e>0||e<0))).forEach(([k,v])=>$('#plot_data').append($('<option>',{value:k,text:k})));
+        Object.entries(a).filter(([k,v])=>(!k.match(/(GPS|Device)\sTime/))&&v.some(e=>(e>0||e<0))).forEach(([k,v])=>$('#plot_data').append($('<option>',{value:k,text:k})));
         $('#plot_data').trigger("chosen:updated");
         $('#plot_data').chosen().off('change');
         $('#plot_data').chosen().change(tempUpdCharts);
     }
     const tempCSV = a=>{
         //build an object with the csv columns and saving data, avoinding duplicates
-        window.tempData = {};
+        const tempData = {};
         a[0].forEach((v,i)=>(v==v.trim()&&tempData[v]==undefined)&&(tempData[v]=a.slice(1,a.length-1).map(e=>v.match(/(GPS|Device)\sTime/)?Date.parse(e[i]):((parseFloat(e[i])>0||parseFloat(e[i])<0)?parseFloat(e[i]):0))));
         tempChart(tempData);
         //This part is kinda hard to read but easier to write, we find the indexes we care about(lat,long,speed)
         //then we build a new array with only those(obd>gps speed), turn the strings to float and then filter lines with lat or long <> 0
         const idx = ['Latitude','Longitude',/Speed\s\(OBD\)/,/Speed\s\(GPS\)/].map(v=>a[0].findIndex(e=>e.trim()==v||e.match(v)));
         const data = a.map(l=>[l[idx[0]],l[idx[1]],(idx[2]>0?l[idx[2]]:(idx[3]>0?l[idx[3]]:0))].map(s=>parseFloat(s))).filter(([a,b,c])=>(a>0||a<0||b>0||b<0));
+        window.MapData.path = data.map(v=>[v[0],v[1]]);
+        window.MapData.spd = data.map(v=>v[2]);
         (data.length>0)?tempMap(data):alert('Map is not updated with the csv data');
         //maybe hide the silder?
-        //tempSlider(a);
+        tempSlider(tempData['Device Time']);
         alert('CSV file finished loading');
     }
     const readCSV = t=>{
