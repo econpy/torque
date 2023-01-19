@@ -17,6 +17,11 @@ $thunderforestApiKey = ''; // OPTIONAL: Create a key at https://www.thunderfores
 $hereApiKey = '';  // OPTIONAL: Create a key at https://account.here.com/sign-up
 $maptilerApiKey = ''; // OPTIONAL: Create a key at https://cloud.maptiler.com/auth/widget
 
+// OPTIONAL set the URI here for your HomeAssistant instance; format: https://SERVER_HOME_ASSITANT:PORT/api/torque Leave blank if unused
+$uri_homeassistant = '';
+// OPTIONAL Uncomment and paste the bearer token from Home Assistant here to use it directly, rather than pulling it from the Torque App's web request
+//$token_homeassistant = '';
+
 //Map options
 $mapProvider = 'esri'; // google,esri,stamen,openstreetmap,mapbox,tomtom,thunderforest,here,maptiler
 $mapStyleSelect = 'Streets'; //provider specific see README e.g. roadmap for google, Streets for esri, not used for openstreetmap

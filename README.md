@@ -164,6 +164,10 @@ Enter the URL to your **upload_data.php** script under "Webserver URL" and press
 
 At this point, you should be all setup. The next time you connect to Torque in your car, data will begin syncing into your MySQL database in real-time!
 
+### Optional: Home Assistant Integration ###
+
+Per [arduiacob's](https://github.com/arduiacob) suggestion and code submission, this app can now forward sensor data to Home Assistant.  This requires 2 variables, one is the URL to your home assistant instance (which is set in the creds.php file and is clearly labeled), and the other is a Bearer Token for the Home Assistant account which will be intaking the data.  The bearer token can be pasted directly into creds.php as a variable (which must be uncommented), or if you chose to put the bearer token into the Torque Pro config, this webapp will extract it from the upload request and utilize it.  Documentation of the [Home Assistant Torque Integration is available here.](https://www.home-assistant.io/integrations/torque/) Uploaded data will appear as a sensor, most often prefixed with "sensor.vehicle".
+
 ### Gotchas ###
 
 If you log a ton of PID's (as I do for debugging) you may encounter an apache bug; Torque uploads data through a huge $_GET request.  Apache, by default, allows $_GET requests up to 8190 characters.  My sample data upload was 13,619 characters long...this led to some data uploads returning 414 errors instead of 200 responses, which resulted in the app trying over-and-over to re-upload the datapoint, essentially DDoS'ing myself.  For this; you can edit your apache configuration to allow any value you like; this is, in general, not recommended and should be set to limit a value as close as possible to what your longest query would be.  On my configuration, I edited /etc/apache2/sites-available/000-default.conf and added the following line:
